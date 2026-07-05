@@ -1,6 +1,6 @@
 "use client";
 
-import { useActionState, useEffect, useState } from "react";
+import { useActionState, useEffect, useState, type ReactNode } from "react";
 import { AppSelect, AppTextarea } from "@/components/form-controls";
 import { submitFeedback } from "@/features/feedback/actions";
 import {
@@ -13,19 +13,30 @@ const initialState: FeedbackActionState = {};
 
 type FeedbackButtonProps = {
   userEmail: string;
+  className?: string;
+  children?: ReactNode;
+  onOpen?: () => void;
 };
 
-export function FeedbackButton({ userEmail }: FeedbackButtonProps) {
+export function FeedbackButton({
+  userEmail,
+  className = "inline-flex h-10 items-center justify-center rounded-2xl border border-landing-nav-auth-border bg-landing-nav-auth-bg px-4 text-sm font-semibold text-landing-nav-auth-text shadow-[inset_0_1px_0_var(--fg-7)] transition duration-200 hover:border-landing-nav-auth-border-hover hover:bg-landing-nav-auth-bg-hover",
+  children = "Feedback",
+  onOpen,
+}: FeedbackButtonProps) {
   const [open, setOpen] = useState(false);
 
   return (
     <>
       <button
         type="button"
-        onClick={() => setOpen(true)}
-        className="inline-flex h-10 items-center justify-center rounded-2xl border border-landing-nav-auth-border bg-landing-nav-auth-bg px-4 text-sm font-semibold text-landing-nav-auth-text shadow-[inset_0_1px_0_var(--fg-7)] transition duration-200 hover:border-landing-nav-auth-border-hover hover:bg-landing-nav-auth-bg-hover"
+        onClick={() => {
+          onOpen?.();
+          setOpen(true);
+        }}
+        className={className}
       >
-        Feedback
+        {children}
       </button>
 
       {open ? (
@@ -62,7 +73,7 @@ function FeedbackModal({
 
   useEffect(() => {
     if (state.success) {
-      setMessage("");
+      queueMicrotask(() => setMessage(""));
     }
   }, [state.success]);
 

@@ -43,9 +43,6 @@ export function ThemeSwitcher({ className = "" }: { className?: string }) {
 
   return (
     <div className={className}>
-      <p className="mb-2 px-1 text-[10px] font-semibold uppercase tracking-[0.18em] text-muted">
-        Theme
-      </p>
       <div className="grid grid-cols-3 gap-1 rounded-2xl border border-border bg-surface-soft p-1">
         {themeOptions.map((option) => {
           const active = theme === option.value;
@@ -55,15 +52,16 @@ export function ThemeSwitcher({ className = "" }: { className?: string }) {
               key={option.value}
               type="button"
               onClick={() => setTheme(option.value)}
+              aria-label={`Use ${option.label.toLowerCase()} theme`}
               aria-pressed={active}
-              className={`inline-flex h-9 items-center justify-center gap-1.5 rounded-xl text-xs font-semibold transition ${
+              title={option.label}
+              className={`inline-flex h-9 items-center justify-center rounded-xl transition ${
                 active
                   ? "bg-filter-active-bg text-filter-active-text shadow-[0_8px_24px_var(--shadow-soft)]"
-                  : "text-muted hover:bg-filter-idle-bg-hover hover:text-faint"
+                  : "text-muted hover:bg-filter-idle-bg-hover hover:text-filter-idle-text-hover"
               }`}
             >
               <ThemeIcon icon={option.icon} />
-              {option.label}
             </button>
           );
         })}

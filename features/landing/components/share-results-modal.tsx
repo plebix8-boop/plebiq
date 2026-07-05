@@ -1,8 +1,19 @@
 "use client";
 
 import { AnimatePresence, motion } from "framer-motion";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState, type ComponentType } from "react";
 import { createPortal } from "react-dom";
+import {
+  FaCopy,
+  FaDownload,
+  FaFacebookF,
+  FaLinkedinIn,
+  FaRedditAlien,
+  FaShareAlt,
+  FaTelegramPlane,
+  FaTwitter,
+  FaWhatsapp,
+} from "react-icons/fa";
 import type { FeaturedPoll } from "../data";
 
 type ShareResultsModalProps = {
@@ -15,6 +26,8 @@ type ShareResultsModalProps = {
 type ShareOption = {
   label: string;
   helper: string;
+  Icon: ComponentType<{ className?: string }>;
+  color: string;
   action: () => void;
 };
 
@@ -103,48 +116,54 @@ function buildShareImage(
   shareUrl: string,
   logoDataUrl?: string | null,
 ) {
-  const questionLines = wrapText(poll.question, 30).slice(0, 4);
-  const optionCount = poll.options.length;
-  const optionGap = optionCount > 6 ? 22 : 28;
-  const optionHeight = optionCount > 6 ? 124 : 148;
-  const startY = 500;
+  const results = poll.options
+    .map((option, index) => ({
+      option,
+      originalIndex: index,
+      percent: parsePercent(percentages[index] ?? option.previewWidth),
+    }))
+    .sort((a, b) => b.percent - a.percent);
+  const questionLines = wrapText(poll.question, 27).slice(0, 4);
+  const optionCount = results.length;
+  const optionGap = optionCount > 6 ? 18 : 22;
+  const optionHeight = optionCount > 6 ? 118 : 132;
+  const startY = 560;
   const contentHeight = startY + optionCount * (optionHeight + optionGap);
-  const footerY = Math.max(1285, contentHeight + 28);
+  const footerY = Math.max(1290, contentHeight + 34);
   const imageHeight = Math.max(MIN_IMAGE_HEIGHT, footerY + 150);
-  const optionsSvg = poll.options
-    .map((option, index) => {
-      const percent = parsePercent(percentages[index] ?? option.previewWidth);
+  const cardHeight = imageHeight - 150;
+  const optionsSvg = results
+    .map(({ option, percent, originalIndex }, index) => {
       const y = startY + index * (optionHeight + optionGap);
-      const barWidth = Math.max(12, Math.round((percent / 100) * 674));
-      const labelLines = wrapText(option.label, 34).slice(0, 2);
-      const descriptionLines = wrapText(option.description, 50).slice(0, 1);
-      const [accentStart, accentEnd] = OPTION_ACCENTS[index % OPTION_ACCENTS.length];
+      const barWidth = Math.max(12, Math.round((percent / 100) * 640));
+      const labelLines = wrapText(option.label, 32).slice(0, 2);
+      const descriptionLines = wrapText(option.description, 46).slice(0, 1);
+      const [accentStart, accentEnd] = OPTION_ACCENTS[originalIndex % OPTION_ACCENTS.length];
       const rank = String(index + 1).padStart(2, "0");
 
       return `
-        <g transform="translate(100 ${y})">
-          <rect x="0" y="10" width="1000" height="${optionHeight}" rx="38" fill="#082a45" opacity="0.16"/>
-          <rect width="1000" height="${optionHeight}" rx="38" fill="#f4f8ff"/>
-          <rect x="0" y="0" width="1000" height="${optionHeight}" rx="38" fill="none" stroke="#d6e7ff" stroke-width="2"/>
-          <rect x="0" y="0" width="16" height="${optionHeight}" rx="8" fill="url(#optionGradient${index})"/>
-          <circle cx="72" cy="58" r="30" fill="url(#optionGradient${index})"/>
-          <text x="72" y="68" text-anchor="middle" fill="#ffffff" font-family="Inter, Arial, sans-serif" font-size="22" font-weight="900">${rank}</text>
+        <g transform="translate(130 ${y})">
+          <rect x="0" y="10" width="940" height="${optionHeight}" rx="30" fill="#050812" opacity="0.34"/>
+          <rect width="940" height="${optionHeight}" rx="30" fill="#ffffff" opacity="0.055"/>
+          <rect width="940" height="${optionHeight}" rx="30" fill="none" stroke="#ffffff" stroke-opacity="0.085" stroke-width="2"/>
+          <circle cx="58" cy="52" r="27" fill="url(#optionGradient${index})"/>
+          <text x="58" y="61" text-anchor="middle" fill="#ffffff" font-family="Inter, Arial, sans-serif" font-size="20" font-weight="900">${rank}</text>
           ${labelLines
             .map(
               (line, lineIndex) =>
-                `<text x="122" y="${48 + lineIndex * 34}" fill="#0e304c" font-family="Inter, Arial, sans-serif" font-size="32" font-weight="900">${escapeXml(line)}</text>`,
+                `<text x="108" y="${43 + lineIndex * 31}" fill="#ffffff" fill-opacity="0.95" font-family="Inter, Arial, sans-serif" font-size="28" font-weight="850">${escapeXml(line)}</text>`,
             )
             .join("")}
           ${
             descriptionLines[0]
-              ? `<text x="122" y="${labelLines.length > 1 ? 112 : 88}" fill="#47657d" font-family="Inter, Arial, sans-serif" font-size="22" font-weight="600">${escapeXml(descriptionLines[0])}</text>`
+              ? `<text x="108" y="${labelLines.length > 1 ? 103 : 78}" fill="#a9b7d8" font-family="Inter, Arial, sans-serif" font-size="20" font-weight="600">${escapeXml(descriptionLines[0])}</text>`
               : ""
           }
-          <rect x="818" y="34" width="132" height="64" rx="26" fill="#e4f0ff"/>
-          <text x="884" y="77" text-anchor="middle" fill="${accentStart}" font-family="Inter, Arial, sans-serif" font-size="40" font-weight="950">${percent}%</text>
-          <rect x="122" y="${optionHeight - 34}" width="674" height="14" rx="7" fill="#d8e7fb"/>
-          <rect x="122" y="${optionHeight - 34}" width="${barWidth}" height="14" rx="7" fill="url(#optionGradient${index})"/>
-          <circle cx="${122 + barWidth}" cy="${optionHeight - 27}" r="18" fill="#ffffff" stroke="${accentEnd}" stroke-width="8"/>
+          <rect x="768" y="28" width="124" height="58" rx="23" fill="#ffffff" opacity="0.08"/>
+          <text x="830" y="66" text-anchor="middle" fill="${accentEnd}" font-family="Inter, Arial, sans-serif" font-size="34" font-weight="950">${percent}%</text>
+          <rect x="108" y="${optionHeight - 30}" width="640" height="10" rx="5" fill="#ffffff" opacity="0.08"/>
+          <rect x="108" y="${optionHeight - 30}" width="${barWidth}" height="10" rx="5" fill="url(#optionGradient${index})"/>
+          <circle cx="${108 + barWidth}" cy="${optionHeight - 25}" r="13" fill="#10152e" stroke="${accentEnd}" stroke-width="7"/>
           <defs>
             <linearGradient id="optionGradient${index}" x1="0" y1="0" x2="1" y2="0">
               <stop offset="0%" stop-color="${accentStart}"/>
@@ -160,53 +179,57 @@ function buildShareImage(
     <svg width="${IMAGE_WIDTH}" height="${imageHeight}" viewBox="0 0 ${IMAGE_WIDTH} ${imageHeight}" xmlns="http://www.w3.org/2000/svg">
       <defs>
         <linearGradient id="bgGradient" x1="0" y1="0" x2="1" y2="1">
-          <stop offset="0%" stop-color="#0e304c"/>
-          <stop offset="54%" stop-color="#146aff"/>
-          <stop offset="100%" stop-color="#2da3ff"/>
+          <stop offset="0%" stop-color="#050812"/>
+          <stop offset="48%" stop-color="#0e304c"/>
+          <stop offset="100%" stop-color="#146aff"/>
         </linearGradient>
-        <linearGradient id="barGradient" x1="0" y1="0" x2="1" y2="0">
-          <stop offset="0%" stop-color="#146aff"/>
-          <stop offset="100%" stop-color="#2da3ff"/>
+        <linearGradient id="cardGradient" x1="0" y1="0" x2="1" y2="1">
+          <stop offset="0%" stop-color="#171c3a"/>
+          <stop offset="58%" stop-color="#10152e"/>
+          <stop offset="100%" stop-color="#081326"/>
         </linearGradient>
         <pattern id="dotPattern" width="44" height="44" patternUnits="userSpaceOnUse">
-          <circle cx="6" cy="6" r="3" fill="#f4f8ff" opacity="0.18"/>
+          <circle cx="6" cy="6" r="2.6" fill="#f4f8ff" opacity="0.12"/>
         </pattern>
         <filter id="softShadow" x="-20%" y="-20%" width="140%" height="140%">
-          <feDropShadow dx="0" dy="24" stdDeviation="34" flood-color="#06243d" flood-opacity="0.22"/>
+          <feDropShadow dx="0" dy="30" stdDeviation="38" flood-color="#000000" flood-opacity="0.38"/>
         </filter>
         <filter id="logoShadow" x="-20%" y="-40%" width="140%" height="180%">
-          <feDropShadow dx="0" dy="14" stdDeviation="18" flood-color="#061f35" flood-opacity="0.28"/>
+          <feDropShadow dx="0" dy="8" stdDeviation="8" flood-color="#000000" flood-opacity="0.18"/>
         </filter>
       </defs>
       <rect width="1200" height="${imageHeight}" fill="url(#bgGradient)"/>
       <rect width="1200" height="${imageHeight}" fill="url(#dotPattern)"/>
-      <circle cx="1070" cy="120" r="230" fill="#f4f8ff" opacity="0.12"/>
-      <circle cx="1040" cy="430" r="118" fill="none" stroke="#f4f8ff" stroke-width="22" opacity="0.12"/>
-      <path d="M104 404 C220 312 314 404 430 298 S650 208 796 304" fill="none" stroke="#91ceff" stroke-width="10" stroke-linecap="round" opacity="0.24"/>
-      <circle cx="120" cy="${imageHeight - 180}" r="260" fill="#2da3ff" opacity="0.18"/>
-      <rect x="58" y="58" width="1084" height="${imageHeight - 116}" rx="58" fill="#f4f8ff" opacity="0.12" stroke="#f4f8ff" stroke-opacity="0.24"/>
+      <circle cx="1030" cy="160" r="260" fill="#7c5cff" opacity="0.18"/>
+      <circle cx="120" cy="${imageHeight - 140}" r="300" fill="#2da3ff" opacity="0.18"/>
+      <path d="M88 416 C230 306 332 420 468 294 S696 198 848 314" fill="none" stroke="#22d3c5" stroke-width="9" stroke-linecap="round" opacity="0.24"/>
+      <rect x="74" y="72" width="1052" height="${cardHeight}" rx="54" fill="url(#cardGradient)" stroke="#ffffff" stroke-opacity="0.1" stroke-width="2" filter="url(#softShadow)"/>
+      <circle cx="1010" cy="396" r="112" fill="none" stroke="#ffffff" stroke-width="20" opacity="0.08"/>
+      <circle cx="928" cy="292" r="10" fill="#22d3c5"/>
+      <circle cx="962" cy="334" r="6" fill="#7c5cff"/>
+      <circle cx="1028" cy="292" r="7" fill="#2da3ff"/>
 
-      <g transform="translate(94 92)" filter="url(#logoShadow)">
-        <rect x="0" y="0" width="480" height="132" rx="34" fill="#f4f8ff" opacity="0.97"/>
+      <g transform="translate(118 106)" filter="url(#logoShadow)">
         ${
           logoDataUrl
-            ? `<image href="${logoDataUrl}" x="30" y="28" width="420" height="76" preserveAspectRatio="xMidYMid meet"/>`
-            : `<rect x="30" y="28" width="420" height="76" rx="18" fill="#d8e7fb"/>`
+            ? `<image href="${logoDataUrl}" x="0" y="0" width="520" height="146" preserveAspectRatio="xMinYMid meet"/>`
+            : `<rect x="0" y="36" width="520" height="74" rx="22" fill="#d8e7fb" opacity="0.3"/>`
         }
       </g>
-      <g transform="translate(790 116)">
-        <rect width="310" height="70" rx="35" fill="#f4f8ff" opacity="0.18" stroke="#f4f8ff" stroke-opacity="0.26"/>
-        <circle cx="38" cy="35" r="11" fill="#2da3ff"/>
-        <text x="66" y="44" fill="#f4f8ff" font-family="Inter, Arial, sans-serif" font-size="24" font-weight="900" letter-spacing="3">LIVE RESULTS</text>
+      <g transform="translate(794 138)">
+        <rect width="278" height="64" rx="32" fill="#22d3c5" opacity="0.1" stroke="#22d3c5" stroke-opacity="0.28"/>
+        <circle cx="37" cy="32" r="8" fill="#22d3c5"/>
+        <path d="M66 32 H88 L98 18 L108 46 L120 32 H198" fill="none" stroke="#22d3c5" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+        <text x="214" y="40" fill="#22d3c5" font-family="Inter, Arial, sans-serif" font-size="18" font-weight="900" letter-spacing="2">LIVE</text>
       </g>
 
-      <g transform="translate(100 260)">
-        <rect x="0" y="-36" width="${Math.max(220, poll.category.length * 18 + 96)}" height="54" rx="27" fill="#f4f8ff" opacity="0.17"/>
-        <text x="38" y="0" fill="#d9efff" font-family="Inter, Arial, sans-serif" font-size="22" font-weight="900" letter-spacing="4">${escapeXml(poll.category.toUpperCase())}</text>
+      <g transform="translate(130 340)">
+        <rect x="0" y="-36" width="${Math.max(220, poll.category.length * 17 + 92)}" height="54" rx="27" fill="#ffffff" opacity="0.07"/>
+        <text x="34" y="0" fill="#8790b3" font-family="Inter, Arial, sans-serif" font-size="21" font-weight="900" letter-spacing="4">${escapeXml(poll.category.toUpperCase())}</text>
         ${questionLines
           .map(
             (line, index) =>
-              `<text x="0" y="${84 + index * 58}" fill="#ffffff" font-family="Inter, Arial, sans-serif" font-size="52" font-weight="950">${escapeXml(line)}</text>`,
+              `<text x="0" y="${80 + index * 57}" fill="#ffffff" font-family="Inter, Arial, sans-serif" font-size="52" font-weight="850">${escapeXml(line)}</text>`,
           )
           .join("")}
       </g>
@@ -215,11 +238,12 @@ function buildShareImage(
         ${optionsSvg}
       </g>
 
-      <g transform="translate(100 ${footerY})">
-        <rect width="1000" height="92" rx="28" fill="#0e304c" opacity="0.88"/>
-        <text x="40" y="38" fill="#f4f8ff" font-family="Inter, Arial, sans-serif" font-size="26" font-weight="900">Join the vote</text>
-        <text x="40" y="68" fill="#b9ddff" font-family="Inter, Arial, sans-serif" font-size="22" font-weight="700">${escapeXml(shareUrl.replace("https://", ""))}</text>
-        <path d="M910 31 L948 46 L910 61 M946 46 H834" fill="none" stroke="#2da3ff" stroke-width="10" stroke-linecap="round" stroke-linejoin="round"/>
+      <g transform="translate(130 ${footerY})">
+        <rect width="940" height="96" rx="30" fill="#ffffff" opacity="0.065" stroke="#ffffff" stroke-opacity="0.09"/>
+        <text x="38" y="39" fill="#ffffff" font-family="Inter, Arial, sans-serif" font-size="25" font-weight="850">Join the vote</text>
+        <text x="38" y="70" fill="#8790b3" font-family="Inter, Arial, sans-serif" font-size="21" font-weight="700">${escapeXml(shareUrl.replace("https://", ""))}</text>
+        <circle cx="878" cy="48" r="31" fill="#146aff"/>
+        <path d="M868 38 L884 48 L868 58 M884 48 H850" fill="none" stroke="#ffffff" stroke-width="7" stroke-linecap="round" stroke-linejoin="round"/>
       </g>
     </svg>
   `;
@@ -364,6 +388,8 @@ export function ShareResultsModal({
     {
       label: "Facebook",
       helper: "Share link",
+      Icon: FaFacebookF,
+      color: "#1877f2",
       action: () =>
         openShareWindow(
           `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(shareUrl)}`,
@@ -372,6 +398,8 @@ export function ShareResultsModal({
     {
       label: "Reddit",
       helper: "Submit post",
+      Icon: FaRedditAlien,
+      color: "#ff4500",
       action: () =>
         openShareWindow(
           `https://www.reddit.com/submit?url=${encodeURIComponent(shareUrl)}&title=${encodeURIComponent(poll.question)}`,
@@ -380,12 +408,16 @@ export function ShareResultsModal({
     {
       label: "WhatsApp",
       helper: "Send message",
+      Icon: FaWhatsapp,
+      color: "#25d366",
       action: () =>
         openShareWindow(`https://wa.me/?text=${encodeURIComponent(caption)}`),
     },
     {
       label: "X",
       helper: "Post result",
+      Icon: FaTwitter,
+      color: "#1da1f2",
       action: () =>
         openShareWindow(
           `https://twitter.com/intent/tweet?text=${encodeURIComponent(caption)}`,
@@ -394,6 +426,8 @@ export function ShareResultsModal({
     {
       label: "LinkedIn",
       helper: "Share link",
+      Icon: FaLinkedinIn,
+      color: "#0a66c2",
       action: () =>
         openShareWindow(
           `https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(shareUrl)}`,
@@ -402,6 +436,8 @@ export function ShareResultsModal({
     {
       label: "Telegram",
       helper: "Send message",
+      Icon: FaTelegramPlane,
+      color: "#2aabee",
       action: () =>
         openShareWindow(
           `https://t.me/share/url?url=${encodeURIComponent(shareUrl)}&text=${encodeURIComponent(caption)}`,
@@ -453,31 +489,35 @@ export function ShareResultsModal({
 
               <div className="grid gap-2 sm:grid-cols-2">
                 <button
-                  className="rounded-2xl bg-button-primary-bg px-4 py-3 text-sm font-black text-button-primary-text transition hover:bg-button-primary-bg-hover"
+                  className="inline-flex items-center justify-center gap-2 rounded-2xl bg-button-primary-bg px-4 py-3 text-sm font-black text-button-primary-text transition hover:bg-button-primary-bg-hover"
                   onClick={shareNative}
                   type="button"
                 >
-                  Native share
+                  <FaShareAlt className="size-4" />
+                  Share
                 </button>
                 <button
-                  className="rounded-2xl border border-button-secondary-border bg-button-secondary-bg px-4 py-3 text-sm font-bold text-button-secondary-text transition hover:bg-button-secondary-bg-hover"
+                  className="inline-flex items-center justify-center gap-2 rounded-2xl border border-button-secondary-border bg-button-secondary-bg px-4 py-3 text-sm font-bold text-button-secondary-text transition hover:bg-button-secondary-bg-hover"
                   onClick={downloadImage}
                   type="button"
                 >
+                  <FaDownload className="size-4" />
                   Download image
                 </button>
                 <button
-                  className="rounded-2xl border border-button-secondary-border bg-button-secondary-bg px-4 py-3 text-sm font-bold text-button-secondary-text transition hover:bg-button-secondary-bg-hover"
+                  className="inline-flex items-center justify-center gap-2 rounded-2xl border border-button-secondary-border bg-button-secondary-bg px-4 py-3 text-sm font-bold text-button-secondary-text transition hover:bg-button-secondary-bg-hover"
                   onClick={() => void withStatus(() => copyText(shareUrl), "Link copied.")}
                   type="button"
                 >
+                  <FaCopy className="size-4" />
                   Copy link
                 </button>
                 <button
-                  className="rounded-2xl border border-button-secondary-border bg-button-secondary-bg px-4 py-3 text-sm font-bold text-button-secondary-text transition hover:bg-button-secondary-bg-hover"
+                  className="inline-flex items-center justify-center gap-2 rounded-2xl border border-button-secondary-border bg-button-secondary-bg px-4 py-3 text-sm font-bold text-button-secondary-text transition hover:bg-button-secondary-bg-hover"
                   onClick={() => void withStatus(() => copyText(caption), "Caption copied.")}
                   type="button"
                 >
+                  <FaCopy className="size-4" />
                   Copy caption
                 </button>
               </div>
@@ -487,21 +527,38 @@ export function ShareResultsModal({
                   Platforms
                 </p>
                 <div className="grid gap-2 sm:grid-cols-2">
-                  {platformShares.map((option) => (
+                  {platformShares.map((option) => {
+                    const Icon = option.Icon;
+
+                    return (
                     <button
-                      className="rounded-2xl border border-poll-option-border bg-poll-option-bg px-4 py-3 text-left transition hover:border-poll-option-border-hover hover:bg-poll-option-bg-hover"
+                      className="group relative flex items-center gap-3 overflow-hidden rounded-2xl border border-poll-option-border bg-poll-option-bg px-4 py-3 text-left transition hover:border-poll-option-border-hover"
                       key={option.label}
                       onClick={option.action}
                       type="button"
                     >
-                      <span className="block text-sm font-black text-poll-option-text">
-                        {option.label}
+                      <span
+                        aria-hidden="true"
+                        className="absolute inset-0 opacity-0 transition group-hover:opacity-15"
+                        style={{ backgroundColor: option.color }}
+                      />
+                      <span
+                        className="relative grid size-9 shrink-0 place-items-center rounded-full bg-button-secondary-bg transition group-hover:bg-white"
+                        style={{ color: option.color }}
+                      >
+                        <Icon className="size-4" />
                       </span>
-                      <span className="mt-0.5 block text-xs text-poll-option-muted">
-                        {option.helper}
+                      <span className="relative min-w-0">
+                        <span className="block text-sm font-black text-poll-option-text">
+                          {option.label}
+                        </span>
+                        <span className="mt-0.5 block truncate text-xs text-poll-option-muted">
+                          {option.helper}
+                        </span>
                       </span>
                     </button>
-                  ))}
+                  );
+                  })}
                 </div>
               </div>
 

@@ -1,7 +1,6 @@
 import {
   AnimatePresence,
   motion,
-  useTransform,
   type MotionValue,
 } from "framer-motion";
 import { useEffect, useRef, useState, type CSSProperties } from "react";
@@ -12,7 +11,6 @@ import { LiveVotesTicker } from "./live-votes-ticker";
 import { PollPreview } from "./poll-preview";
 import { SignInNavButton, UserAvatarMenu } from "./user-avatar-menu";
 import { useAuth } from "@/contexts/auth-context";
-import { FeedbackButton } from "@/features/feedback/components/feedback-button";
 
 type HeroSectionProps = {
   scrollYProgress: MotionValue<number>;
@@ -40,7 +38,7 @@ function cleanWord(word: string) {
     .toLowerCase();
 }
 
-export function HeroSection({ scrollYProgress, featuredPoll, voteProps }: HeroSectionProps) {
+export function HeroSection({ featuredPoll, voteProps }: HeroSectionProps) {
   const { user } = useAuth();
   const [displayText, setDisplayText] = useState("");
   const [phraseIndex, setPhraseIndex] = useState(0);
@@ -56,15 +54,6 @@ export function HeroSection({ scrollYProgress, featuredPoll, voteProps }: HeroSe
   function scrollToFeed() {
     window.scrollTo({ top: window.innerHeight, behavior: "smooth" });
   }
-
-  const scale = useTransform(scrollYProgress, [0, 1], [1, 0.5]);
-  const filter = useTransform(scrollYProgress, [0.6, 0.9], ["blur(0px)", "blur(8px)"]);
-  const rotateX = useTransform(scrollYProgress, [0, 1], [0, 10]);
-  const boxShadow = useTransform(
-    scrollYProgress,
-    [0, 1],
-    ["0px 0px 0px transparent", "0px 40px 80px var(--shadow-soft)"],
-  );
 
   useEffect(() => {
     const currentPhrase = heroPhrases[phraseIndex].text;
@@ -219,10 +208,7 @@ export function HeroSection({ scrollYProgress, featuredPoll, voteProps }: HeroSe
       {/* Top-right nav: avatar or sign-in */}
       <div className="absolute right-5 top-5 z-40 sm:right-8 sm:top-6">
         {user ? (
-          <div className="flex items-center gap-2">
-            {user.email ? <FeedbackButton userEmail={user.email} /> : null}
-            <UserAvatarMenu />
-          </div>
+          <UserAvatarMenu />
         ) : (
           <SignInNavButton />
         )}
@@ -232,13 +218,6 @@ export function HeroSection({ scrollYProgress, featuredPoll, voteProps }: HeroSe
 
       <motion.div
         className="relative z-10 mx-auto flex min-h-[172svh] w-full max-w-[1600px] flex-col items-center justify-start gap-10 pb-12 pt-[8svh] lg:grid lg:min-h-[calc(100vh-48px)] lg:grid-cols-[minmax(0,0.94fr)_minmax(500px,624px)] lg:justify-center lg:gap-12 lg:py-0 xl:gap-16"
-        style={{
-          boxShadow,
-          filter,
-          rotateX,
-          scale,
-          transformPerspective: 1000,
-        }}
       >
         <motion.div
           animate={{ opacity: 1, y: 0 }}
@@ -336,13 +315,13 @@ export function HeroSection({ scrollYProgress, featuredPoll, voteProps }: HeroSe
           >
             <motion.div
               animate={{ opacity: 1, scale: 1, y: 0 }}
-              className="w-full max-w-lg"
+              className="flex max-h-[calc(100svh-48px)] w-[min(92vw,620px)] flex-col overflow-hidden"
               exit={{ opacity: 0, scale: 0.94, y: 16 }}
               initial={{ opacity: 0, scale: 0.9, y: 32 }}
               onClick={(e) => e.stopPropagation()}
               transition={{ type: "spring", stiffness: 340, damping: 30 }}
             >
-              <div className="mb-4 flex items-center justify-between px-1">
+              <div className="mb-3 flex shrink-0 items-center justify-between px-1">
                 <p className="text-sm font-semibold text-hero-modal-label-text">Featured poll</p>
                 <button
                   className="grid size-8 place-items-center rounded-full bg-hero-modal-close-bg text-hero-modal-close-text transition hover:bg-hero-button-secondary-bg-hover hover:text-hero-text"
@@ -352,7 +331,9 @@ export function HeroSection({ scrollYProgress, featuredPoll, voteProps }: HeroSe
                   ✕
                 </button>
               </div>
-              <PollPreview poll={featuredPoll} {...voteProps} />
+              <div className="min-h-0 overflow-y-auto pr-1 [scrollbar-width:thin]">
+                <PollPreview poll={featuredPoll} {...voteProps} />
+              </div>
             </motion.div>
           </motion.div>
         )}

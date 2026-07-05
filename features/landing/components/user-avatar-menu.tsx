@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 import { ThemeSwitcher } from "@/components/theme-switcher";
 import { useAuth } from "@/contexts/auth-context";
+import { FeedbackButton } from "@/features/feedback/components/feedback-button";
 import { createClient } from "@/utils/supabase/client";
 
 function getInitials(name: string | null, email: string | null) {
@@ -94,6 +95,22 @@ export function UserAvatarMenu() {
             {/* Actions */}
             <div className="p-2">
               <ThemeSwitcher className="mb-2 rounded-xl border border-landing-profile-menu-border bg-landing-profile-menu-item-bg-hover p-2" />
+
+              {user.email && (
+                <FeedbackButton
+                  userEmail={user.email}
+                  onOpen={() => setOpen(false)}
+                  className="flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-left text-sm text-landing-profile-menu-item-text transition duration-150 hover:bg-landing-profile-menu-item-bg-hover hover:text-landing-profile-menu-item-text-hover"
+                >
+                  <span className="grid h-7 w-7 shrink-0 place-items-center rounded-lg bg-landing-profile-icon-bg text-landing-profile-icon-text">
+                    <svg fill="none" height="14" viewBox="0 0 14 14" width="14">
+                      <path d="M2 2.5h10v6.8H5.7L3 11.5V9.3H2V2.5Z" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.35" />
+                      <path d="M4.5 5h5M4.5 7h3" stroke="currentColor" strokeLinecap="round" strokeWidth="1.35" />
+                    </svg>
+                  </span>
+                  Feedback
+                </FeedbackButton>
+              )}
 
               {user.role === "admin" && (
                 <Link
