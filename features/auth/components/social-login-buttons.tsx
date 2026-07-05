@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { createClient } from "@/utils/supabase/client";
 import { countries, isoToCountry } from "@/utils/countries";
+import { getAuthCallbackUrl } from "@/utils/site-url";
 
 type Provider = "google";
 
@@ -124,7 +125,7 @@ export function SocialLoginButtons({ mode = "sign-in" }: SocialLoginButtonsProps
     setLoadingProvider(provider);
     setError(null);
     const supabase = createClient();
-    const callbackUrl = new URL("/auth/callback", window.location.origin);
+    const callbackUrl = new URL(getAuthCallbackUrl());
     const country = await detectCountryForOAuth();
 
     if (country) {

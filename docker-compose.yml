@@ -1,14 +1,16 @@
-# docker-compose.yml
-version: '1.0'
-
 services:
   plebiq-app:
-    build: .
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        - NEXT_PUBLIC_SITE_URL=https://plebiq.com
     container_name: plebiq-app
     restart: unless-stopped
-    ports:
-      - "3000:3000"
     environment:
       - NODE_ENV=production
+      - NEXT_PUBLIC_SITE_URL=https://plebiq.com
     env_file:
       - .env.production
+    ports:
+      - "3000:3000"

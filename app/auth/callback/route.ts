@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { headers } from "next/headers";
 import { createClient } from "@/utils/supabase/server";
 import { countries, isoToCountry } from "@/utils/countries";
+import { getSiteUrl } from "@/utils/site-url";
 
 function validCountry(country: string | null | undefined) {
   return country && countries.includes(country) ? country : "";
@@ -49,5 +50,5 @@ export async function GET(request: Request) {
     });
   }
 
-  return NextResponse.redirect(new URL(redirectPath, requestUrl.origin));
+  return NextResponse.redirect(new URL(redirectPath, getSiteUrl()));
 }

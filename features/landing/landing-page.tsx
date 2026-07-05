@@ -118,6 +118,22 @@ export function LandingPage({
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isAuthLoading, userId]);
 
+  useEffect(() => {
+    const pollId = new URLSearchParams(window.location.search).get("poll");
+    if (!pollId) return;
+
+    const frame = window.requestAnimationFrame(() => {
+      const pollCards = Array.from(document.querySelectorAll<HTMLElement>("[data-poll-id]"));
+      const target = pollCards.find((card) => card.dataset.pollId === pollId);
+
+      if (target) {
+        target.scrollIntoView({ behavior: "smooth", block: "center" });
+      }
+    });
+
+    return () => window.cancelAnimationFrame(frame);
+  }, [featuredPoll.id, feedPolls]);
+
   // Returns the voteProps for a given poll — called per PollPreview render
   function getVoteProps(pollId: string | undefined): VoteProps {
     if (!pollId || !voteMap) {

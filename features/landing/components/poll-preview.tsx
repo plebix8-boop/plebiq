@@ -7,6 +7,7 @@ import { useAuth } from "@/contexts/auth-context";
 import { castVote } from "../actions";
 import type { VoteState } from "../landing-page";
 import type { FeaturedPoll } from "../data";
+import { ShareResultsModal } from "./share-results-modal";
 
 type PollPreviewProps = {
   poll: FeaturedPoll;
@@ -37,6 +38,7 @@ export function PollPreview({
   );
   const [voteError, setVoteError] = useState<string | null>(null);
   const [showAuthModal, setShowAuthModal] = useState(false);
+  const [showShareModal, setShowShareModal] = useState(false);
   const [overlayStrength, setOverlayStrength] = useState(0.42);
 
   const imageRef = useRef<HTMLImageElement>(null);
@@ -47,6 +49,7 @@ export function PollPreview({
   // Show shimmer while auth is loading OR while parent hasn't resolved vote state yet
   // (existingVoteOptionId === undefined means the batch fetch is still in flight)
   const isLoadingVoteState = variant !== "management" && (isAuthLoading || existingVoteOptionId === undefined);
+  const hasResults = selected !== null || variant === "management";
 
   // ── Sync parent-resolved vote state into local state ──────────────────────
   // Runs once when existingVoteOptionId transitions from undefined to a real value
@@ -151,7 +154,7 @@ export function PollPreview({
   }
 
   return (
-    <div className="mx-auto w-full">
+    <div className="mx-auto w-full scroll-mt-8" data-poll-id={poll.id}>
       <article className="relative overflow-hidden rounded-[1.65rem] bg-poll-card-bg text-poll-card-text shadow-[0_14px_45px_var(--shadow-soft)]">
         <div className="pointer-events-none absolute inset-0 bg-gradient-to-br from-poll-card-sheen via-transparent to-transparent" />
 
@@ -256,19 +259,46 @@ export function PollPreview({
             </p>
           </div>
 
-          {/* Privacy notice */}
-          <div className={isCompact ? "hidden sm:block" : "space-y-2"}>
-            <div className="inline-flex items-center gap-1 rounded-full bg-poll-badge-bg px-3 py-1 text-xs font-medium text-poll-badge-text">
-              <span aria-hidden="true" className="grid size-6 place-items-center">
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img
-                  alt=""
-                  className="size-5 object-contain drop-shadow-[0_1px_3px_var(--fg-25)]"
-                  src="/privacy-icon.ico"
-                />
-              </span>
-              Results reveal after voting
-            </div>
+          {/* Results/share action */}
+          <div className={isCompact ? "sm:block" : "space-y-2"}>
+            {hasResults ? (
+              <button
+                className="inline-flex items-center gap-2 rounded-full border border-poll-option-border bg-poll-option-bg px-3 py-1.5 text-xs font-black text-poll-option-text transition hover:border-poll-option-border-hover hover:bg-poll-option-bg-hover"
+                onClick={() => setShowShareModal(true)}
+                type="button"
+              >
+                <svg
+                  aria-hidden="true"
+                  className="size-3.5"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    d="M7.5 12.5 16.5 7.5M7.5 11.5l9 5"
+                    stroke="currentColor"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth="2"
+                  />
+                  <circle cx="5.5" cy="12" r="2.75" stroke="currentColor" strokeWidth="2" />
+                  <circle cx="18.5" cy="6.5" r="2.75" stroke="currentColor" strokeWidth="2" />
+                  <circle cx="18.5" cy="17.5" r="2.75" stroke="currentColor" strokeWidth="2" />
+                </svg>
+                Share results
+              </button>
+            ) : (
+              <div className="inline-flex items-center gap-1 rounded-full bg-poll-badge-bg px-3 py-1 text-xs font-medium text-poll-badge-text">
+                <span aria-hidden="true" className="grid size-6 place-items-center">
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img
+                    alt=""
+                    className="size-5 object-contain drop-shadow-[0_1px_3px_var(--fg-25)]"
+                    src="/privacy-icon.ico"
+                  />
+                </span>
+                Results reveal after voting
+              </div>
+            )}
           </div>
 
           {/* Options — skeleton while resolving, real buttons once ready */}
@@ -530,6 +560,12 @@ export function PollPreview({
           )}
         </AnimatePresence>
       </article>
+      <ShareResultsModal
+        isOpen={showShareModal}
+        onClose={() => setShowShareModal(false)}
+        percentages={displayedWidths}
+        poll={poll}
+      />
     </div>
   );
 }

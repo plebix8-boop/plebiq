@@ -164,7 +164,7 @@ export function AuthSplitLayout({
           </Link>
           <Link
             href="/"
-            className="text-xs font-medium text-slate-400 transition hover:text-slate-700"
+            className="rounded-full border border-button-secondary-border bg-button-secondary-bg px-3 py-2 text-xs font-semibold text-button-secondary-text transition hover:bg-button-secondary-bg-hover hover:text-button-secondary-text"
           >
             ← Back
           </Link>

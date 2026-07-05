@@ -176,10 +176,14 @@ function SortButton({
     <button
       type="button"
       onClick={() => onSort(sortKey)}
-      className="inline-flex items-center gap-1 text-left text-xs font-semibold uppercase tracking-[0.14em] text-admin-text-muted transition hover:text-admin-text"
+      className={`inline-flex items-center gap-1 rounded-xl border px-3 py-2 text-left text-xs font-semibold uppercase tracking-[0.14em] transition ${
+        active
+          ? "border-admin-card-border-hover bg-admin-nav-active-bg text-admin-nav-active-text"
+          : "border-admin-button-secondary-border bg-admin-button-secondary-bg text-admin-button-secondary-text hover:bg-admin-button-secondary-bg-hover"
+      }`}
     >
       {label}
-      <span className={active ? "text-admin-text" : "text-admin-text-subtle"}>
+      <span className={active ? "text-admin-nav-active-text" : "text-admin-text-subtle"}>
         {active ? (direction === "asc" ? "↑" : "↓") : "↕"}
       </span>
     </button>
@@ -204,26 +208,36 @@ function FeedbackRowForm({ row }: { row: AdminFeedbackRow }) {
   return (
     <form action={formAction} className="grid gap-3">
       <input type="hidden" name="feedbackId" value={row.id} />
-      <div className="grid gap-3 lg:grid-cols-[190px_minmax(240px,1fr)_auto] lg:items-start">
-        <AppSelect
-          name="status"
-          value={status}
-          onChange={(value) => setStatus(value as AdminFeedbackStatus)}
-          options={feedbackStatuses.map((value) => ({
-            value,
-            label: feedbackStatusLabels[value],
-          }))}
-          tone="dark"
-        />
-        <AppTextarea
-          name="internalNotes"
-          value={notes}
-          onChange={(event) => setNotes(event.target.value)}
-          placeholder="Internal notes"
-          rows={2}
-          tone="dark"
-        />
-        <div className="flex flex-wrap gap-2 lg:justify-end">
+      <div className="grid gap-3 rounded-2xl border border-admin-card-border bg-admin-surface p-3 lg:grid-cols-[190px_minmax(240px,1fr)]">
+        <div>
+          <label className="mb-2 block text-[10px] font-semibold uppercase tracking-[0.14em] text-admin-text-muted">
+            Status
+          </label>
+          <AppSelect
+            name="status"
+            value={status}
+            onChange={(value) => setStatus(value as AdminFeedbackStatus)}
+            options={feedbackStatuses.map((value) => ({
+              value,
+              label: feedbackStatusLabels[value],
+            }))}
+            tone="light"
+          />
+        </div>
+        <div>
+          <label className="mb-2 block text-[10px] font-semibold uppercase tracking-[0.14em] text-admin-text-muted">
+            Internal notes
+          </label>
+          <AppTextarea
+            name="internalNotes"
+            value={notes}
+            onChange={(event) => setNotes(event.target.value)}
+            placeholder="Internal notes are visible to admins only"
+            rows={2}
+            tone="light"
+          />
+        </div>
+        <div className="flex flex-wrap gap-2 lg:col-span-2 lg:justify-end">
           <button
             type="submit"
             name="resolve"
@@ -450,127 +464,125 @@ export function FeedbackManagementClient({
             value={search}
             onChange={(event) => setSearch(event.target.value)}
             placeholder="Search email or message"
-            tone="dark"
+            tone="light"
           />
           <AppSelect
             value={statusFilter}
             onChange={setStatusFilter}
             options={statusOptions}
-            tone="dark"
+            tone="light"
           />
           <AppSelect
             value={categoryFilter}
             onChange={setCategoryFilter}
             options={categoryOptions}
-            tone="dark"
+            tone="light"
           />
           <AppInput
             type="date"
             value={dateFrom}
             onChange={(event) => setDateFrom(event.target.value)}
-            tone="dark"
+            tone="light"
             aria-label="Date from"
           />
           <AppInput
             type="date"
             value={dateTo}
             onChange={(event) => setDateTo(event.target.value)}
-            tone="dark"
+            tone="light"
             aria-label="Date to"
           />
         </div>
       </div>
 
-      <div className="overflow-hidden rounded-2xl border border-admin-card-border bg-admin-card-bg">
-        <div className="overflow-x-auto">
-          <table className="min-w-[980px] w-full border-collapse">
-            <thead className="border-b border-admin-divider bg-admin-surface">
-              <tr>
-                <th className="px-4 py-3 text-left">
-                  <SortButton
-                    label="Created"
-                    sortKey="created_at"
-                    activeKey={sortKey}
-                    direction={sortDirection}
-                    onSort={handleSort}
-                  />
-                </th>
-                <th className="px-4 py-3 text-left">
-                  <SortButton
-                    label="Email"
-                    sortKey="user_email"
-                    activeKey={sortKey}
-                    direction={sortDirection}
-                    onSort={handleSort}
-                  />
-                </th>
-                <th className="px-4 py-3 text-left">
-                  <SortButton
-                    label="Category"
-                    sortKey="category"
-                    activeKey={sortKey}
-                    direction={sortDirection}
-                    onSort={handleSort}
-                  />
-                </th>
-                <th className="px-4 py-3 text-left">
-                  <SortButton
-                    label="Status"
-                    sortKey="status"
-                    activeKey={sortKey}
-                    direction={sortDirection}
-                    onSort={handleSort}
-                  />
-                </th>
-                <th className="px-4 py-3 text-left text-xs font-semibold uppercase tracking-[0.14em] text-admin-text-muted">
-                  Message / Admin
-                </th>
-              </tr>
-            </thead>
-            <tbody>
-              {filteredRows.map((row) => (
-                <tr
-                  key={row.id}
-                  className="border-b border-admin-divider align-top last:border-b-0"
-                >
-                  <td className="px-4 py-4 text-sm text-admin-text-muted">
-                    <p>{formatDate(row.created_at)}</p>
-                    {row.resolved_at ? (
-                      <p className="mt-2 text-xs text-admin-success-text">
-                        Resolved {formatDate(row.resolved_at)}
-                      </p>
-                    ) : null}
-                  </td>
-                  <td className="px-4 py-4 text-sm font-semibold text-admin-text">
-                    {row.user_email}
-                  </td>
-                  <td className="px-4 py-4">
-                    <span className="rounded-full border border-admin-badge-info-border bg-admin-badge-info-bg px-3 py-1 text-xs font-semibold text-admin-badge-info-text">
+      <div className="rounded-2xl border border-admin-card-border bg-admin-card-bg p-4">
+        <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
+          <div>
+            <h2 className="text-sm font-semibold text-admin-text">Feedback inbox</h2>
+            <p className="mt-1 text-xs text-admin-text-muted">
+              Sort and review feedback without leaving the page.
+            </p>
+          </div>
+          <div className="flex flex-wrap gap-2">
+            <SortButton
+              label="Created"
+              sortKey="created_at"
+              activeKey={sortKey}
+              direction={sortDirection}
+              onSort={handleSort}
+            />
+            <SortButton
+              label="Email"
+              sortKey="user_email"
+              activeKey={sortKey}
+              direction={sortDirection}
+              onSort={handleSort}
+            />
+            <SortButton
+              label="Category"
+              sortKey="category"
+              activeKey={sortKey}
+              direction={sortDirection}
+              onSort={handleSort}
+            />
+            <SortButton
+              label="Status"
+              sortKey="status"
+              activeKey={sortKey}
+              direction={sortDirection}
+              onSort={handleSort}
+            />
+          </div>
+        </div>
+
+        <div className="grid gap-4">
+          {filteredRows.map((row) => (
+            <article
+              key={row.id}
+              className="rounded-2xl border border-admin-card-border bg-admin-surface p-4 shadow-[0_12px_30px_var(--shadow-soft)]"
+            >
+              <div className="flex flex-col gap-3 lg:flex-row lg:items-start lg:justify-between">
+                <div className="min-w-0">
+                  <div className="flex flex-wrap items-center gap-2">
+                    <span className="whitespace-nowrap rounded-full border border-admin-badge-info-border bg-admin-badge-info-bg px-3 py-1 text-xs font-semibold text-admin-badge-info-text">
                       {feedbackCategoryLabels[row.category]}
                     </span>
-                  </td>
-                  <td className="px-4 py-4">
-                    <span className="rounded-full border border-admin-badge-priority-border bg-admin-badge-priority-bg px-3 py-1 text-xs font-semibold text-admin-badge-priority-text">
+                    <span className="whitespace-nowrap rounded-full border border-admin-badge-priority-border bg-admin-badge-priority-bg px-3 py-1 text-xs font-semibold text-admin-badge-priority-text">
                       {feedbackStatusLabels[row.status]}
                     </span>
-                  </td>
-                  <td className="px-4 py-4">
-                    <p className="mb-3 max-w-2xl whitespace-pre-wrap text-sm leading-6 text-admin-text">
-                      {row.message}
-                    </p>
-                    <FeedbackRowForm row={row} />
-                  </td>
-                </tr>
-              ))}
-              {!filteredRows.length ? (
-                <tr>
-                  <td colSpan={5} className="px-4 py-12 text-center text-sm text-admin-text-muted">
-                    No feedback matches these filters.
-                  </td>
-                </tr>
-              ) : null}
-            </tbody>
-          </table>
+                    {row.resolved_at ? (
+                      <span className="whitespace-nowrap rounded-full border border-admin-card-border bg-admin-card-bg px-3 py-1 text-xs font-semibold text-admin-success-text">
+                        Resolved
+                      </span>
+                    ) : null}
+                  </div>
+                  <p className="mt-3 text-sm font-semibold text-admin-text">
+                    {row.user_email}
+                  </p>
+                  <p className="mt-1 text-xs text-admin-text-muted">
+                    Created {formatDate(row.created_at)}
+                    {row.resolved_at ? ` - Resolved ${formatDate(row.resolved_at)}` : ""}
+                  </p>
+                </div>
+              </div>
+
+              <div className="mt-4 rounded-2xl border border-admin-card-border bg-admin-card-bg p-4">
+                <p className="whitespace-pre-wrap text-sm leading-6 text-admin-text">
+                  {row.message}
+                </p>
+              </div>
+
+              <div className="mt-4">
+                <FeedbackRowForm row={row} />
+              </div>
+            </article>
+          ))}
+
+          {!filteredRows.length ? (
+            <div className="rounded-2xl border border-admin-card-border bg-admin-surface px-4 py-12 text-center text-sm text-admin-text-muted">
+              No feedback matches these filters.
+            </div>
+          ) : null}
         </div>
       </div>
     </div>

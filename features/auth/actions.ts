@@ -5,6 +5,7 @@ import { redirect } from "next/navigation";
 import { createClient } from "@/utils/supabase/server";
 import { isoToCountry } from "@/utils/countries";
 import { checkRateLimit } from "@/utils/rate-limit";
+import { getAuthCallbackUrl } from "@/utils/site-url";
 import type { AuthFormState } from "./types";
 
 function normalizeEmail(value: FormDataEntryValue | null) {
@@ -49,11 +50,6 @@ function validateEmail(email: string) {
   }
 
   return null;
-}
-
-async function getAuthOrigin() {
-  const requestHeaders = await headers();
-  return requestHeaders.get("origin") ?? "http://localhost:3000";
 }
 
 export async function signIn(
@@ -113,7 +109,6 @@ export async function signUp(
     country = (code && isoToCountry[code]) || "";
   }
 
-  const origin = await getAuthOrigin();
   const supabase = await createClient();
   const { error } = await supabase.auth.signUp({
     email,
@@ -124,7 +119,7 @@ export async function signUp(
         ...(name ? { full_name: name } : {}),
         ...(country ? { country } : {}),
       },
-      emailRedirectTo: `${origin}/auth/callback`,
+      emailRedirectTo: getAuthCallbackUrl(),
     },
   });
 
@@ -155,9 +150,8 @@ export async function requestPasswordReset(
   }
 
   const supabase = await createClient();
-  const origin = await getAuthOrigin();
   const { error } = await supabase.auth.resetPasswordForEmail(email, {
-    redirectTo: `${origin}/auth/callback`,
+    redirectTo: getAuthCallbackUrl(),
   });
 
   if (error) {
