@@ -1,0 +1,14 @@
+# docker-compose.yml
+version: '1.0'
+
+services:
+  plebiq-app:
+    build: .
+    container_name: plebiq-app
+    restart: unless-stopped
+    ports:
+      - "3000:3000"
+    environment:
+      - NODE_ENV=production
+    env_file:
+      - .env.production

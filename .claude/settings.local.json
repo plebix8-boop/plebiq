@@ -1,0 +1,16 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(npm install *)",
+      "Bash(Get-ChildItem -Path \"c:\\\\Users\\\\AppTrick\\\\IdeaProjects\\\\How to\\\\polls\" -Recurse -Force)",
+      "Bash(Select-Object FullName)",
+      "Bash(npm run *)",
+      "Bash(mkdir \"c:\\\\Users\\\\AppTrick\\\\IdeaProjects\\\\How to\\\\polls\\\\app\\\\admin\\\\polls\\\\[id]\" 2>/dev/null; echo \"done\")",
+      "Bash(node -e \"const p=require\\('./package.json'\\); console.log\\(JSON.stringify\\({deps: Object.keys\\(p.dependencies\\)}, null, 2\\)\\)\")",
+      "Bash(del \"c:\\\\Users\\\\AppTrick\\\\IdeaProjects\\\\How to\\\\polls\\\\middleware.ts\")"
+    ],
+    "additionalDirectories": [
+      "c:\\Users\\AppTrick\\IdeaProjects\\How to\\polls\\app\\admin\\polls"
+    ]
+  }
+}

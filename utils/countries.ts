@@ -1,0 +1,30 @@
+export const countries = [
+  "Afghanistan", "Albania", "Algeria", "Argentina", "Australia", "Austria",
+  "Bangladesh", "Belgium", "Brazil", "Canada", "Chile", "China", "Colombia",
+  "Croatia", "Czech Republic", "Denmark", "Egypt", "Ethiopia", "Finland",
+  "France", "Germany", "Ghana", "Greece", "Hungary", "India", "Indonesia",
+  "Iran", "Iraq", "Ireland", "Israel", "Italy", "Japan", "Jordan", "Kenya",
+  "Malaysia", "Mexico", "Morocco", "Netherlands", "New Zealand", "Nigeria",
+  "Norway", "Pakistan", "Peru", "Philippines", "Poland", "Portugal", "Romania",
+  "Russia", "Saudi Arabia", "South Africa", "South Korea", "Spain", "Sri Lanka",
+  "Sweden", "Switzerland", "Thailand", "Turkey", "Ukraine",
+  "United Arab Emirates", "United Kingdom", "United States", "Venezuela", "Vietnam",
+];
+
+export const isoToCountry: Record<string, string> = {
+  AF: "Afghanistan", AL: "Albania", DZ: "Algeria", AR: "Argentina",
+  AU: "Australia", AT: "Austria", BD: "Bangladesh", BE: "Belgium",
+  BR: "Brazil", CA: "Canada", CL: "Chile", CN: "China", CO: "Colombia",
+  HR: "Croatia", CZ: "Czech Republic", DK: "Denmark", EG: "Egypt",
+  ET: "Ethiopia", FI: "Finland", FR: "France", DE: "Germany", GH: "Ghana",
+  GR: "Greece", HU: "Hungary", IN: "India", ID: "Indonesia", IR: "Iran",
+  IQ: "Iraq", IE: "Ireland", IL: "Israel", IT: "Italy", JP: "Japan",
+  JO: "Jordan", KE: "Kenya", MY: "Malaysia", MX: "Mexico", MA: "Morocco",
+  NL: "Netherlands", NZ: "New Zealand", NG: "Nigeria", NO: "Norway",
+  PK: "Pakistan", PE: "Peru", PH: "Philippines", PL: "Poland", PT: "Portugal",
+  RO: "Romania", RU: "Russia", SA: "Saudi Arabia", ZA: "South Africa",
+  KR: "South Korea", ES: "Spain", LK: "Sri Lanka", SE: "Sweden",
+  CH: "Switzerland", TH: "Thailand", TR: "Turkey", UA: "Ukraine",
+  AE: "United Arab Emirates", GB: "United Kingdom", US: "United States",
+  VE: "Venezuela", VN: "Vietnam",
+};
