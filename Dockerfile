@@ -1,16 +1,21 @@
-# Dockerfile
-FROM node:18-alpine AS deps
+# Dockerfile - installs all dependencies for build
+FROM node:22-alpine AS builder
 WORKDIR /app
-COPY package.json package-lock.json* ./
-RUN npm ci --only=production
 
-FROM node:18-alpine AS builder
-WORKDIR /app
-COPY --from=deps /app/node_modules ./node_modules
+# Copy package files
+COPY package.json package-lock.json* ./
+
+# Install ALL dependencies (including dev dependencies needed for build)
+RUN npm ci
+
+# Copy the rest of the application
 COPY . .
+
+# Build the application
 RUN npm run build
 
-FROM node:18-alpine AS runner
+# Production stage
+FROM node:22-alpine AS runner
 WORKDIR /app
 
 ENV NODE_ENV=production
@@ -26,7 +31,6 @@ COPY --from=builder /app/.next/static ./.next/static
 USER nextjs
 
 EXPOSE 3000
-
 ENV PORT=3000
 ENV HOSTNAME=0.0.0.0
 
