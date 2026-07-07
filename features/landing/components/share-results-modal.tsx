@@ -15,6 +15,7 @@ import {
   FaWhatsapp,
 } from "react-icons/fa";
 import type { FeaturedPoll } from "../data";
+import { AppButton } from "@/components/ui/button";
 
 type ShareResultsModalProps = {
   isOpen: boolean;
@@ -488,38 +489,45 @@ export function ShareResultsModal({
               </div>
 
               <div className="grid gap-2 sm:grid-cols-2">
-                <button
-                  className="inline-flex items-center justify-center gap-2 rounded-2xl bg-button-primary-bg px-4 py-3 text-sm font-black text-button-primary-text transition hover:bg-button-primary-bg-hover"
+                <AppButton
+                  className="font-black"
                   onClick={shareNative}
+                  size="lg"
                   type="button"
                 >
                   <FaShareAlt className="size-4" />
                   Share
-                </button>
-                <button
-                  className="inline-flex items-center justify-center gap-2 rounded-2xl border border-button-secondary-border bg-button-secondary-bg px-4 py-3 text-sm font-bold text-button-secondary-text transition hover:bg-button-secondary-bg-hover"
+                </AppButton>
+                <AppButton
+                  className="font-bold"
                   onClick={downloadImage}
+                  variant="secondary"
+                  size="lg"
                   type="button"
                 >
                   <FaDownload className="size-4" />
                   Download image
-                </button>
-                <button
-                  className="inline-flex items-center justify-center gap-2 rounded-2xl border border-button-secondary-border bg-button-secondary-bg px-4 py-3 text-sm font-bold text-button-secondary-text transition hover:bg-button-secondary-bg-hover"
+                </AppButton>
+                <AppButton
+                  className="font-bold"
                   onClick={() => void withStatus(() => copyText(shareUrl), "Link copied.")}
+                  variant="secondary"
+                  size="lg"
                   type="button"
                 >
                   <FaCopy className="size-4" />
                   Copy link
-                </button>
-                <button
-                  className="inline-flex items-center justify-center gap-2 rounded-2xl border border-button-secondary-border bg-button-secondary-bg px-4 py-3 text-sm font-bold text-button-secondary-text transition hover:bg-button-secondary-bg-hover"
+                </AppButton>
+                <AppButton
+                  className="font-bold"
                   onClick={() => void withStatus(() => copyText(caption), "Caption copied.")}
+                  variant="secondary"
+                  size="lg"
                   type="button"
                 >
                   <FaCopy className="size-4" />
                   Copy caption
-                </button>
+                </AppButton>
               </div>
 
               <div className="mt-5">

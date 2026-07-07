@@ -2,6 +2,7 @@
 
 import { useActionState } from "react";
 import { AppInput } from "@/components/form-controls";
+import { AppButton } from "@/components/ui/button";
 import { createCategory } from "@/features/admin/actions";
 import type { AdminActionState } from "@/features/admin/types";
 
@@ -54,12 +55,13 @@ export function CategoryCreateForm() {
         </p>
       ) : null}
 
-      <button
+      <AppButton
         type="submit"
-        className="inline-flex w-fit items-center justify-center rounded-2xl bg-cyan-300 px-5 py-3 text-sm font-semibold text-slate-950 transition hover:bg-cyan-200"
+        size="lg"
+        className="w-fit"
       >
         Create category
-      </button>
+      </AppButton>
     </form>
   );
 }

@@ -2,6 +2,7 @@
 
 import { useActionState } from "react";
 import { AppInput } from "@/components/form-controls";
+import { AppButton } from "@/components/ui/button";
 import { createMockUsers } from "@/features/admin/actions";
 import type { MockUserSeedState } from "@/features/admin/types";
 
@@ -113,13 +114,12 @@ export function MockUserSeedingTask() {
             Users are created now in Supabase Auth, but their seeded tenure is stored in
             `mock_created_at` metadata for analytics simulation.
           </p>
-          <button
+          <AppButton
             type="submit"
             disabled={pending}
-            className="rounded-xl bg-admin-button-primary-bg px-4 py-2.5 text-sm font-semibold text-admin-button-primary-text transition hover:bg-admin-button-primary-bg-hover disabled:cursor-not-allowed disabled:opacity-60"
           >
             {pending ? "Creating users..." : "Run task"}
-          </button>
+          </AppButton>
         </div>
 
         {state.error ? (

@@ -3,6 +3,7 @@
 import { headers } from "next/headers";
 import { redirect } from "next/navigation";
 import { createClient } from "@/utils/supabase/server";
+import { createAdminClient } from "@/utils/supabase/admin";
 import { isoToCountry } from "@/utils/countries";
 import { checkRateLimit } from "@/utils/rate-limit";
 import { getAuthCallbackUrl } from "@/utils/site-url";
@@ -52,6 +53,70 @@ function validateEmail(email: string) {
   return null;
 }
 
+type ExistingAuthAccount = {
+  hasEmail: boolean;
+  hasGoogle: boolean;
+};
+
+async function findExistingAuthAccount(email: string): Promise<ExistingAuthAccount | null> {
+  try {
+    const supabase = createAdminClient();
+    const normalizedEmail = email.toLowerCase();
+
+    for (let page = 1; page <= 10; page += 1) {
+      const { data, error } = await supabase.auth.admin.listUsers({
+        page,
+        perPage: 1000,
+      });
+
+      if (error) {
+        return null;
+      }
+
+      const user = data.users.find(
+        (candidate) => candidate.email?.toLowerCase() === normalizedEmail,
+      );
+
+      if (user) {
+        const providers = new Set(
+          [
+            user.app_metadata.provider,
+            ...(Array.isArray(user.app_metadata.providers)
+              ? user.app_metadata.providers
+              : []),
+            ...(user.identities?.map((identity) => identity.provider) ?? []),
+          ].filter((provider): provider is string => typeof provider === "string"),
+        );
+
+        return {
+          hasEmail: providers.has("email"),
+          hasGoogle: providers.has("google"),
+        };
+      }
+
+      if (data.users.length < 1000) {
+        break;
+      }
+    }
+  } catch {
+    return null;
+  }
+
+  return null;
+}
+
+function existingAccountSignUpMessage(account: ExistingAuthAccount) {
+  if (account.hasGoogle && !account.hasEmail) {
+    return "Looks like you already have an account with this email. Continue with Google to sign in.";
+  }
+
+  if (account.hasGoogle && account.hasEmail) {
+    return "Looks like you already have an account with this email. Sign in or continue with Google.";
+  }
+
+  return "Looks like you already have an account with this email. Sign in to continue.";
+}
+
 export async function signIn(
   _previousState: AuthFormState,
   formData: FormData,
@@ -69,6 +134,10 @@ export async function signIn(
     return { error: validationError };
   }
 
+  const existingAccount = await findExistingAuthAccount(email);
+  const shouldGuideToGoogle =
+    existingAccount?.hasGoogle && !existingAccount.hasEmail;
+
   const supabase = await createClient();
   const { error } = await supabase.auth.signInWithPassword({
     email,
@@ -76,6 +145,12 @@ export async function signIn(
   });
 
   if (error) {
+    if (shouldGuideToGoogle) {
+      return {
+        info: "This email is connected with Google. Continue with Google to sign in.",
+      };
+    }
+
     return { error: error.message };
   }
 
@@ -100,6 +175,11 @@ export async function signUp(
 
   if (validationError) {
     return { error: validationError };
+  }
+
+  const existingAccount = await findExistingAuthAccount(email);
+  if (existingAccount) {
+    return { info: existingAccountSignUpMessage(existingAccount) };
   }
 
   let country = normalizeName(formData.get("country"));

@@ -3,6 +3,7 @@ import {
   motion,
   type MotionValue,
 } from "framer-motion";
+import Image from "next/image";
 import { useEffect, useRef, useState, type CSSProperties } from "react";
 import { heroPhrases } from "../data";
 import type { FeaturedPoll } from "../data";
@@ -11,6 +12,7 @@ import { LiveVotesTicker } from "./live-votes-ticker";
 import { PollPreview } from "./poll-preview";
 import { SignInNavButton, UserAvatarMenu } from "./user-avatar-menu";
 import { useAuth } from "@/contexts/auth-context";
+import { AppButton } from "@/components/ui/button";
 
 type HeroSectionProps = {
   scrollYProgress: MotionValue<number>;
@@ -186,7 +188,7 @@ export function HeroSection({ featuredPoll, voteProps }: HeroSectionProps) {
         <span
           className={
             shouldHighlight
-              ? "bg-gradient-to-r from-pink-400 to-purple-400 bg-clip-text font-semibold text-transparent drop-shadow-[0_0_8px_var(--glow-accent)]"
+              ? "bg-gradient-to-r from-accent to-accent-alt bg-clip-text font-semibold text-transparent drop-shadow-[0_0_8px_var(--glow-accent)]"
               : "text-hero-text"
           }
           key={`${partIndex}-${charIndex}`}
@@ -202,8 +204,19 @@ export function HeroSection({ featuredPoll, voteProps }: HeroSectionProps) {
       className="fixed inset-0 z-10 h-screen overflow-hidden bg-hero-bg px-5 py-6 text-hero-text sm:px-8 lg:px-10"
       id="hero"
     >
-      <div className="pointer-events-none absolute -left-40 -top-40 h-[520px] w-[520px] rounded-full bg-purple-700/25 blur-[130px]" />
-      <div className="pointer-events-none absolute -bottom-40 -right-40 h-[440px] w-[440px] rounded-full bg-blue-700/20 blur-[120px]" />
+      <div className="pointer-events-none absolute -left-40 -top-40 h-[520px] w-[520px] rounded-full bg-accent/25 blur-[130px]" />
+      <div className="pointer-events-none absolute -bottom-40 -right-40 h-[440px] w-[440px] rounded-full bg-accent-alt/20 blur-[120px]" />
+
+      <div className="absolute left-5 top-5 z-40 sm:left-8 sm:top-6">
+        <Image
+          alt="Plebiq"
+          src="/logo.png"
+          width={1266}
+          height={435}
+          className="h-9 w-auto sm:h-10"
+          priority
+        />
+      </div>
 
       {/* Top-right nav: avatar or sign-in */}
       <div className="absolute right-5 top-5 z-40 sm:right-8 sm:top-6">
@@ -233,7 +246,7 @@ export function HeroSection({ featuredPoll, voteProps }: HeroSectionProps) {
           <div className="flex min-h-[132px] items-center sm:min-h-[150px] lg:min-h-[164px] xl:min-h-[188px]">
             <h1 className="text-[2.65rem] font-semibold leading-[1.02] tracking-normal sm:text-[3.25rem] lg:text-[4rem] xl:text-[4.625rem]">
               {renderText()}
-              <span className="ml-1 inline-block h-[1em] w-[3px] animate-pulse rounded bg-purple-400" />
+              <span className="ml-1 inline-block h-[1em] w-[3px] animate-pulse rounded bg-accent" />
             </h1>
           </div>
 
@@ -242,27 +255,38 @@ export function HeroSection({ featuredPoll, voteProps }: HeroSectionProps) {
           </p>
 
           <div className="mt-7 flex flex-col items-center gap-3 sm:flex-row lg:justify-start">
-            <button
-              className="group inline-flex h-12 shrink-0 items-center justify-center gap-2 rounded-2xl bg-hero-button-primary-bg px-5 text-sm font-semibold text-hero-button-primary-text shadow-[0_18px_50px_var(--fg-16),0_0_0_1px_var(--fg-24)] transition duration-200 hover:-translate-y-0.5 hover:shadow-[0_22px_60px_var(--glow-accent),0_0_0_1px_var(--fg-35)]"
+            <AppButton
+              className="group"
               onClick={() => setShowPollModal(true)}
+              size="lg"
               type="button"
             >
               Start voting
               <span className="grid size-6 place-items-center rounded-full bg-hero-button-primary-icon-bg text-hero-button-primary-icon-text transition group-hover:translate-x-0.5">
-                →
+                <svg
+                  aria-hidden="true"
+                  className="size-3.5"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2.5"
+                  viewBox="0 0 24 24"
+                >
+                  <path d="M5 12h14M13 6l6 6-6 6" strokeLinecap="round" strokeLinejoin="round" />
+                </svg>
               </span>
-            </button>
-            <button
-              className="inline-flex h-12 shrink-0 items-center justify-center rounded-2xl border border-hero-button-secondary-border bg-hero-button-secondary-bg px-5 text-sm font-semibold text-hero-button-secondary-text shadow-[inset_0_1px_0_var(--fg-8)] backdrop-blur-md transition duration-200 hover:-translate-y-0.5 hover:bg-hero-button-secondary-bg-hover"
+            </AppButton>
+            <AppButton
               onClick={scrollToFeed}
+              variant="secondary"
+              size="lg"
               type="button"
             >
               See active polls
-            </button>
+            </AppButton>
           </div>
 
           <div className="mt-8 inline-flex items-center gap-2 rounded-full border border-hero-button-secondary-border bg-hero-button-secondary-bg px-4 py-2 text-xs font-semibold text-hero-text-muted backdrop-blur-md lg:hidden">
-            <span className="size-1.5 rounded-full bg-fuchsia-300 shadow-[0_0_14px_var(--glow-accent)]" />
+            <span className="size-1.5 rounded-full bg-accent shadow-[0_0_14px_var(--glow-accent)]" />
             Live poll below
           </div>
         </motion.div>

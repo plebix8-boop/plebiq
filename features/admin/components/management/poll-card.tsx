@@ -1,4 +1,5 @@
 import type { ManagedPoll } from "./data";
+import { AppButton } from "@/components/ui/button";
 
 const statusConfig = {
   Live:   { className: "bg-emerald-500/15 text-emerald-400 border-emerald-500/20", dot: "bg-emerald-400" },
@@ -77,15 +78,17 @@ export function PollCard({ poll, onEdit }: { poll: ManagedPoll; onEdit: () => vo
 
         {/* Actions */}
         <div className="mt-auto flex gap-2 border-t border-white/5 pt-3">
-          <button
+          <AppButton
             onClick={onEdit}
-            className="flex-1 rounded-lg border border-white/8 bg-white/5 py-1.5 text-xs font-semibold text-slate-300 transition hover:border-violet-500/30 hover:bg-violet-500/10 hover:text-violet-300"
+            variant="secondary"
+            size="sm"
+            className="flex-1"
           >
             Edit
-          </button>
-          <button className="flex-1 rounded-lg border border-white/8 bg-white/5 py-1.5 text-xs font-semibold text-slate-300 transition hover:border-white/15 hover:text-white">
+          </AppButton>
+          <AppButton variant="secondary" size="sm" className="flex-1">
             View Details
-          </button>
+          </AppButton>
         </div>
       </div>
     </div>

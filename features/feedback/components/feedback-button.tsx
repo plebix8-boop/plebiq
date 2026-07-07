@@ -2,6 +2,7 @@
 
 import { useActionState, useEffect, useState, type ReactNode } from "react";
 import { AppSelect, AppTextarea } from "@/components/form-controls";
+import { AppButton, buttonClassName } from "@/components/ui/button";
 import { submitFeedback } from "@/features/feedback/actions";
 import {
   feedbackCategoryLabels,
@@ -20,7 +21,7 @@ type FeedbackButtonProps = {
 
 export function FeedbackButton({
   userEmail,
-  className = "inline-flex h-10 items-center justify-center rounded-2xl border border-landing-nav-auth-border bg-landing-nav-auth-bg px-4 text-sm font-semibold text-landing-nav-auth-text shadow-[inset_0_1px_0_var(--fg-7)] transition duration-200 hover:border-landing-nav-auth-border-hover hover:bg-landing-nav-auth-bg-hover",
+  className = buttonClassName({ variant: "secondary" }),
   children = "Feedback",
   onOpen,
 }: FeedbackButtonProps) {
@@ -169,20 +170,19 @@ function FeedbackModal({
           ) : null}
 
           <div className="flex flex-col-reverse gap-3 pt-1 sm:flex-row sm:justify-end">
-            <button
+            <AppButton
               type="button"
               onClick={onClose}
-              className="rounded-xl border border-button-secondary-border bg-button-secondary-bg px-4 py-2.5 text-sm font-semibold text-button-secondary-text transition hover:bg-button-secondary-bg-hover"
+              variant="secondary"
             >
               Close
-            </button>
-            <button
+            </AppButton>
+            <AppButton
               type="submit"
               disabled={pending || message.trim().length < 10}
-              className="rounded-xl bg-button-primary-bg px-4 py-2.5 text-sm font-semibold text-button-primary-text transition hover:bg-button-primary-bg-hover disabled:cursor-not-allowed disabled:opacity-60"
             >
               {pending ? "Sending..." : "Submit feedback"}
-            </button>
+            </AppButton>
           </div>
         </form>
       </div>

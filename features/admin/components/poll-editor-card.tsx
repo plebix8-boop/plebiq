@@ -2,6 +2,7 @@
 
 import { useActionState, useState } from "react";
 import { AppInput, AppTextarea } from "@/components/form-controls";
+import { AppButton } from "@/components/ui/button";
 import { updatePoll } from "@/features/admin/actions";
 import { AdminSelect } from "@/features/admin/components/ui/admin-select";
 import type {
@@ -304,13 +305,13 @@ export function PollEditorCard({
                 Drag to reorder options, then save the poll to update option `sort_order`.
               </p>
             </div>
-            <button
+            <AppButton
               type="button"
               onClick={addOption}
-              className="inline-flex items-center justify-center rounded-2xl border border-white/10 bg-white/5 px-4 py-2.5 text-sm font-semibold text-white transition hover:border-white/20 hover:bg-white/10"
+              variant="secondary"
             >
               Add option
-            </button>
+            </AppButton>
           </div>
 
           <div className="grid gap-3">
@@ -394,12 +395,12 @@ export function PollEditorCard({
         ) : null}
 
         <div className="flex flex-wrap items-center gap-3">
-          <button
+          <AppButton
             type="submit"
-            className="inline-flex items-center justify-center rounded-2xl bg-cyan-300 px-5 py-3 text-sm font-semibold text-slate-950 transition hover:bg-cyan-200"
+            size="lg"
           >
             Save poll changes
-          </button>
+          </AppButton>
           <p className="text-sm text-slate-400">
             Save after reordering or editing options to persist the new structure.
           </p>

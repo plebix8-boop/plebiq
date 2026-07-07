@@ -1,6 +1,7 @@
 "use client";
 
 import { useFormStatus } from "react-dom";
+import { AppButton } from "@/components/ui/button";
 
 type AuthSubmitButtonProps = {
   idleLabel: string;
@@ -11,10 +12,11 @@ export function AuthSubmitButton({ idleLabel, pendingLabel }: AuthSubmitButtonPr
   const { pending } = useFormStatus();
 
   return (
-    <button
+    <AppButton
       type="submit"
       disabled={pending}
-      className="relative inline-flex w-full items-center justify-center gap-2.5 overflow-hidden rounded-xl bg-black px-5 py-3.5 text-sm font-semibold text-white shadow-[0_4px_14px_var(--shadow-soft)] transition duration-200 hover:-translate-y-0.5 hover:bg-accent hover:shadow-[0_8px_24px_var(--shadow-soft)] active:translate-y-0 disabled:cursor-not-allowed disabled:opacity-55 disabled:hover:translate-y-0 disabled:hover:shadow-[0_4px_14px_var(--shadow-soft)]"
+      size="lg"
+      className="relative w-full overflow-hidden"
     >
       {pending && (
         <svg
@@ -32,6 +34,6 @@ export function AuthSubmitButton({ idleLabel, pendingLabel }: AuthSubmitButtonPr
         </svg>
       )}
       {pending ? pendingLabel : idleLabel}
-    </button>
+    </AppButton>
   );
 }

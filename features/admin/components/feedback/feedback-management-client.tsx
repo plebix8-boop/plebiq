@@ -15,6 +15,7 @@ import {
   YAxis,
 } from "recharts";
 import { AppInput, AppSelect, AppTextarea } from "@/components/form-controls";
+import { AppButton } from "@/components/ui/button";
 import { updateFeedback } from "@/features/admin/actions";
 import type {
   AdminActionState,
@@ -238,24 +239,25 @@ function FeedbackRowForm({ row }: { row: AdminFeedbackRow }) {
           />
         </div>
         <div className="flex flex-wrap gap-2 lg:col-span-2 lg:justify-end">
-          <button
+          <AppButton
             type="submit"
             name="resolve"
             value="false"
             disabled={pending}
-            className="rounded-xl border border-admin-button-secondary-border bg-admin-button-secondary-bg px-3 py-2 text-xs font-semibold text-admin-button-secondary-text transition hover:bg-admin-button-secondary-bg-hover disabled:cursor-not-allowed disabled:opacity-60"
+            variant="secondary"
+            size="sm"
           >
             {pending ? "Saving..." : "Save"}
-          </button>
-          <button
+          </AppButton>
+          <AppButton
             type="submit"
             name="resolve"
             value="true"
             disabled={pending}
-            className="rounded-xl bg-admin-button-primary-bg px-3 py-2 text-xs font-semibold text-admin-button-primary-text transition hover:bg-admin-button-primary-bg-hover disabled:cursor-not-allowed disabled:opacity-60"
+            size="sm"
           >
             Resolve
-          </button>
+          </AppButton>
         </div>
       </div>
       {state.error ? (

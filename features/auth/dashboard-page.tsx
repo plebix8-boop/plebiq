@@ -1,4 +1,4 @@
-import Link from "next/link";
+import { AppButtonLink } from "@/components/ui/button";
 import { SignOutButton } from "./components/sign-out-button";
 
 type DashboardPageProps = {
@@ -30,12 +30,11 @@ export function DashboardPage({ email, name, role }: DashboardPageProps) {
           </div>
           <div className="flex flex-wrap items-center gap-3">
             {isAdmin ? (
-              <Link
+              <AppButtonLink
                 href="/admin"
-                className="inline-flex items-center justify-center rounded-full bg-cyan-300 px-4 py-2 text-sm font-semibold text-slate-950 transition hover:bg-cyan-200"
               >
                 Open admin panel
-              </Link>
+              </AppButtonLink>
             ) : null}
             <SignOutButton />
           </div>

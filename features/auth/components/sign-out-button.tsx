@@ -1,14 +1,15 @@
 import { signOut } from "@/features/auth/actions";
+import { AppButton } from "@/components/ui/button";
 
 export function SignOutButton() {
   return (
     <form action={signOut}>
-      <button
+      <AppButton
         type="submit"
-        className="inline-flex items-center justify-center rounded-full border border-border bg-white px-4 py-2 text-sm font-semibold text-black transition hover:border-border-strong hover:bg-surface-soft"
+        variant="secondary"
       >
         Sign out
-      </button>
+      </AppButton>
     </form>
   );
 }

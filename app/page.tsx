@@ -1,18 +1,18 @@
 import { Suspense } from "react";
 import Image from "next/image";
-import Link from "next/link";
 import { unstable_cache } from "next/cache";
+import { AppButtonLink } from "@/components/ui/button";
 import { createAdminClient } from "@/utils/supabase/admin";
 import { LandingPage } from "@/features/landing/landing-page";
 import type { FeaturedPoll } from "@/features/landing/data";
 
 const OPTION_ACCENTS = [
-  "from-sky-300 to-cyan-400",
-  "from-violet-300 to-fuchsia-400",
-  "from-amber-200 to-orange-400",
-  "from-emerald-300 to-cyan-400",
-  "from-rose-300 to-pink-400",
-  "from-indigo-300 to-blue-400",
+  "from-accent to-accent-alt",
+  "from-accent-alt to-accent",
+  "from-warning to-accent",
+  "from-success to-accent-alt",
+  "from-danger to-accent",
+  "from-info to-accent-alt",
 ];
 
 const FALLBACK_IMAGE =
@@ -97,9 +97,9 @@ const fetchLivePolls = unstable_cache(
 
 function EmptyLandingState() {
   return (
-    <main className="relative grid min-h-screen overflow-hidden bg-app-bg px-5 py-8 text-white">
-      <div className="pointer-events-none absolute -left-40 -top-40 h-[520px] w-[520px] rounded-full bg-blue-700/20 blur-[130px]" />
-      <div className="pointer-events-none absolute -bottom-40 -right-40 h-[440px] w-[440px] rounded-full bg-cyan-500/15 blur-[120px]" />
+    <main className="relative grid min-h-screen overflow-hidden bg-app-bg px-5 py-8 text-app-fg">
+      <div className="pointer-events-none absolute -left-40 -top-40 h-[520px] w-[520px] rounded-full bg-accent/20 blur-[130px]" />
+      <div className="pointer-events-none absolute -bottom-40 -right-40 h-[440px] w-[440px] rounded-full bg-accent-alt/15 blur-[120px]" />
 
       <div className="relative z-10 flex min-h-full flex-col">
         <header className="flex items-center justify-between">
@@ -111,32 +111,32 @@ function EmptyLandingState() {
             className="h-10 w-auto"
             priority
           />
-          <Link
+          <AppButtonLink
             href="/auth/sign-in"
-            className="inline-flex h-10 items-center justify-center rounded-2xl border border-white/15 bg-white/8 px-5 text-sm font-semibold text-white/80 transition hover:border-white/28 hover:bg-white/14 hover:text-white"
+            variant="secondary"
           >
             Sign in
-          </Link>
+          </AppButtonLink>
         </header>
 
         <section className="mx-auto flex flex-1 max-w-3xl flex-col items-center justify-center py-24 text-center">
-          <p className="mb-4 rounded-full border border-white/10 bg-white/8 px-4 py-2 text-xs font-semibold uppercase tracking-[0.2em] text-white/55">
+          <p className="mb-4 rounded-full border border-border bg-surface-soft px-4 py-2 text-xs font-semibold uppercase tracking-[0.2em] text-muted">
             Quiet for the moment
           </p>
           <h1 className="text-4xl font-black leading-tight sm:text-6xl">
             New polls are coming soon.
           </h1>
-          <p className="mt-5 max-w-xl text-base leading-7 text-white/60 sm:text-lg">
+          <p className="mt-5 max-w-xl text-base leading-7 text-muted sm:text-lg">
             There are no live questions open right now. Check back soon to add
             your voice when the next poll goes live.
           </p>
           <div className="mt-8 flex flex-col items-center gap-3 sm:flex-row">
-            <Link
+            <AppButtonLink
               href="/auth/sign-in"
-              className="inline-flex h-12 items-center justify-center rounded-2xl bg-white px-5 text-sm font-semibold text-black transition hover:-translate-y-0.5"
+              size="lg"
             >
               Sign in to Plebiq
-            </Link>
+            </AppButtonLink>
           </div>
         </section>
       </div>

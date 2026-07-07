@@ -70,6 +70,12 @@ export function SignUpForm() {
         </p>
       )}
 
+      {state.info && (
+        <p className="rounded-xl border border-blue-100 bg-blue-50 px-4 py-3 text-sm text-blue-700">
+          {state.info}
+        </p>
+      )}
+
       {state.success && (
         <p className="rounded-xl border border-emerald-100 bg-emerald-50 px-4 py-3 text-sm text-emerald-700">
           {state.success}

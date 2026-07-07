@@ -12,6 +12,7 @@ import {
   updatePollStatus,
 } from "@/features/admin/actions";
 import type { AdminPoll } from "@/features/admin/types";
+import { AppButtonLink } from "@/components/ui/button";
 
 // ─── Helpers ────────────────────────────────────────────────────────────────
 
@@ -381,15 +382,15 @@ export function PollDetailView({ poll }: { poll: AdminPoll }) {
           <div className="rounded-2xl border border-white/8 bg-white/[0.04] p-5 backdrop-blur-sm">
             <h2 className="mb-4 text-xs font-bold uppercase tracking-widest text-slate-500">Actions</h2>
             <div className="flex flex-col gap-2.5">
-              <Link
-                className="flex items-center gap-2 rounded-xl border border-white/10 bg-white/5 px-4 py-2.5 text-sm font-semibold text-slate-300 transition hover:border-violet-500/30 hover:bg-violet-500/10 hover:text-violet-300"
+              <AppButtonLink
                 href="/admin/management"
+                variant="secondary"
               >
                 <svg fill="none" height="14" viewBox="0 0 14 14" width="14">
                   <path d="M2 7h10M2 3h10M2 11h6" stroke="currentColor" strokeLinecap="round" strokeWidth="1.5" />
                 </svg>
                 Edit Poll
-              </Link>
+              </AppButtonLink>
 
               <ActionButton
                 disabled={isPending}

@@ -2,6 +2,7 @@
 
 import { startTransition, useEffect, useRef, useState } from "react";
 import { AppInput, AppTextarea } from "@/components/form-controls";
+import { AppButton } from "@/components/ui/button";
 import { useRouter } from "next/navigation";
 import { createPoll, updatePoll } from "@/features/admin/actions";
 import type { AdminActionState, AdminPoll, AdminPollOption } from "@/features/admin/types";
@@ -346,13 +347,14 @@ export function NewPollModal({
                 <label className={`${labelClass} mb-0`}>
                   Poll Options <span className="text-admin-danger-text">*</span>
                 </label>
-                <button
+                <AppButton
                   type="button"
                   onClick={addOption}
-                  className="rounded-lg border border-admin-button-secondary-border bg-admin-button-secondary-bg px-3 py-1.5 text-xs font-semibold text-admin-button-secondary-text transition hover:bg-admin-button-secondary-bg-hover"
+                  variant="secondary"
+                  size="sm"
                 >
                   Add Option
-                </button>
+                </AppButton>
               </div>
 
               <div className="space-y-3">
@@ -429,16 +431,15 @@ export function NewPollModal({
         </div>
 
         <div className="flex shrink-0 items-center justify-end gap-3 border-t border-admin-divider px-6 py-4">
-          <button
+          <AppButton
             onClick={onClose}
-            className="rounded-xl border border-admin-button-secondary-border bg-admin-button-secondary-bg px-5 py-2.5 text-sm font-semibold text-admin-button-secondary-text transition hover:bg-admin-button-secondary-bg-hover"
+            variant="secondary"
           >
             Cancel
-          </button>
-          <button
+          </AppButton>
+          <AppButton
             onClick={handleSubmit}
             disabled={isSubmitting}
-            className="rounded-xl bg-admin-button-primary-bg px-5 py-2.5 text-sm font-semibold text-admin-button-primary-text shadow transition hover:bg-admin-button-primary-bg-hover disabled:cursor-not-allowed disabled:opacity-60"
           >
             {isSubmitting
               ? isEdit
@@ -447,7 +448,7 @@ export function NewPollModal({
               : isEdit
                 ? "Update Poll"
                 : "Create Poll"}
-          </button>
+          </AppButton>
         </div>
       </div>
     </div>

@@ -2,6 +2,7 @@
 
 import { useActionState, useEffect, useMemo, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
+import { AppButton } from "@/components/ui/button";
 import { createVoteCampaign } from "@/features/admin/actions";
 import type { VoteCampaignPoll, VoteCampaignState } from "@/features/admin/types";
 
@@ -403,13 +404,14 @@ function DateTimePicker({
               >
                 +1 day
               </button>
-              <button
+              <AppButton
                 type="button"
                 onClick={() => setOpen(false)}
-                className="ml-auto rounded-full bg-admin-button-primary-bg px-3 py-1.5 text-xs font-semibold text-admin-button-primary-text transition hover:bg-admin-button-primary-bg-hover"
+                size="sm"
+                className="ml-auto rounded-full"
               >
                 Apply
-              </button>
+              </AppButton>
             </div>
           </div>
         </div>
@@ -733,13 +735,12 @@ export function VoteCampaignTask({
             Each generated vote uses a unique mock user and is tagged with
             `is_mock`, `mock_campaign_id`, and `seed_source`.
           </p>
-          <button
+          <AppButton
             type="submit"
             disabled={pending || !selectedPollId}
-            className="rounded-xl bg-admin-button-primary-bg px-4 py-2.5 text-sm font-semibold text-admin-button-primary-text transition hover:bg-admin-button-primary-bg-hover disabled:cursor-not-allowed disabled:opacity-60"
           >
             {pending ? "Starting campaign..." : "Start campaign"}
-          </button>
+          </AppButton>
         </div>
 
         {typeof requestedVotes === "number" ? (

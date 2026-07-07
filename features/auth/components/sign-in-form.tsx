@@ -47,6 +47,12 @@ export function SignInForm() {
         </p>
       )}
 
+      {state.info && (
+        <p className="rounded-xl border border-blue-100 bg-blue-50 px-4 py-3 text-sm text-blue-700">
+          {state.info}
+        </p>
+      )}
+
       <AuthSubmitButton idleLabel="Sign in" pendingLabel="Signing in…" />
     </form>
   );

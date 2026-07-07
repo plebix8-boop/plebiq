@@ -145,7 +145,7 @@ export function SocialLoginButtons({ mode = "sign-in" }: SocialLoginButtonsProps
   const googleLabel = loadingProvider === "google" ? "Redirecting…" : "Google";
   const facebookLabel = "Facebook";
 
-  const heading = mode === "sign-up" ? "Sign up with" : "Continue with";
+  const heading = mode === "sign-up" ? "Start with" : "Continue with";
 
   return (
     <div className="space-y-3">
@@ -158,7 +158,7 @@ export function SocialLoginButtons({ mode = "sign-in" }: SocialLoginButtonsProps
           className="inline-flex items-center justify-center gap-2.5 rounded-xl border border-accent/25 bg-accent/10 px-4 py-3 text-sm font-semibold text-black shadow-sm transition duration-150 hover:-translate-y-0.5 hover:border-accent/40 hover:bg-accent/15 hover:shadow-md disabled:cursor-not-allowed disabled:opacity-55 disabled:hover:translate-y-0"
         >
           <GoogleIcon />
-          {googleLabel}
+          {loadingProvider === "google" ? googleLabel : "Continue with Google"}
         </button>
 
         <button

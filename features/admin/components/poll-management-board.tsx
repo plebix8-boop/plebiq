@@ -1,6 +1,7 @@
 "use client";
 
 import { startTransition, useState } from "react";
+import { AppButton } from "@/components/ui/button";
 import { reorderPolls } from "@/features/admin/actions";
 import type { AdminCategory, AdminPoll } from "@/features/admin/types";
 import { PollEditorCard } from "./poll-editor-card";
@@ -80,14 +81,13 @@ export function PollManagementBoard({
           {orderMessage ? (
             <p className="text-sm text-emerald-300">{orderMessage}</p>
           ) : null}
-          <button
+          <AppButton
             type="button"
             onClick={saveOrder}
             disabled={isSavingOrder}
-            className="inline-flex items-center justify-center rounded-2xl bg-cyan-300 px-4 py-2.5 text-sm font-semibold text-slate-950 transition hover:bg-cyan-200 disabled:cursor-not-allowed disabled:opacity-60"
           >
             {isSavingOrder ? "Saving order..." : "Save poll order"}
-          </button>
+          </AppButton>
         </div>
       </div>
 

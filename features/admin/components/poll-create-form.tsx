@@ -2,6 +2,7 @@
 
 import { useActionState, useState } from "react";
 import { AppInput, AppTextarea } from "@/components/form-controls";
+import { AppButton } from "@/components/ui/button";
 import { createPoll } from "@/features/admin/actions";
 import type { AdminActionState, AdminCategory } from "@/features/admin/types";
 import { AdminSelect } from "@/features/admin/components/ui/admin-select";
@@ -219,13 +220,13 @@ export function PollCreateForm({ categories }: PollCreateFormProps) {
           <label className="text-sm font-medium text-slate-200">
             Poll options
           </label>
-          <button
+          <AppButton
             type="button"
             onClick={addOption}
-            className="inline-flex items-center justify-center rounded-2xl border border-white/10 bg-white/5 px-4 py-2 text-sm font-semibold text-white transition hover:border-white/20 hover:bg-white/10"
+            variant="secondary"
           >
             Add option
-          </button>
+          </AppButton>
         </div>
 
         <div className="grid gap-3">
@@ -307,12 +308,13 @@ export function PollCreateForm({ categories }: PollCreateFormProps) {
         </p>
       ) : null}
 
-      <button
+      <AppButton
         type="submit"
-        className="inline-flex w-fit items-center justify-center rounded-2xl bg-white px-5 py-3 text-sm font-semibold text-slate-950 transition hover:bg-slate-100"
+        size="lg"
+        className="w-fit"
       >
         Create poll
-      </button>
+      </AppButton>
     </form>
   );
 }

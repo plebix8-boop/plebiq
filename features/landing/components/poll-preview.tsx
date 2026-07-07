@@ -8,6 +8,7 @@ import { castVote } from "../actions";
 import type { VoteState } from "../landing-page";
 import type { FeaturedPoll } from "../data";
 import { ShareResultsModal } from "./share-results-modal";
+import { AppButton } from "@/components/ui/button";
 
 type PollPreviewProps = {
   poll: FeaturedPoll;
@@ -200,7 +201,7 @@ export function PollPreview({
           <motion.div
             animate={{
               boxShadow: [
-                "0 0 0 0 var(--danger-soft-ring)",
+                "0 0 0 0 var(--poll-live-ring)",
                 "0 0 0 8px transparent",
                 "0 0 0 0 transparent",
               ],
@@ -211,12 +212,12 @@ export function PollPreview({
             <span className="relative flex size-2.5 shrink-0">
               <motion.span
                 animate={{ opacity: [0.75, 0], scale: [1, 2.6] }}
-                className="absolute inline-flex h-full w-full rounded-full bg-red-400"
+                className="absolute inline-flex h-full w-full rounded-full bg-button-primary-bg"
                 transition={{ duration: 1.35, repeat: Infinity, ease: "easeOut" }}
               />
               <motion.span
                 animate={{ opacity: [1, 0.55, 1], scale: [1, 0.82, 1] }}
-                className="relative inline-flex size-2.5 rounded-full bg-red-400 shadow-[0_0_16px_var(--danger-glow-strong)]"
+                className="relative inline-flex size-2.5 rounded-full bg-button-primary-bg shadow-[0_0_16px_var(--poll-live-glow)]"
                 transition={{ duration: 1.1, repeat: Infinity, ease: "easeInOut" }}
               />
             </span>
@@ -533,24 +534,23 @@ export function PollPreview({
                     isCompact ? "mt-3" : "mt-5 gap-2.5 sm:mt-7"
                   }`}
                 >
-                  <button
-                    className={`rounded-2xl bg-modal-cta-primary-bg font-black text-modal-cta-primary-text shadow-[0_18px_48px_var(--glow-accent),0_0_0_1px_var(--fg-16)] transition hover:scale-[1.015] hover:bg-white ${
-                      isCompact ? "px-3 py-2.5 text-xs" : "px-4 py-3.5 text-sm"
-                    }`}
+                  <AppButton
+                    className="font-black"
                     onClick={goToSignUp}
+                    size={isCompact ? "sm" : "lg"}
                     type="button"
                   >
                     Create free account
-                  </button>
-                  <button
-                    className={`rounded-2xl border border-modal-cta-secondary-border bg-modal-cta-secondary-bg font-bold text-modal-cta-secondary-text transition hover:bg-modal-cta-secondary-bg-hover ${
-                      isCompact ? "px-3 py-2 text-xs" : "px-4 py-3 text-sm"
-                    }`}
+                  </AppButton>
+                  <AppButton
+                    className="font-bold"
                     onClick={goToSignIn}
+                    variant="secondary"
+                    size={isCompact ? "sm" : "lg"}
                     type="button"
                   >
                     Sign in instead
-                  </button>
+                  </AppButton>
                 </div>
                 <p className="relative mt-3 text-center text-xs font-medium text-poll-auth-modal-muted">
                   Takes about 15 seconds.

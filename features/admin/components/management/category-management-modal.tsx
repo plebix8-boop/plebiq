@@ -2,6 +2,7 @@
 
 import { useMemo, useState, useTransition } from "react";
 import { AppInput } from "@/components/form-controls";
+import { AppButton } from "@/components/ui/button";
 import {
   createCategory,
   deleteCategory,
@@ -286,14 +287,13 @@ export function CategoryManagementModal({
                   tone="dark"
                   className="py-2.5"
                 />
-                <button
+                <AppButton
                   type="button"
                   disabled={busy}
                   onClick={handleAddCategory}
-                  className="rounded-xl bg-violet-600 px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-violet-500 disabled:cursor-not-allowed disabled:opacity-60"
                 >
                   {pendingAction === "create" ? "Adding..." : "Add Category"}
-                </button>
+                </AppButton>
               </div>
             </div>
 
@@ -372,15 +372,15 @@ export function CategoryManagementModal({
                       <div className="flex flex-wrap gap-2 sm:justify-end">
                         {isEditing ? (
                           <>
-                            <button
+                            <AppButton
                               type="button"
                               disabled={busy}
                               onClick={handleSaveEdit}
-                              className="rounded-xl bg-emerald-600 px-3 py-2 text-xs font-semibold text-white transition hover:bg-emerald-500 disabled:cursor-not-allowed disabled:opacity-60"
+                              size="sm"
                             >
                               {pendingAction === `update:${category.id}` ? "Saving..." : "Save"}
-                            </button>
-                            <button
+                            </AppButton>
+                            <AppButton
                               type="button"
                               disabled={busy}
                               onClick={() => {
@@ -389,20 +389,22 @@ export function CategoryManagementModal({
                                 setIsEditingSlugManuallyEdited(false);
                                 setFeedback({});
                               }}
-                              className="rounded-xl border border-white/10 bg-white/5 px-3 py-2 text-xs font-semibold text-slate-300 transition hover:border-white/20 hover:text-white disabled:cursor-not-allowed disabled:opacity-60"
+                              variant="secondary"
+                              size="sm"
                             >
                               Cancel
-                            </button>
+                            </AppButton>
                           </>
                         ) : (
-                          <button
+                          <AppButton
                             type="button"
                             disabled={busy}
                             onClick={() => handleStartEdit(category)}
-                            className="rounded-xl border border-white/10 bg-white/5 px-3 py-2 text-xs font-semibold text-slate-300 transition hover:border-violet-500/30 hover:bg-violet-500/10 hover:text-violet-300 disabled:cursor-not-allowed disabled:opacity-60"
+                            variant="secondary"
+                            size="sm"
                           >
                             Edit
-                          </button>
+                          </AppButton>
                         )}
 
                         <button
@@ -435,13 +437,13 @@ export function CategoryManagementModal({
         </div>
 
         <div className="flex items-center justify-end gap-3 border-t border-white/8 px-6 py-4">
-          <button
+          <AppButton
             type="button"
             onClick={onClose}
-            className="rounded-xl border border-white/10 px-4 py-2.5 text-sm font-semibold text-slate-300 transition hover:border-white/20 hover:text-white"
+            variant="secondary"
           >
             Close
-          </button>
+          </AppButton>
         </div>
       </div>
     </div>

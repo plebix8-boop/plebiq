@@ -1,7 +1,7 @@
 "use client";
 
 import { startTransition, useState } from "react";
-import Link from "next/link";
+import { AppButton, AppButtonLink } from "@/components/ui/button";
 import { reorderPolls } from "@/features/admin/actions";
 import {
   CategoryManagementModal,
@@ -75,18 +75,22 @@ function PollCardWrapper({
     <div className="flex flex-col gap-2">
       <PollPreview poll={toFeaturedPoll(poll)} variant="management" />
       <div className="flex gap-2">
-        <button
+        <AppButton
           onClick={onEdit}
-          className="flex-1 rounded-xl border border-admin-button-secondary-border bg-admin-button-secondary-bg py-2 text-xs font-semibold text-admin-button-secondary-text transition hover:bg-admin-button-secondary-bg-hover"
+          variant="secondary"
+          size="sm"
+          className="flex-1"
         >
           Edit
-        </button>
-        <Link
+        </AppButton>
+        <AppButtonLink
           href={`/admin/polls/${poll.id}`}
-          className="flex-1 rounded-xl border border-admin-button-secondary-border bg-admin-button-secondary-bg py-2 text-center text-xs font-semibold text-admin-button-secondary-text transition hover:bg-admin-button-secondary-bg-hover"
+          variant="secondary"
+          size="sm"
+          className="flex-1"
         >
           View Details
-        </Link>
+        </AppButtonLink>
       </div>
     </div>
   );
@@ -254,29 +258,24 @@ export function ManagementPageClient({
 
           <div className="flex flex-col gap-4 lg:items-end">
             <div className="flex flex-wrap gap-3">
-              <button
+              <AppButton
                 onClick={() => setShowNew(true)}
-                className="rounded-xl bg-admin-button-primary-bg px-4 py-2 text-sm font-semibold text-admin-button-primary-text shadow transition hover:bg-admin-button-primary-bg-hover"
               >
                 + New Poll
-              </button>
-              <button
+              </AppButton>
+              <AppButton
                 onClick={() => setShowCategoryManagement(true)}
-                className="rounded-xl border border-admin-button-secondary-border bg-admin-button-secondary-bg px-4 py-2 text-sm font-semibold text-admin-button-secondary-text transition hover:bg-admin-button-secondary-bg-hover"
+                variant="secondary"
               >
                 Manage Categories
-              </button>
-              <button
+              </AppButton>
+              <AppButton
                 onClick={saveOrder}
                 disabled={isSavingOrder || !hasUnsavedOrder}
-                className={`rounded-xl border px-4 py-2 text-sm font-semibold transition ${
-                  hasUnsavedOrder
-                    ? "border-admin-button-secondary-border bg-admin-button-secondary-bg text-admin-button-secondary-text hover:bg-admin-button-secondary-bg-hover"
-                    : "cursor-not-allowed border-admin-button-secondary-border bg-admin-button-disabled-bg text-admin-button-disabled-text"
-                } disabled:cursor-not-allowed disabled:opacity-70`}
+                variant="secondary"
               >
                 {isSavingOrder ? "Saving Order..." : "Save Order"}
-              </button>
+              </AppButton>
             </div>
 
             <div className="-mx-1 flex gap-2 overflow-x-auto px-1 pb-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">

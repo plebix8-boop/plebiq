@@ -5,6 +5,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 import { ThemeSwitcher } from "@/components/theme-switcher";
+import { AppButtonLink } from "@/components/ui/button";
 import { useAuth } from "@/contexts/auth-context";
 import { FeedbackButton } from "@/features/feedback/components/feedback-button";
 import { createClient } from "@/utils/supabase/client";
@@ -155,11 +156,11 @@ export function UserAvatarMenu() {
 
 export function SignInNavButton() {
   return (
-    <Link
-      className="inline-flex h-10 items-center justify-center rounded-2xl border border-landing-nav-auth-border bg-landing-nav-auth-bg px-5 text-sm font-semibold text-landing-nav-auth-text shadow-[inset_0_1px_0_var(--fg-7)] transition duration-200 hover:border-landing-nav-auth-border-hover hover:bg-landing-nav-auth-bg-hover"
+    <AppButtonLink
       href="/auth/sign-in"
+      variant="secondary"
     >
       Sign in
-    </Link>
+    </AppButtonLink>
   );
 }

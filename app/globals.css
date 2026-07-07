@@ -4,7 +4,7 @@
   color-scheme: light;
 
   --palette-navy-900: #0e304c;
-  --palette-blue-600: #146aff;
+  --palette-blue-600: #2563eb;
   --palette-sky-500: #2da3ff;
   --palette-ice-50: #f4f8ff;
 
@@ -45,20 +45,20 @@
   --info-soft: color-mix(in oklch, var(--palette-blue-600) 12%, var(--palette-ice-50));
 
   --button-primary-bg: var(--palette-blue-600);
-  --button-primary-bg-hover: color-mix(in oklch, var(--palette-blue-600) 88%, var(--palette-navy-900));
+  --button-primary-bg-hover: #1d4ed8;
   --button-primary-text: var(--palette-ice-50);
-  --button-secondary-bg: color-mix(in oklch, var(--palette-blue-600) 8%, var(--palette-ice-50));
-  --button-secondary-bg-hover: color-mix(in oklch, var(--palette-blue-600) 13%, var(--palette-ice-50));
+  --button-secondary-bg: #ffffff;
+  --button-secondary-bg-hover: #f3f4f6;
   --button-secondary-text: var(--palette-navy-900);
-  --button-secondary-border: color-mix(in oklch, var(--palette-navy-900) 14%, var(--palette-ice-50));
+  --button-secondary-border: #d1d5db;
   --button-disabled-bg: color-mix(in oklch, var(--palette-navy-900) 5%, var(--palette-ice-50));
   --button-disabled-text: color-mix(in oklch, var(--palette-navy-900) 36%, var(--palette-ice-50));
-  --filter-active-bg: var(--palette-ice-50);
-  --filter-active-text: var(--palette-navy-900);
-  --filter-idle-bg: color-mix(in oklch, var(--palette-ice-50) 8%, transparent);
-  --filter-idle-bg-hover: color-mix(in oklch, var(--palette-ice-50) 12%, transparent);
-  --filter-idle-text: color-mix(in oklch, var(--palette-ice-50) 65%, transparent);
-  --filter-idle-text-hover: var(--palette-ice-50);
+  --filter-active-bg: var(--button-primary-bg);
+  --filter-active-text: var(--button-primary-text);
+  --filter-idle-bg: var(--accent-soft);
+  --filter-idle-bg-hover: var(--accent-alt-soft);
+  --filter-idle-text: var(--foreground);
+  --filter-idle-text-hover: var(--foreground);
   --field-bg: color-mix(in oklch, var(--palette-blue-600) 8%, var(--palette-ice-50));
   --field-bg-hover: color-mix(in oklch, var(--palette-blue-600) 12%, var(--palette-ice-50));
   --field-bg-focus: var(--palette-ice-50);
@@ -150,6 +150,8 @@
   --poll-badge-bg: color-mix(in oklch, var(--palette-navy-900) 10%, var(--palette-ice-50));
   --poll-badge-text: var(--palette-navy-900);
   --poll-badge-border: color-mix(in oklch, var(--palette-navy-900) 14%, var(--palette-ice-50));
+  --poll-live-ring: color-mix(in oklch, var(--button-primary-bg) 35%, transparent);
+  --poll-live-glow: color-mix(in oklch, var(--button-primary-bg) 70%, transparent);
   --poll-option-bg: color-mix(in oklch, var(--palette-blue-600) 6%, var(--palette-ice-50));
   --poll-option-bg-hover: color-mix(in oklch, var(--palette-blue-600) 10%, var(--palette-ice-50));
   --poll-option-bg-selected: color-mix(in oklch, var(--palette-blue-600) 14%, var(--palette-ice-50));
@@ -188,12 +190,12 @@
   --admin-profile-role-bg: color-mix(in oklch, var(--palette-blue-600) 13%, var(--palette-ice-50));
   --admin-profile-role-text: var(--palette-navy-900);
   --admin-button-primary-bg: var(--palette-blue-600);
-  --admin-button-primary-bg-hover: color-mix(in oklch, var(--palette-blue-600) 88%, var(--palette-navy-900));
+  --admin-button-primary-bg-hover: var(--button-primary-bg-hover);
   --admin-button-primary-text: var(--palette-ice-50);
-  --admin-button-secondary-bg: color-mix(in oklch, var(--palette-blue-600) 8%, var(--palette-ice-50));
-  --admin-button-secondary-bg-hover: color-mix(in oklch, var(--palette-blue-600) 13%, var(--palette-ice-50));
-  --admin-button-secondary-border: color-mix(in oklch, var(--palette-navy-900) 14%, var(--palette-ice-50));
-  --admin-button-secondary-text: var(--palette-navy-900);
+  --admin-button-secondary-bg: var(--button-secondary-bg);
+  --admin-button-secondary-bg-hover: var(--button-secondary-bg-hover);
+  --admin-button-secondary-border: var(--button-secondary-border);
+  --admin-button-secondary-text: var(--button-secondary-text);
   --admin-button-disabled-bg: color-mix(in oklch, var(--palette-navy-900) 5%, var(--palette-ice-50));
   --admin-button-disabled-text: color-mix(in oklch, var(--palette-navy-900) 38%, var(--palette-ice-50));
   --admin-danger-text: color-mix(in oklch, var(--palette-navy-900) 80%, var(--palette-sky-500));
@@ -296,6 +298,12 @@
     --button-secondary-border: color-mix(in oklch, var(--palette-ice-50) 15%, transparent);
     --button-disabled-bg: color-mix(in oklch, var(--palette-ice-50) 4%, transparent);
     --button-disabled-text: color-mix(in oklch, var(--palette-ice-50) 42%, transparent);
+    --filter-active-bg: var(--button-primary-bg);
+    --filter-active-text: var(--button-primary-text);
+    --filter-idle-bg: color-mix(in oklch, var(--palette-ice-50) 8%, transparent);
+    --filter-idle-bg-hover: color-mix(in oklch, var(--palette-ice-50) 14%, transparent);
+    --filter-idle-text: color-mix(in oklch, var(--palette-ice-50) 82%, transparent);
+    --filter-idle-text-hover: var(--palette-ice-50);
     --field-bg: color-mix(in oklch, var(--palette-ice-50) 5%, transparent);
     --field-bg-hover: color-mix(in oklch, var(--palette-ice-50) 8%, transparent);
     --field-bg-focus: color-mix(in oklch, var(--palette-ice-50) 8%, transparent);
@@ -490,6 +498,12 @@
   --button-secondary-border: color-mix(in oklch, var(--palette-ice-50) 15%, transparent);
   --button-disabled-bg: color-mix(in oklch, var(--palette-ice-50) 4%, transparent);
   --button-disabled-text: color-mix(in oklch, var(--palette-ice-50) 42%, transparent);
+  --filter-active-bg: var(--button-primary-bg);
+  --filter-active-text: var(--button-primary-text);
+  --filter-idle-bg: color-mix(in oklch, var(--palette-ice-50) 8%, transparent);
+  --filter-idle-bg-hover: color-mix(in oklch, var(--palette-ice-50) 14%, transparent);
+  --filter-idle-text: color-mix(in oklch, var(--palette-ice-50) 82%, transparent);
+  --filter-idle-text-hover: var(--palette-ice-50);
   --field-bg: color-mix(in oklch, var(--palette-ice-50) 5%, transparent);
   --field-bg-hover: color-mix(in oklch, var(--palette-ice-50) 8%, transparent);
   --field-bg-focus: color-mix(in oklch, var(--palette-ice-50) 8%, transparent);
