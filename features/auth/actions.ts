@@ -55,6 +55,7 @@ function validateEmail(email: string) {
 
 type ExistingAuthAccount = {
   hasEmail: boolean;
+  hasFacebook: boolean;
   hasGoogle: boolean;
 };
 
@@ -90,6 +91,7 @@ async function findExistingAuthAccount(email: string): Promise<ExistingAuthAccou
 
         return {
           hasEmail: providers.has("email"),
+          hasFacebook: providers.has("facebook"),
           hasGoogle: providers.has("google"),
         };
       }
@@ -106,12 +108,16 @@ async function findExistingAuthAccount(email: string): Promise<ExistingAuthAccou
 }
 
 function existingAccountSignUpMessage(account: ExistingAuthAccount) {
+  if (account.hasFacebook && !account.hasEmail && !account.hasGoogle) {
+    return "Looks like you already have an account with this email. Continue with Facebook to sign in.";
+  }
+
   if (account.hasGoogle && !account.hasEmail) {
     return "Looks like you already have an account with this email. Continue with Google to sign in.";
   }
 
-  if (account.hasGoogle && account.hasEmail) {
-    return "Looks like you already have an account with this email. Sign in or continue with Google.";
+  if ((account.hasFacebook || account.hasGoogle) && account.hasEmail) {
+    return "Looks like you already have an account with this email. Sign in or continue with your social login.";
   }
 
   return "Looks like you already have an account with this email. Sign in to continue.";
@@ -135,6 +141,8 @@ export async function signIn(
   }
 
   const existingAccount = await findExistingAuthAccount(email);
+  const shouldGuideToFacebook =
+    existingAccount?.hasFacebook && !existingAccount.hasEmail;
   const shouldGuideToGoogle =
     existingAccount?.hasGoogle && !existingAccount.hasEmail;
 
@@ -145,6 +153,12 @@ export async function signIn(
   });
 
   if (error) {
+    if (shouldGuideToFacebook) {
+      return {
+        info: "This email is connected with Facebook. Continue with Facebook to sign in.",
+      };
+    }
+
     if (shouldGuideToGoogle) {
       return {
         info: "This email is connected with Google. Continue with Google to sign in.",

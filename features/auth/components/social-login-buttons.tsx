@@ -1,11 +1,11 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { createClient } from "@/utils/supabase/client";
 import { countries, isoToCountry } from "@/utils/countries";
 import { getAuthCallbackUrl } from "@/utils/site-url";
 
-type Provider = "google";
+type Provider = "facebook" | "google";
 
 type SocialLoginButtonsProps = {
   mode?: "sign-in" | "sign-up";
@@ -113,13 +113,6 @@ async function detectCountryForOAuth() {
 export function SocialLoginButtons({ mode = "sign-in" }: SocialLoginButtonsProps) {
   const [loadingProvider, setLoadingProvider] = useState<Provider | null>(null);
   const [error, setError] = useState<string | null>(null);
-  const [toast, setToast] = useState<string | null>(null);
-
-  useEffect(() => {
-    if (!toast) return undefined;
-    const timeout = window.setTimeout(() => setToast(null), 2800);
-    return () => window.clearTimeout(timeout);
-  }, [toast]);
 
   async function handleSocialLogin(provider: Provider) {
     setLoadingProvider(provider);
@@ -143,7 +136,10 @@ export function SocialLoginButtons({ mode = "sign-in" }: SocialLoginButtonsProps
   }
 
   const googleLabel = loadingProvider === "google" ? "Redirecting…" : "Google";
-  const facebookLabel = "Facebook";
+  const displayedGoogleLabel =
+    loadingProvider === "google" ? googleLabel : "Google";
+  const facebookLabel =
+    loadingProvider === "facebook" ? "Redirecting..." : "Facebook";
 
   const heading = mode === "sign-up" ? "Start with" : "Continue with";
 
@@ -158,13 +154,14 @@ export function SocialLoginButtons({ mode = "sign-in" }: SocialLoginButtonsProps
           className="inline-flex items-center justify-center gap-2.5 rounded-xl border border-accent/25 bg-accent/10 px-4 py-3 text-sm font-semibold text-black shadow-sm transition duration-150 hover:-translate-y-0.5 hover:border-accent/40 hover:bg-accent/15 hover:shadow-md disabled:cursor-not-allowed disabled:opacity-55 disabled:hover:translate-y-0"
         >
           <GoogleIcon />
-          {loadingProvider === "google" ? googleLabel : "Continue with Google"}
+          {displayedGoogleLabel}
         </button>
 
         <button
           type="button"
-          onClick={() => { setError(null); setToast("Facebook login is coming soon."); }}
-          className="inline-flex items-center justify-center gap-2.5 rounded-xl border border-provider-facebook/25 bg-provider-facebook/10 px-4 py-3 text-sm font-semibold text-black shadow-sm transition duration-150 hover:-translate-y-0.5 hover:border-provider-facebook/45 hover:bg-provider-facebook/15 hover:shadow-md"
+          onClick={() => handleSocialLogin("facebook")}
+          disabled={loadingProvider !== null}
+          className="inline-flex items-center justify-center gap-2.5 rounded-xl border border-provider-facebook/25 bg-provider-facebook/10 px-4 py-3 text-sm font-semibold text-black shadow-sm transition duration-150 hover:-translate-y-0.5 hover:border-provider-facebook/45 hover:bg-provider-facebook/15 hover:shadow-md disabled:cursor-not-allowed disabled:opacity-55 disabled:hover:translate-y-0"
         >
           <FacebookIcon />
           {facebookLabel}
@@ -174,11 +171,6 @@ export function SocialLoginButtons({ mode = "sign-in" }: SocialLoginButtonsProps
       {error && (
         <p className="rounded-xl border border-red-100 bg-red-50 px-4 py-3 text-sm text-red-600">
           {error}
-        </p>
-      )}
-      {toast && (
-        <p className="rounded-xl border border-amber-100 bg-amber-50 px-4 py-3 text-sm text-amber-700">
-          {toast}
         </p>
       )}
     </div>
