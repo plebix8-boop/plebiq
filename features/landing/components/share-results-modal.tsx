@@ -468,7 +468,7 @@ export function ShareResultsModal({
           >
             <button
               aria-label="Close share results"
-              className="absolute right-4 top-1/2 z-20 grid size-9 -translate-y-1/2 place-items-center rounded-full border border-poll-option-border bg-poll-option-bg text-poll-option-text transition hover:bg-poll-option-bg-hover"
+              className="absolute right-4 top-4 z-20 grid size-9 place-items-center rounded-full border border-poll-option-border bg-poll-option-bg text-poll-option-text transition hover:bg-poll-option-bg-hover"
               onClick={onClose}
               type="button"
             >
