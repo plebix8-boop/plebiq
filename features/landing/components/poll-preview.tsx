@@ -226,7 +226,7 @@ export function PollPreview({
             </span>
           </motion.div>
 
-          <div className="absolute right-4 top-4 inline-flex h-7 items-center rounded-full border border-poll-badge-border bg-poll-badge-bg px-3 text-[10px] font-bold uppercase leading-none tracking-[0.16em] text-poll-badge-text backdrop-blur-md">
+          <div className="absolute right-4 top-4 inline-flex h-7 items-center rounded-full border border-transparent bg-button-primary-bg px-3 text-[10px] font-bold uppercase leading-none tracking-[0.16em] text-button-primary-text backdrop-blur-md">
             {poll.category}
           </div>
         </div>

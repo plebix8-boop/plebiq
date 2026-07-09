@@ -43,8 +43,8 @@ function fieldClasses(tone: FieldTone, extra = "") {
     "w-full rounded-xl border px-4 py-3 text-sm outline-none transition duration-150 disabled:cursor-not-allowed disabled:opacity-60";
   const colors =
     tone === "dark"
-      ? "border-field-dark-border bg-field-dark-bg text-field-dark-text placeholder:text-field-dark-placeholder hover:border-field-dark-border-hover hover:bg-field-dark-bg-hover focus:border-field-border-focus focus:bg-field-dark-bg-focus focus:ring-2 focus:ring-accent/20"
-      : "border-field-light-border bg-field-light-bg text-field-light-text placeholder:text-field-light-placeholder hover:border-field-light-border-hover hover:bg-field-light-bg-hover focus:border-field-border-focus focus:bg-field-light-bg-focus focus:ring-2 focus:ring-accent/20";
+      ? "border-field-border-focus bg-field-dark-bg-focus text-field-dark-text placeholder:text-field-dark-placeholder hover:border-field-border-focus hover:bg-field-dark-bg-focus focus:border-field-border-focus focus:bg-field-dark-bg-focus focus:ring-2 focus:ring-accent/20"
+      : "border-field-border-focus bg-field-light-bg-focus text-field-light-text placeholder:text-field-light-placeholder hover:border-field-border-focus hover:bg-field-light-bg-focus focus:border-field-border-focus focus:bg-field-light-bg-focus focus:ring-2 focus:ring-accent/20";
 
   return `${base} ${colors} ${extra}`.trim();
 }
@@ -174,10 +174,10 @@ export function AppSelect({
     resolvedTone === "dark"
       ? open
         ? "border-field-border-focus bg-field-dark-bg-focus ring-2 ring-accent/20"
-        : "border-field-dark-border bg-field-dark-bg hover:border-field-dark-border-hover hover:bg-field-dark-bg-hover"
+        : "border-field-border-focus bg-field-dark-bg-focus hover:border-field-border-focus hover:bg-field-dark-bg-focus"
       : open
         ? "border-field-border-focus bg-field-light-bg-focus ring-2 ring-accent/20"
-        : "border-field-light-border bg-field-light-bg hover:border-field-light-border-hover hover:bg-field-light-bg-hover";
+        : "border-field-border-focus bg-field-light-bg-focus hover:border-field-border-focus hover:bg-field-light-bg-focus";
   const textColor = selected
     ? resolvedTone === "dark"
       ? "text-field-dark-text"
@@ -201,8 +201,8 @@ export function AppSelect({
   };
   const searchColors =
     resolvedTone === "dark"
-      ? "border-field-dark-border bg-field-dark-bg text-field-dark-text placeholder:text-field-dark-placeholder focus-within:border-field-border-focus focus-within:ring-accent/20"
-      : "border-field-light-border bg-field-light-bg text-field-light-text placeholder:text-field-light-placeholder focus-within:border-field-border-focus focus-within:bg-field-light-bg-focus focus-within:ring-accent/20";
+      ? "border-field-border-focus bg-field-dark-bg-focus text-field-dark-text placeholder:text-field-dark-placeholder focus-within:border-field-border-focus focus-within:ring-accent/20"
+      : "border-field-border-focus bg-field-light-bg-focus text-field-light-text placeholder:text-field-light-placeholder focus-within:border-field-border-focus focus-within:bg-field-light-bg-focus focus-within:ring-accent/20";
   const optionBase =
     resolvedTone === "dark" ? "text-field-dark-text" : "text-field-light-text";
   const optionActive =

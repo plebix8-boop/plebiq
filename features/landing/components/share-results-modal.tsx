@@ -460,14 +460,23 @@ export function ShareResultsModal({
         >
           <motion.div
             animate={{ opacity: 1, scale: 1, y: 0 }}
-            className="relative grid max-h-[min(900px,92vh)] w-full max-w-5xl overflow-hidden rounded-[1.5rem] border border-poll-option-border bg-poll-auth-modal-bg text-poll-auth-modal-text shadow-[0_30px_90px_var(--shadow-soft)] md:grid-cols-[0.95fr_1.05fr]"
+            className="relative grid max-h-[min(900px,92vh)] w-full max-w-5xl overflow-y-auto overflow-x-hidden rounded-[1.5rem] border border-poll-option-border bg-poll-auth-modal-bg text-poll-auth-modal-text shadow-[0_30px_90px_var(--shadow-soft)] md:grid-cols-[0.95fr_1.05fr]"
             exit={{ opacity: 0, scale: 0.96, y: 12 }}
             initial={{ opacity: 0, scale: 0.94, y: 20 }}
             onClick={(event) => event.stopPropagation()}
             transition={{ type: "spring", stiffness: 300, damping: 28 }}
           >
-            <div className="min-h-0 overflow-y-auto p-5 sm:p-6">
-              <div className="mb-4 flex items-start justify-between gap-4">
+            <button
+              aria-label="Close share results"
+              className="absolute right-4 top-1/2 z-20 grid size-9 -translate-y-1/2 place-items-center rounded-full border border-poll-option-border bg-poll-option-bg text-poll-option-text transition hover:bg-poll-option-bg-hover"
+              onClick={onClose}
+              type="button"
+            >
+              x
+            </button>
+
+            <div className="min-h-0 p-5 sm:p-6">
+              <div className="mb-4">
                 <div>
                   <p className="text-xs font-black uppercase tracking-[0.18em] text-poll-card-subtle">
                     Share results
@@ -479,13 +488,6 @@ export function ShareResultsModal({
                     The image includes branding, percentages, every option, and the poll link.
                   </p>
                 </div>
-                <button
-                  className="grid size-9 shrink-0 place-items-center rounded-full border border-poll-option-border bg-poll-option-bg text-poll-option-text transition hover:bg-poll-option-bg-hover"
-                  onClick={onClose}
-                  type="button"
-                >
-                  x
-                </button>
               </div>
 
               <div className="grid gap-2 sm:grid-cols-2">

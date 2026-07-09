@@ -6,7 +6,7 @@ import { SocialLoginButtons } from "./components/social-login-buttons";
 export function SignInPage() {
   return (
     <AuthSplitLayout
-      formEyebrow="Welcome back"
+      formEyebrow=""
       formTitle="Sign in to your account"
       formDescription="Use your email and password, or choose a social login provider below."
       footer={

@@ -37,9 +37,9 @@ export function AuthSplitLayout({
         <div className="relative z-10 max-w-[450px]">
 
           {/* Headline */}
-          <p className="mb-3 text-[11px] font-bold uppercase tracking-[0.24em] text-accent">
+          {/* <p className="mb-3 text-[11px] font-bold uppercase tracking-[0.24em] text-accent">
             Live global polling
-          </p>
+          </p> */}
           <h2 className="text-4xl font-black leading-[1.06] text-app-fg xl:text-5xl">
             The world votes.{" "}
             <span className="bg-gradient-to-r from-accent via-accent-alt to-accent bg-clip-text text-transparent">
@@ -68,8 +68,8 @@ export function AuthSplitLayout({
               {/* LIVE badge */}
               <div className="absolute left-4 top-4 inline-flex h-7 items-center gap-2 rounded-full bg-inverse/15 px-3 backdrop-blur-md">
                 <span className="relative flex size-2.5 shrink-0">
-                  <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-danger opacity-60" />
-                  <span className="relative inline-flex size-2.5 rounded-full bg-danger shadow-[0_0_10px_var(--danger-glow)]" />
+                  <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-button-primary-bg opacity-60" />
+                  <span className="relative inline-flex size-2.5 rounded-full bg-button-primary-bg shadow-[0_0_10px_var(--glow-accent)]" />
                 </span>
                 <span className="text-[10px] font-bold leading-none tracking-widest text-inverse/80">
                   LIVE
@@ -77,7 +77,7 @@ export function AuthSplitLayout({
               </div>
 
               {/* Category badge */}
-              <div className="absolute right-4 top-4 inline-flex h-7 items-center rounded-full border border-inverse/15 bg-inverse/15 px-3 text-[10px] font-bold uppercase leading-none tracking-[0.16em] text-inverse/80 backdrop-blur-md">
+              <div className="absolute right-4 top-4 inline-flex h-7 items-center rounded-full border border-transparent bg-button-primary-bg px-3 text-[10px] font-bold uppercase leading-none tracking-[0.16em] text-button-primary-text backdrop-blur-md">
                 Product
               </div>
             </div>
@@ -192,9 +192,9 @@ export function AuthSplitLayout({
         </div>
 
         {/* Bottom tagline */}
-        <p className="w-full text-center text-xs text-faint">
+        {/* <p className="w-full text-center text-xs text-faint">
           &copy; {new Date().getFullYear()} Plebiq. All rights reserved.
-        </p>
+        </p> */}
       </div>
 
     </div>

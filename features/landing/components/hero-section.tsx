@@ -24,7 +24,7 @@ type TypePhase = "typing" | "pause" | "deleting";
 
 const HERO_PREVIEW_WIDTH = 624;
 const HERO_PREVIEW_FALLBACK_HEIGHT = 860;
-const HERO_PREVIEW_MIN_SCALE = 0.58;
+const HERO_PREVIEW_MIN_SCALE = 0.42;
 const HERO_PREVIEW_MAX_SCALE = 1;
 
 function isLetter(char: string) {
@@ -117,9 +117,13 @@ export function HeroSection({ featuredPoll, voteProps }: HeroSectionProps) {
         const slotWidth =
           previewSlotRef.current?.getBoundingClientRect().width ??
           HERO_PREVIEW_WIDTH;
+        const slotHeight = previewSlotRef.current?.getBoundingClientRect().height;
         const naturalHeight =
           previewFrameRef.current?.scrollHeight || HERO_PREVIEW_FALLBACK_HEIGHT;
-        const availableHeight = Math.max(360, window.innerHeight - 84);
+        const availableHeight = Math.max(
+          260,
+          Math.min(slotHeight || window.innerHeight, window.innerHeight - 156),
+        );
         const nextScale = Math.min(
           HERO_PREVIEW_MAX_SCALE,
           Math.max(
@@ -201,13 +205,13 @@ export function HeroSection({ featuredPoll, voteProps }: HeroSectionProps) {
 
   return (
     <section
-      className="fixed inset-0 z-10 h-screen overflow-hidden bg-hero-bg px-5 py-6 text-hero-text sm:px-8 lg:px-10"
+      className="fixed inset-0 z-10 h-screen bg-hero-bg px-5 py-6 text-hero-text sm:px-8 lg:px-10"
       id="hero"
     >
       <div className="pointer-events-none absolute -left-40 -top-40 h-[520px] w-[520px] rounded-full bg-accent/25 blur-[130px]" />
       <div className="pointer-events-none absolute -bottom-40 -right-40 h-[440px] w-[440px] rounded-full bg-accent-alt/20 blur-[120px]" />
 
-      <div className="absolute left-5 top-5 z-40 sm:left-8 sm:top-6">
+      <nav className="relative z-40 mx-auto px-6 mb-3 flex w-full max-w-[1600px] items-center justify-between">
         <Image
           alt="Plebiq"
           src="/logo.png"
@@ -216,25 +220,22 @@ export function HeroSection({ featuredPoll, voteProps }: HeroSectionProps) {
           className="h-9 w-auto sm:h-10"
           priority
         />
-      </div>
 
-      {/* Top-right nav: avatar or sign-in */}
-      <div className="absolute right-5 top-5 z-40 sm:right-8 sm:top-6">
         {user ? (
           <UserAvatarMenu />
         ) : (
           <SignInNavButton />
         )}
-      </div>
+      </nav>
 
       <LiveVotesTicker />
 
       <motion.div
-        className="relative z-10 mx-auto flex min-h-[172svh] w-full max-w-[1600px] flex-col items-center justify-start gap-10 pb-12 pt-[8svh] lg:grid lg:min-h-[calc(100vh-48px)] lg:grid-cols-[minmax(0,0.94fr)_minmax(500px,624px)] lg:justify-center lg:gap-12 lg:py-0 xl:gap-16"
+        className="z-10 mx-auto flex h-[calc(100svh-104px)] w-full max-w-[1600px] flex-col items-center justify-start gap-6 pt-[4svh] lg:grid lg:h-[calc(100svh-116px)] lg:grid-cols-[minmax(0,0.94fr)_minmax(500px,624px)] lg:items-center lg:justify-center lg:gap-10 lg:pt-0 xl:gap-14"
       >
         <motion.div
           animate={{ opacity: 1, y: 0 }}
-          className="flex min-h-[86svh] w-full max-w-[760px] flex-col items-center justify-center text-center lg:block lg:min-h-0 lg:text-left"
+          className="flex min-h-0 w-full max-w-[760px] flex-col items-center justify-center text-center lg:block lg:text-left"
           initial={{ opacity: 0, y: 24 }}
           transition={{ duration: 0.6 }}
         >
@@ -293,13 +294,13 @@ export function HeroSection({ featuredPoll, voteProps }: HeroSectionProps) {
 
         <motion.div
           animate={{ opacity: 1, scale: 1, y: 0 }}
-          className="relative flex w-full max-w-[min(92vw,624px)] justify-center lg:max-w-[624px] lg:justify-end"
+          className="relative flex min-h-0 w-full max-w-[min(92vw,624px)] flex-1 justify-center lg:h-full lg:max-w-[624px] lg:flex-none lg:items-center lg:justify-end"
           initial={{ opacity: 0, scale: 0.94, y: 24 }}
           ref={previewSlotRef}
           transition={{ delay: 0.15 }}
         >
           <div
-            className="relative"
+            className="absolute top-0 left-0"
             style={
               {
                 height: previewHeight * previewScale,

@@ -6,7 +6,7 @@ import { SignUpForm } from "./components/sign-up-form";
 export function SignUpPage() {
   return (
     <AuthSplitLayout
-      formEyebrow="New to Plebiq"
+      formEyebrow=""
       formTitle="Create your account"
       formDescription="Sign up with email and password, or begin with a social login option."
       footer={

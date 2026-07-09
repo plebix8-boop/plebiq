@@ -4,6 +4,7 @@ import { AnimatePresence, motion } from "framer-motion";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
+import { FaSignInAlt } from "react-icons/fa";
 import { ThemeSwitcher } from "@/components/theme-switcher";
 import { AppButtonLink } from "@/components/ui/button";
 import { useAuth } from "@/contexts/auth-context";
@@ -158,8 +159,9 @@ export function SignInNavButton() {
   return (
     <AppButtonLink
       href="/auth/sign-in"
-      variant="secondary"
+      variant="primary"
     >
+      <FaSignInAlt className="size-3.5" />
       Sign in
     </AppButtonLink>
   );

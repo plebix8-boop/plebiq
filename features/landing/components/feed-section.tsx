@@ -19,16 +19,16 @@ export function FeedSection({ polls, categories, getVoteProps }: FeedSectionProp
 
   return (
     <section
-      className="relative z-20 min-h-screen bg-app-bg px-5 py-12 pb-16 text-app-fg sm:px-8 lg:py-16 lg:pb-24"
+      className="relative z-20 min-h-screen bg-app-bg px-5 pt-6 pb-12 pb-16 text-app-fg sm:px-8 lg:pt-12 lg:pb-24"
       id="feed"
     >
       <div className="mx-auto w-full max-w-7xl">
         <div className="mb-8 flex flex-col gap-5 sm:mb-10 lg:flex-row lg:items-end lg:justify-between">
           <div>
-            <p className="text-sm font-black uppercase tracking-[0.18em] text-accent">
+            {/* <p className="text-sm font-black uppercase tracking-[0.18em] text-accent">
               Feed
-            </p>
-            <h2 className="mt-3 text-4xl font-black leading-tight sm:text-5xl">
+            </p> */}
+            <h2 className="mt-3 text-4xl font-bold leading-tight sm:text-5xl">
               Active polls
             </h2>
             <p className="mt-3 max-w-2xl text-base leading-7 text-muted">
@@ -40,11 +40,10 @@ export function FeedSection({ polls, categories, getVoteProps }: FeedSectionProp
           <div className="-mx-1 flex gap-2 overflow-x-auto px-1 pb-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
             {categories.map((category) => (
               <button
-                className={`shrink-0 rounded-full border px-4 py-2 text-sm font-semibold transition ${
-                  activeCategory === category
-                    ? "border-transparent bg-filter-active-bg text-filter-active-text shadow-[0_8px_20px_var(--shadow-soft)]"
-                    : "border-border bg-filter-idle-bg text-filter-idle-text hover:bg-filter-idle-bg-hover hover:text-filter-idle-text-hover"
-                }`}
+                className={`shrink-0 rounded-full border px-4 py-2 text-sm font-semibold transition ${activeCategory === category
+                  ? "border-transparent bg-filter-active-bg text-filter-active-text"
+                  : "border-border bg-filter-idle-bg text-filter-idle-text hover:bg-filter-idle-bg-hover hover:text-filter-idle-text-hover"
+                  }`}
                 key={category}
                 onClick={() => setActiveCategory(category)}
                 type="button"

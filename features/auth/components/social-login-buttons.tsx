@@ -138,9 +138,6 @@ export function SocialLoginButtons({ mode = "sign-in" }: SocialLoginButtonsProps
   const googleLabel = loadingProvider === "google" ? "Redirecting…" : "Google";
   const displayedGoogleLabel =
     loadingProvider === "google" ? googleLabel : "Google";
-  const facebookLabel =
-    loadingProvider === "facebook" ? "Redirecting..." : "Facebook";
-
   const heading = mode === "sign-up" ? "Start with" : "Continue with";
 
   return (
@@ -159,12 +156,11 @@ export function SocialLoginButtons({ mode = "sign-in" }: SocialLoginButtonsProps
 
         <button
           type="button"
-          onClick={() => handleSocialLogin("facebook")}
-          disabled={loadingProvider !== null}
-          className="inline-flex items-center justify-center gap-2.5 rounded-xl border border-provider-facebook/25 bg-provider-facebook/10 px-4 py-3 text-sm font-semibold text-black shadow-sm transition duration-150 hover:-translate-y-0.5 hover:border-provider-facebook/45 hover:bg-provider-facebook/15 hover:shadow-md disabled:cursor-not-allowed disabled:opacity-55 disabled:hover:translate-y-0"
+          disabled
+          className="inline-flex cursor-not-allowed items-center justify-center gap-2.5 rounded-xl border border-provider-facebook/20 bg-provider-facebook/10 px-4 py-3 text-sm font-semibold text-black opacity-55 shadow-sm"
         >
           <FacebookIcon />
-          {facebookLabel}
+          coming soon
         </button>
       </div>
 

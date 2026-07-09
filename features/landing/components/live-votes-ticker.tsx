@@ -86,11 +86,11 @@ export function LiveVotesTicker() {
   }, []);
 
   return (
-    <div className="pointer-events-none absolute right-4 top-20 z-30 hidden flex-col items-end gap-3 sm:flex lg:right-8">
+    <div className="pointer-events-none absolute right-4 top-20 z-30 hidden max-w-[min(22rem,calc(100vw-2rem))] flex-col items-end gap-3 sm:flex lg:right-8">
       {items.map((user, index) => (
         <motion.div
           animate={{ opacity: 1, x: 0, scale: 1 }}
-          className="pointer-events-auto flex items-center gap-2 rounded-full bg-white/10 px-4 py-2 text-sm text-white/90 shadow-[0_8px_30px_var(--shadow-soft)] backdrop-blur-md"
+          className="pointer-events-auto flex items-center gap-2 rounded-full border border-poll-badge-border bg-poll-badge-bg px-4 py-2 text-sm text-poll-badge-text shadow-[0_8px_30px_var(--shadow-soft)] backdrop-blur-md"
           exit={{ opacity: 0, x: 100 }}
           initial={{ opacity: 0, x: 100, scale: 0.95 }}
           key={user.id}
@@ -108,7 +108,7 @@ export function LiveVotesTicker() {
             src={`https://flagcdn.com/${user.code}.svg`}
           />
           <span className="font-semibold">{user.name}</span>
-          <span className="text-white/60">just voted</span>
+          <span className="text-poll-card-muted">just voted</span>
         </motion.div>
       ))}
     </div>
