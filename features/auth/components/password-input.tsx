@@ -45,7 +45,7 @@ export function PasswordInput({ id, name, autoComplete, placeholder, required }:
       />
       <button
         aria-label={show ? "Hide password" : "Show password"}
-        className="absolute right-3.5 top-1/2 -translate-y-1/2 text-slate-400 transition hover:text-slate-700"
+        className="absolute right-3.5 top-1/2 -translate-y-1/2 text-muted transition hover:text-foreground"
         onClick={() => setShow((s) => !s)}
         tabIndex={-1}
         type="button"

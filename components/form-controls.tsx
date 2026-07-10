@@ -13,12 +13,13 @@ import {
   type TextareaHTMLAttributes,
 } from "react";
 import { createPortal } from "react-dom";
+import { useTheme } from "@/contexts/theme-context";
 
 export type SelectOption = { value: string; label: string };
 
 type FieldTone = "light" | "dark";
 
-const FieldToneContext = createContext<FieldTone>("light");
+const FieldToneContext = createContext<FieldTone | undefined>(undefined);
 
 export function FieldToneProvider({
   tone,
@@ -35,7 +36,10 @@ export function FieldToneProvider({
 }
 
 function useFieldTone(tone?: FieldTone) {
-  return tone ?? useContext(FieldToneContext);
+  const contextTone = useContext(FieldToneContext);
+  const { effectiveTheme } = useTheme();
+
+  return tone ?? contextTone ?? effectiveTheme;
 }
 
 function fieldClasses(tone: FieldTone, extra = "") {

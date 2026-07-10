@@ -27,7 +27,7 @@ export function ResetPasswordPage({
             Remembered your password?{" "}
             <Link
               href="/auth"
-              className="font-semibold text-accent transition hover:text-black"
+              className="font-semibold text-accent transition hover:text-foreground"
             >
               Sign in
             </Link>
@@ -36,7 +36,7 @@ export function ResetPasswordPage({
             Need an account?{" "}
             <Link
               href="/auth/sign-up"
-              className="font-semibold text-accent transition hover:text-black"
+              className="font-semibold text-accent transition hover:text-foreground"
             >
               Create account
             </Link>

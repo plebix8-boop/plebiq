@@ -122,7 +122,6 @@ export function CountrySelect({
       options={countryOptions}
       placeholder="Select your country"
       searchThreshold={0}
-      tone="light"
     />
   );
 }

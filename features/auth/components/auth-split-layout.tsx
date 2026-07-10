@@ -61,10 +61,6 @@ export function AuthSplitLayout({
                 className="h-full w-full object-cover"
                 src="https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?q=80&w=1600&auto=format&fit=crop"
               />
-              {/* overlays */}
-              <div className="absolute inset-0 bg-foreground/40" />
-              <div className="absolute inset-0 bg-gradient-to-b from-foreground/10 via-foreground/30 to-foreground/65" />
-
               {/* LIVE badge */}
               <div className="absolute left-4 top-4 inline-flex h-7 items-center gap-2 rounded-full bg-poll-badge-bg px-3 backdrop-blur-md">
                 <span className="relative flex size-2.5 shrink-0">

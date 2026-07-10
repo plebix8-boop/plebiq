@@ -142,13 +142,13 @@ export function SocialLoginButtons({ mode = "sign-in" }: SocialLoginButtonsProps
 
   return (
     <div className="space-y-3">
-      <p className="text-xs font-semibold uppercase tracking-wide text-slate-400">{heading}</p>
+      <p className="text-xs font-semibold uppercase tracking-wide text-muted">{heading}</p>
       <div className="grid gap-2.5 sm:grid-cols-2">
         <button
           type="button"
           onClick={() => handleSocialLogin("google")}
           disabled={loadingProvider !== null}
-          className="inline-flex items-center justify-center gap-2.5 rounded-xl border border-accent/25 bg-accent/10 px-4 py-3 text-sm font-semibold text-black shadow-sm transition duration-150 hover:-translate-y-0.5 hover:border-accent/40 hover:bg-accent/15 hover:shadow-md disabled:cursor-not-allowed disabled:opacity-55 disabled:hover:translate-y-0"
+          className="inline-flex items-center justify-center gap-2.5 rounded-xl border border-button-secondary-border bg-button-secondary-bg px-4 py-3 text-sm font-semibold text-button-secondary-text shadow-sm transition duration-150 hover:-translate-y-0.5 hover:border-accent/40 hover:bg-button-secondary-bg-hover hover:shadow-md disabled:cursor-not-allowed disabled:opacity-55 disabled:hover:translate-y-0"
         >
           <GoogleIcon />
           {displayedGoogleLabel}
@@ -157,7 +157,7 @@ export function SocialLoginButtons({ mode = "sign-in" }: SocialLoginButtonsProps
         <button
           type="button"
           disabled
-          className="inline-flex cursor-not-allowed items-center justify-center gap-2.5 rounded-xl border border-provider-facebook/20 bg-provider-facebook/10 px-4 py-3 text-sm font-semibold text-black opacity-55 shadow-sm"
+          className="inline-flex cursor-not-allowed items-center justify-center gap-2.5 rounded-xl border border-button-secondary-border bg-button-secondary-bg px-4 py-3 text-sm font-semibold text-button-secondary-text opacity-55 shadow-sm"
         >
           <FacebookIcon />
           coming soon

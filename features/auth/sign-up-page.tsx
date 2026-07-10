@@ -14,7 +14,7 @@ export function SignUpPage() {
           <p>
             <Link
               href="/auth/reset-password"
-              className="font-medium text-accent transition hover:text-black"
+              className="font-medium text-accent transition hover:text-foreground"
             >
               Reset password
             </Link>
@@ -23,7 +23,7 @@ export function SignUpPage() {
             Already have an account?{" "}
             <Link
               href="/auth/sign-in"
-              className="font-semibold text-accent transition hover:text-black"
+              className="font-semibold text-accent transition hover:text-foreground"
             >
               Sign in
             </Link>
