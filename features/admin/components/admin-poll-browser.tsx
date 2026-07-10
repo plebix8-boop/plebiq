@@ -64,7 +64,7 @@ export function AdminPollBrowser({
         <div className="rounded-[1.6rem] border border-white/10 bg-white/5 p-6 shadow-[0_20px_60px_var(--shadow-soft)] backdrop-blur-md">
           <div className="flex flex-col gap-5 lg:flex-row lg:items-end lg:justify-between">
             <div className="max-w-2xl">
-              <h1 className="text-3xl font-black leading-tight text-white sm:text-4xl">
+              <h1 className="text-3xl font-bold leading-tight text-white sm:text-4xl">
                 Poll browser
               </h1>
               <p className="mt-3 text-sm leading-7 text-white/55">
@@ -79,11 +79,10 @@ export function AdminPollBrowser({
                   key={status}
                   type="button"
                   onClick={() => setActiveStatus(status)}
-                  className={`rounded-full px-4 py-2 text-sm font-semibold capitalize transition ${
-                    activeStatus === status
+                  className={`rounded-full px-4 py-2 text-sm font-semibold capitalize transition ${activeStatus === status
                       ? "bg-cyan-300 text-slate-950 shadow-[0_12px_30px_var(--accent-alt-glow)]"
                       : "bg-white/8 text-white/65 hover:bg-white/12 hover:text-white"
-                  }`}
+                    }`}
                 >
                   {status}
                 </button>
@@ -97,13 +96,13 @@ export function AdminPollBrowser({
             <p className="text-xs uppercase tracking-[0.2em] text-white/40">
               Total polls
             </p>
-            <p className="mt-3 text-3xl font-black text-white">{polls.length}</p>
+            <p className="mt-3 text-3xl font-bold text-white">{polls.length}</p>
           </div>
           <div className="rounded-[1.6rem] border border-white/10 bg-white/5 p-5 backdrop-blur-md">
             <p className="text-xs uppercase tracking-[0.2em] text-white/40">
               Visible now
             </p>
-            <p className="mt-3 text-3xl font-black text-white">
+            <p className="mt-3 text-3xl font-bold text-white">
               {visiblePolls.length}
             </p>
           </div>
@@ -111,7 +110,7 @@ export function AdminPollBrowser({
             <p className="text-xs uppercase tracking-[0.2em] text-white/40">
               Categories
             </p>
-            <p className="mt-3 text-3xl font-black text-white">
+            <p className="mt-3 text-3xl font-bold text-white">
               {categories.length}
             </p>
           </div>

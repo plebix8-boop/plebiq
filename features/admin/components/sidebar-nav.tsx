@@ -59,6 +59,17 @@ const navItems = [
       </svg>
     ),
   },
+  {
+    label: "Landing Page",
+    href: "/",
+    icon: (
+      <svg className="size-4" fill="none" stroke="currentColor" strokeWidth="1.8" viewBox="0 0 24 24">
+        <path strokeLinecap="round" strokeLinejoin="round" d="M3 11.5 12 4l9 7.5" />
+        <path strokeLinecap="round" strokeLinejoin="round" d="M5.5 10.5V20h13v-9.5" />
+        <path strokeLinecap="round" strokeLinejoin="round" d="M9.5 20v-5h5v5" />
+      </svg>
+    ),
+  },
 ];
 
 export function SidebarNav() {

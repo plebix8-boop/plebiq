@@ -25,7 +25,7 @@ export function FeedSection({ polls, categories, getVoteProps }: FeedSectionProp
       <div className="mx-auto w-full max-w-7xl">
         <div className="mb-8 flex flex-col gap-5 sm:mb-10 lg:flex-row lg:items-end lg:justify-between">
           <div>
-            {/* <p className="text-sm font-black uppercase tracking-[0.18em] text-accent">
+            {/* <p className="text-sm font-bold uppercase tracking-[0.18em] text-accent">
               Feed
             </p> */}
             <h2 className="mt-3 text-4xl font-bold leading-tight sm:text-5xl">

@@ -27,7 +27,7 @@ export function LegalPage({ title, description, updated, sections }: LegalPagePr
           <p className="text-sm font-semibold uppercase tracking-[0.18em] text-accent">
             Legal
           </p>
-          <h1 className="mt-3 text-4xl font-black leading-tight sm:text-5xl">
+          <h1 className="mt-3 text-4xl font-bold leading-tight sm:text-5xl">
             {title}
           </h1>
           <p className="mt-4 text-base leading-7 text-muted">{description}</p>

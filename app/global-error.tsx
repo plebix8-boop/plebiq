@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 
 export default function GlobalError({
   error,
@@ -9,9 +9,20 @@ export default function GlobalError({
   error: Error & { digest?: string };
   reset: () => void;
 }) {
+  const [logoSrc, setLogoSrc] = useState("/logo.png");
+
   useEffect(() => {
     console.error(error);
   }, [error]);
+
+  useEffect(() => {
+    const preference = document.documentElement.dataset.theme;
+    const isDark =
+      preference === "dark" ||
+      (preference !== "light" && window.matchMedia("(prefers-color-scheme: dark)").matches);
+
+    setLogoSrc(isDark ? "/logo-dark.png" : "/logo.png");
+  }, []);
 
   return (
     <html lang="en">
@@ -46,7 +57,7 @@ export default function GlobalError({
         <div style={{ position: "relative", maxWidth: "26rem" }}>
           <img
             alt="Plebiq"
-            src="/logo.png"
+            src={logoSrc}
             style={{
               display: "block",
               height: "2.25rem",

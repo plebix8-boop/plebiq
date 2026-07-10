@@ -47,7 +47,7 @@ export default function Error({
           </svg>
         </div>
 
-        <h1 className="text-2xl font-black sm:text-3xl">Unexpected error</h1>
+        <h1 className="text-2xl font-bold sm:text-3xl">Unexpected error</h1>
         <p className="mx-auto mt-4 max-w-sm text-base leading-7 text-muted">
           Something broke on our end. You can try again — it usually fixes
           itself.

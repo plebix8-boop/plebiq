@@ -1,9 +1,9 @@
 "use client";
 
 import Link from "next/link";
-import Image from "next/image";
 import { usePathname } from "next/navigation";
 import { SignOutButton } from "@/features/auth/components/sign-out-button";
+import { ThemeLogo } from "@/components/theme-logo";
 
 const navItems = [
   {
@@ -25,9 +25,8 @@ export function AdminSidebar({ email, name, role }: AdminSidebarProps) {
     <aside className="relative flex h-screen flex-col overflow-y-auto border-r border-white/10 bg-surface/92 p-6 backdrop-blur-xl lg:fixed lg:inset-y-0 lg:left-0 lg:w-[260px]">
       <div className="mb-10 flex items-center gap-3">
         <div>
-          <Image
+          <ThemeLogo
             alt="Plebiq"
-            src="/logo.png"
             width={1266}
             height={435}
             className="h-10 w-auto"

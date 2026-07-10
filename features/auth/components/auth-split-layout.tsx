@@ -1,6 +1,6 @@
 import Link from "next/link";
-import Image from "next/image";
 import type { ReactNode } from "react";
+import { ThemeLogo } from "@/components/theme-logo";
 
 type AuthSplitLayoutProps = {
   formEyebrow: string;
@@ -40,7 +40,7 @@ export function AuthSplitLayout({
           {/* <p className="mb-3 text-[11px] font-bold uppercase tracking-[0.24em] text-accent">
             Live global polling
           </p> */}
-          <h2 className="text-4xl font-black leading-[1.06] text-app-fg xl:text-5xl">
+          <h2 className="text-4xl font-bold leading-[1.06] text-app-fg xl:text-5xl">
             The world votes.{" "}
             <span className="bg-gradient-to-r from-accent via-accent-alt to-accent bg-clip-text text-transparent">
               You decide.
@@ -66,12 +66,12 @@ export function AuthSplitLayout({
               <div className="absolute inset-0 bg-gradient-to-b from-foreground/10 via-foreground/30 to-foreground/65" />
 
               {/* LIVE badge */}
-              <div className="absolute left-4 top-4 inline-flex h-7 items-center gap-2 rounded-full bg-inverse/15 px-3 backdrop-blur-md">
+              <div className="absolute left-4 top-4 inline-flex h-7 items-center gap-2 rounded-full bg-poll-badge-bg px-3 backdrop-blur-md">
                 <span className="relative flex size-2.5 shrink-0">
                   <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-button-primary-bg opacity-60" />
                   <span className="relative inline-flex size-2.5 rounded-full bg-button-primary-bg shadow-[0_0_10px_var(--glow-accent)]" />
                 </span>
-                <span className="text-[10px] font-bold leading-none tracking-widest text-inverse/80">
+                <span className="text-[10px] font-bold leading-none tracking-widest text-poll-badge-text">
                   LIVE
                 </span>
               </div>
@@ -130,14 +130,14 @@ export function AuthSplitLayout({
               <p className="text-[10px] font-semibold uppercase tracking-[0.18em] text-faint">
                 Active polls
               </p>
-              <p className="mt-1.5 text-[1.5rem] font-black leading-none text-app-fg">2,841</p>
+              <p className="mt-1.5 text-[1.5rem] font-bold leading-none text-app-fg">2,841</p>
               <p className="mt-1 text-[10px] text-accent">↑ 124 launched today</p>
             </div>
             <div className="rounded-xl border border-border bg-surface-soft p-4">
               <p className="text-[10px] font-semibold uppercase tracking-[0.18em] text-faint">
                 Votes today
               </p>
-              <p className="mt-1.5 text-[1.5rem] font-black leading-none text-app-fg">3.2M</p>
+              <p className="mt-1.5 text-[1.5rem] font-bold leading-none text-app-fg">3.2M</p>
               <p className="mt-1 text-[10px] text-accent-alt">↑ 18% vs yesterday</p>
             </div>
           </div> */}
@@ -153,9 +153,8 @@ export function AuthSplitLayout({
             href="/"
             className="flex items-center gap-2.5 transition hover:opacity-80"
           >
-            <Image
+            <ThemeLogo
               alt="Plebiq"
-              src="/logo.png"
               width={1266}
               height={435}
               className="h-9 w-auto"
@@ -176,7 +175,7 @@ export function AuthSplitLayout({
             <p className="mb-1.5 text-[11px] font-bold uppercase tracking-[0.22em] text-accent">
               {formEyebrow}
             </p>
-            <h1 className="text-2xl font-black leading-tight text-foreground sm:text-3xl">
+            <h1 className="text-2xl font-bold leading-tight text-foreground sm:text-3xl">
               {formTitle}
             </h1>
             <p className="mt-2 text-sm leading-6 text-muted">{formDescription}</p>

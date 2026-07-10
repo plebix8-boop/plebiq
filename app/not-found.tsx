@@ -1,5 +1,5 @@
-import Image from "next/image";
 import { AppButtonLink } from "@/components/ui/button";
+import { ThemeLogo } from "@/components/theme-logo";
 
 export default function NotFound() {
   return (
@@ -11,9 +11,8 @@ export default function NotFound() {
       <div className="relative text-center">
         <div className="mb-6 inline-flex items-center gap-2 rounded-full border border-border bg-surface-soft px-4 py-2 text-xs font-semibold text-muted backdrop-blur-md">
           <span className="size-2 animate-pulse rounded-full bg-danger" />
-          <Image
+          <ThemeLogo
             alt="Plebiq"
-            src="/logo.png"
             width={1266}
             height={435}
             className="h-5 w-auto"
@@ -21,7 +20,7 @@ export default function NotFound() {
         </div>
 
         <div
-          className="select-none text-[clamp(6rem,20vw,13rem)] font-black leading-none tracking-tight"
+          className="select-none text-[clamp(6rem,20vw,13rem)] font-bold leading-none tracking-tight"
           aria-hidden="true"
         >
           <span className="bg-gradient-to-br from-accent via-accent-alt to-accent bg-clip-text text-transparent drop-shadow-[0_0_80px_var(--glow-accent)]">
@@ -29,7 +28,7 @@ export default function NotFound() {
           </span>
         </div>
 
-        <h1 className="mt-1 text-2xl font-black sm:text-3xl">
+        <h1 className="mt-1 text-2xl font-bold sm:text-3xl">
           This poll doesn&apos;t exist
         </h1>
         <p className="mx-auto mt-4 max-w-sm text-base leading-7 text-muted">

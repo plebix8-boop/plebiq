@@ -3,7 +3,6 @@ import {
   motion,
   type MotionValue,
 } from "framer-motion";
-import Image from "next/image";
 import { useEffect, useRef, useState, type CSSProperties } from "react";
 import { heroPhrases } from "../data";
 import type { FeaturedPoll } from "../data";
@@ -13,6 +12,7 @@ import { PollPreview } from "./poll-preview";
 import { SignInNavButton, UserAvatarMenu } from "./user-avatar-menu";
 import { useAuth } from "@/contexts/auth-context";
 import { AppButton } from "@/components/ui/button";
+import { ThemeLogo } from "@/components/theme-logo";
 
 type HeroSectionProps = {
   scrollYProgress: MotionValue<number>;
@@ -212,9 +212,8 @@ export function HeroSection({ featuredPoll, voteProps }: HeroSectionProps) {
       <div className="pointer-events-none absolute -bottom-40 -right-40 h-[440px] w-[440px] rounded-full bg-accent-alt/20 blur-[120px]" />
 
       <nav className="relative z-40 mx-auto px-6 mb-3 flex w-full max-w-[1600px] items-center justify-between">
-        <Image
+        <ThemeLogo
           alt="Plebiq"
-          src="/logo.png"
           width={1266}
           height={435}
           className="h-9 w-auto sm:h-10"
@@ -231,11 +230,11 @@ export function HeroSection({ featuredPoll, voteProps }: HeroSectionProps) {
       <LiveVotesTicker />
 
       <motion.div
-        className="z-10 mx-auto flex h-[calc(100svh-104px)] w-full max-w-[1600px] flex-col items-center justify-start gap-6 pt-[4svh] lg:grid lg:h-[calc(100svh-116px)] lg:grid-cols-[minmax(0,0.94fr)_minmax(500px,624px)] lg:items-center lg:justify-center lg:gap-10 lg:pt-0 xl:gap-14"
+        className="z-10 mx-auto flex h-[calc(100svh-104px)] w-full max-w-[1600px] flex-col items-start justify-center gap-6 pt-[4svh] lg:grid lg:h-[calc(100svh-116px)] lg:grid-cols-[minmax(0,0.94fr)_minmax(500px,624px)] lg:items-center lg:justify-center lg:gap-10 lg:pt-0 xl:gap-14"
       >
         <motion.div
           animate={{ opacity: 1, y: 0 }}
-          className="flex min-h-0 w-full max-w-[760px] flex-col items-center justify-center text-center lg:block lg:text-left"
+          className="flex min-h-0 w-full max-w-[760px] flex-col items-start justify-center lg:block"
           initial={{ opacity: 0, y: 24 }}
           transition={{ duration: 0.6 }}
         >
@@ -251,7 +250,7 @@ export function HeroSection({ featuredPoll, voteProps }: HeroSectionProps) {
             </h1>
           </div>
 
-          <p className="mx-auto mt-5 max-w-2xl text-lg leading-8 text-hero-text-muted lg:mx-0">
+          <p className="mt-5 max-w-2xl text-lg leading-8 text-hero-text-muted lg:mx-0">
             Speak up. The world is listening and deciding.
           </p>
 
@@ -286,15 +285,15 @@ export function HeroSection({ featuredPoll, voteProps }: HeroSectionProps) {
             </AppButton>
           </div>
 
-          <div className="mt-8 inline-flex items-center gap-2 rounded-full border border-hero-button-secondary-border bg-hero-button-secondary-bg px-4 py-2 text-xs font-semibold text-hero-text-muted backdrop-blur-md lg:hidden">
+          {/* <div className="mt-8 inline-flex items-center gap-2 rounded-full border border-hero-button-secondary-border bg-hero-button-secondary-bg px-4 py-2 text-xs font-semibold text-hero-text-muted backdrop-blur-md lg:hidden">
             <span className="size-1.5 rounded-full bg-accent shadow-[0_0_14px_var(--glow-accent)]" />
             Live poll below
-          </div>
+          </div> */}
         </motion.div>
 
         <motion.div
           animate={{ opacity: 1, scale: 1, y: 0 }}
-          className="relative flex min-h-0 w-full max-w-[min(92vw,624px)] flex-1 justify-center lg:h-full lg:max-w-[624px] lg:flex-none lg:items-center lg:justify-end"
+          className="relative hidden min-h-0 w-full max-w-[min(92vw,624px)] flex-1 justify-center lg:flex lg:h-full lg:max-w-[624px] lg:flex-none lg:items-center lg:justify-end"
           initial={{ opacity: 0, scale: 0.94, y: 24 }}
           ref={previewSlotRef}
           transition={{ delay: 0.15 }}
@@ -314,7 +313,7 @@ export function HeroSection({ featuredPoll, voteProps }: HeroSectionProps) {
               style={
                 {
                   transform: `scale(${previewScale})`,
-                  transformOrigin: "top center",
+                  transformOrigin: "top right",
                 } as CSSProperties
               }
             >
@@ -322,6 +321,9 @@ export function HeroSection({ featuredPoll, voteProps }: HeroSectionProps) {
             </div>
           </div>
         </motion.div>
+
+
+
       </motion.div>
 
       <AnimatePresence>
@@ -365,4 +367,6 @@ export function HeroSection({ featuredPoll, voteProps }: HeroSectionProps) {
       </AnimatePresence>
     </section>
   );
+
+
 }

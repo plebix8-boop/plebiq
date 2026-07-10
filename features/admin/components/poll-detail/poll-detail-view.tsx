@@ -26,17 +26,17 @@ const OPTION_ACCENTS = [
 ];
 
 const STATUS_CONFIG = {
-  live:   { label: "Live",   cls: "border-emerald-500/30 bg-emerald-500/15 text-emerald-400", dot: "bg-emerald-400 shadow-[0_0_8px_var(--success-glow)]" },
-  draft:  { label: "Draft",  cls: "border-slate-500/30 bg-slate-500/15 text-slate-400",       dot: "bg-slate-400" },
-  closed: { label: "Closed", cls: "border-rose-500/30 bg-rose-500/15 text-rose-400",           dot: "bg-rose-400" },
+  live: { label: "Live", cls: "border-emerald-500/30 bg-emerald-500/15 text-emerald-400", dot: "bg-emerald-400 shadow-[0_0_8px_var(--success-glow)]" },
+  draft: { label: "Draft", cls: "border-slate-500/30 bg-slate-500/15 text-slate-400", dot: "bg-slate-400" },
+  closed: { label: "Closed", cls: "border-rose-500/30 bg-rose-500/15 text-rose-400", dot: "bg-rose-400" },
 };
 
 function fmtNum(n: number) {
   return n >= 1_000_000
     ? `${(n / 1_000_000).toFixed(1)}M`
     : n >= 1_000
-    ? `${(n / 1_000).toFixed(1)}K`
-    : String(n);
+      ? `${(n / 1_000).toFixed(1)}K`
+      : String(n);
 }
 
 function fmtDate(iso: string | null) {
@@ -58,7 +58,7 @@ function getHealth(conversionPct: number, totalVotes: number) {
   if (totalVotes === 0) return { label: "No Votes Yet", cls: "text-slate-400 bg-slate-400/10" };
   if (conversionPct >= 60) return { label: "High Engagement", cls: "text-emerald-300 bg-emerald-400/10" };
   if (conversionPct >= 35) return { label: "Good Engagement", cls: "text-sky-300 bg-sky-400/10" };
-  if (conversionPct >= 15) return { label: "Low Conversion",   cls: "text-amber-300 bg-amber-400/10" };
+  if (conversionPct >= 15) return { label: "Low Conversion", cls: "text-amber-300 bg-amber-400/10" };
   return { label: "Needs Promotion", cls: "text-rose-300 bg-rose-400/10" };
 }
 
@@ -94,7 +94,7 @@ function StatCard({
   return (
     <div className="rounded-2xl border border-white/8 bg-white/[0.04] p-5 backdrop-blur-sm">
       <p className="text-[11px] font-bold uppercase tracking-widest text-slate-500">{label}</p>
-      <p className={`mt-2 text-2xl font-black text-white`}>{value}</p>
+      <p className={`mt-2 text-2xl font-bold text-white`}>{value}</p>
       {sub && <p className={`mt-1 text-xs font-medium ${accent ?? "text-slate-500"}`}>{sub}</p>}
     </div>
   );
@@ -110,11 +110,11 @@ function ActionButton({
   loading?: boolean;
 }) {
   const variants = {
-    default:  "border-white/10 bg-white/5 text-slate-300 hover:border-white/20 hover:bg-white/10 hover:text-white",
-    danger:   "border-rose-500/25 bg-rose-500/10 text-rose-300 hover:bg-rose-500/20",
-    success:  "border-emerald-500/25 bg-emerald-500/10 text-emerald-300 hover:bg-emerald-500/20",
-    amber:    "border-amber-500/25 bg-amber-500/10 text-amber-300 hover:bg-amber-500/20",
-    violet:   "border-violet-500/25 bg-violet-500/10 text-violet-300 hover:bg-violet-500/20",
+    default: "border-white/10 bg-white/5 text-slate-300 hover:border-white/20 hover:bg-white/10 hover:text-white",
+    danger: "border-rose-500/25 bg-rose-500/10 text-rose-300 hover:bg-rose-500/20",
+    success: "border-emerald-500/25 bg-emerald-500/10 text-emerald-300 hover:bg-emerald-500/20",
+    amber: "border-amber-500/25 bg-amber-500/10 text-amber-300 hover:bg-amber-500/20",
+    violet: "border-violet-500/25 bg-violet-500/10 text-violet-300 hover:bg-violet-500/20",
   };
   return (
     <button
@@ -240,7 +240,7 @@ export function PollDetailView({ poll }: { poll: AdminPoll }) {
 
           {/* Title overlay */}
           <div className="absolute bottom-0 left-0 right-0 p-5 sm:p-6">
-            <h1 className="text-xl font-black leading-tight text-white sm:text-2xl lg:text-3xl">
+            <h1 className="text-xl font-bold leading-tight text-white sm:text-2xl lg:text-3xl">
               {localPoll.title}
             </h1>
             {localPoll.description && (
@@ -311,7 +311,7 @@ export function PollDetailView({ poll }: { poll: AdminPoll }) {
                       <div className="mb-2 flex items-center justify-between gap-3">
                         <div className="flex min-w-0 items-center gap-2">
                           {isLeader && (
-                            <span className="shrink-0 rounded-full bg-amber-400/15 px-2 py-0.5 text-[10px] font-black uppercase tracking-wider text-amber-300">
+                            <span className="shrink-0 rounded-full bg-amber-400/15 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider text-amber-300">
                               Leading
                             </span>
                           )}
@@ -450,10 +450,10 @@ export function PollDetailView({ poll }: { poll: AdminPoll }) {
             </span>
             <p className="mt-3 text-xs leading-relaxed text-slate-500">
               {conversionPct >= 60 ? "Strong engagement — more users who view this poll are voting." :
-               conversionPct >= 35 ? "Good performance. Consider featuring to boost reach." :
-               conversionPct >= 15 ? "Conversion is below average. Try pinning or featuring." :
-               totalVotes === 0 ? "No votes yet. Make sure the poll is live and visible." :
-               "Low conversion. Promote this poll to drive more votes."}
+                conversionPct >= 35 ? "Good performance. Consider featuring to boost reach." :
+                  conversionPct >= 15 ? "Conversion is below average. Try pinning or featuring." :
+                    totalVotes === 0 ? "No votes yet. Make sure the poll is live and visible." :
+                      "Low conversion. Promote this poll to drive more votes."}
             </p>
           </div>
 
@@ -462,12 +462,12 @@ export function PollDetailView({ poll }: { poll: AdminPoll }) {
             <h2 className="mb-4 text-xs font-bold uppercase tracking-widest text-slate-500">Details</h2>
             <dl className="space-y-3 text-sm">
               {[
-                { label: "Created",   value: fmtDatetime(localPoll.created_at) },
-                { label: "Updated",   value: fmtDatetime(localPoll.updated_at) },
-                { label: "Expires",   value: fmtDate(localPoll.expires_at) },
-                { label: "Closed",    value: fmtDate(localPoll.closed_at) },
+                { label: "Created", value: fmtDatetime(localPoll.created_at) },
+                { label: "Updated", value: fmtDatetime(localPoll.updated_at) },
+                { label: "Expires", value: fmtDate(localPoll.expires_at) },
+                { label: "Closed", value: fmtDate(localPoll.closed_at) },
                 { label: "Sort Order", value: localPoll.sort_order != null ? `#${localPoll.sort_order}` : "—" },
-                { label: "Poll ID",   value: localPoll.id.slice(0, 8) + "…" },
+                { label: "Poll ID", value: localPoll.id.slice(0, 8) + "…" },
               ].map(({ label, value }) => (
                 <div key={label} className="flex items-start justify-between gap-3">
                   <dt className="shrink-0 text-slate-500">{label}</dt>

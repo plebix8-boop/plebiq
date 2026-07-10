@@ -65,8 +65,8 @@ export function PollPreview({
     if (freshOptionWidths) {
       setDisplayedWidths(freshOptionWidths);
     }
-  // Only re-run when the parent provides the resolved value for the first time
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // Only re-run when the parent provides the resolved value for the first time
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [existingVoteOptionId]);
 
   // ── Image brightness → overlay opacity ────────────────────────────────────
@@ -161,9 +161,8 @@ export function PollPreview({
 
         {/* Banner image */}
         <div
-          className={`relative overflow-hidden ${
-            isCompact ? "h-[132px] lg:h-[148px]" : "h-[170px] lg:h-[218px]"
-          }`}
+          className={`relative overflow-hidden ${isCompact ? "h-[132px] lg:h-[148px]" : "h-[170px] lg:h-[218px]"
+            }`}
         >
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
@@ -233,9 +232,8 @@ export function PollPreview({
 
         {/* Body */}
         <div
-          className={`relative ${
-            isCompact ? "space-y-3 p-4" : "space-y-5 p-5 lg:p-6"
-          }`}
+          className={`relative ${isCompact ? "space-y-3 p-4" : "space-y-5 p-5 lg:p-6"
+            }`}
         >
           {/* Question + description */}
           <div>
@@ -243,18 +241,16 @@ export function PollPreview({
               {poll.tag}
             </p>
             <h2
-              className={`font-semibold leading-[1.3] text-poll-card-text ${
-                isCompact ? "text-lg" : "text-xl lg:text-2xl"
-              }`}
+              className={`font-semibold leading-[1.3] text-poll-card-text ${isCompact ? "text-lg" : "text-xl lg:text-2xl"
+                }`}
             >
               {poll.question}
             </h2>
             <p
-              className={`text-poll-card-muted ${
-                isCompact
-                  ? "mt-2 line-clamp-2 text-xs leading-5"
-                  : "mt-3 text-sm leading-6"
-              }`}
+              className={`text-poll-card-muted ${isCompact
+                ? "mt-2 line-clamp-2 text-xs leading-5"
+                : "mt-3 text-sm leading-6"
+                }`}
             >
               {poll.description}
             </p>
@@ -264,7 +260,7 @@ export function PollPreview({
           <div className={isCompact ? "sm:block" : "space-y-2"}>
             {hasResults ? (
               <button
-                className="inline-flex items-center gap-2 rounded-full border border-poll-option-border bg-poll-option-bg px-3 py-1.5 text-xs font-black text-poll-option-text transition hover:border-poll-option-border-hover hover:bg-poll-option-bg-hover"
+                className="inline-flex items-center gap-2 rounded-full border border-poll-option-border bg-poll-option-bg px-3 py-1.5 text-xs font-bold text-poll-option-text transition hover:border-poll-option-border-hover hover:bg-poll-option-bg-hover"
                 onClick={() => setShowShareModal(true)}
                 type="button"
               >
@@ -306,127 +302,117 @@ export function PollPreview({
           <div className="space-y-2">
             {isLoadingVoteState
               ? poll.options.map((_, index) => (
-                  <div
-                    className={`relative w-full overflow-hidden rounded-2xl border border-poll-option-border bg-poll-option-bg ${
-                      isCompact ? "p-3" : "p-4"
+                <div
+                  className={`relative w-full overflow-hidden rounded-2xl border border-poll-option-border bg-poll-option-bg ${isCompact ? "p-3" : "p-4"
                     }`}
-                    key={index}
-                  >
-                    {/* Sliding shimmer */}
+                  key={index}
+                >
+                  {/* Sliding shimmer */}
+                  <div
+                    className="animate-shimmer pointer-events-none absolute inset-0"
+                    style={{
+                      background:
+                        "linear-gradient(90deg, transparent 0%, var(--fg-7) 50%, transparent 100%)",
+                      backgroundSize: "200% 100%",
+                    }}
+                  />
+                  <div className="flex items-start gap-3">
                     <div
-                      className="animate-shimmer pointer-events-none absolute inset-0"
-                      style={{
-                        background:
-                          "linear-gradient(90deg, transparent 0%, var(--fg-7) 50%, transparent 100%)",
-                        backgroundSize: "200% 100%",
-                      }}
-                    />
-                    <div className="flex items-start gap-3">
-                      <div
-                        className={`mt-0.5 shrink-0 rounded-full bg-poll-radio-bg ${
-                          isCompact ? "size-6" : "size-7"
+                      className={`mt-0.5 shrink-0 rounded-full bg-poll-radio-bg ${isCompact ? "size-6" : "size-7"
                         }`}
-                      />
-                      <div className="min-w-0 flex-1">
-                        <div className="h-3.5 w-2/5 rounded-full bg-poll-progress-track" />
-                        {(showCompactOptionDescriptions || !isCompact) && (
-                          <div className="mt-1.5 h-3 w-4/5 rounded-full bg-poll-progress-track" />
-                        )}
-                        <div
-                          className={`rounded-full bg-poll-progress-track ${
-                            isCompact ? "mt-2 h-1" : "mt-3 h-1.5"
+                    />
+                    <div className="min-w-0 flex-1">
+                      <div className="h-3.5 w-2/5 rounded-full bg-poll-progress-track" />
+                      {(showCompactOptionDescriptions || !isCompact) && (
+                        <div className="mt-1.5 h-3 w-4/5 rounded-full bg-poll-progress-track" />
+                      )}
+                      <div
+                        className={`rounded-full bg-poll-progress-track ${isCompact ? "mt-2 h-1" : "mt-3 h-1.5"
                           }`}
-                        />
-                      </div>
+                      />
                     </div>
                   </div>
-                ))
+                </div>
+              ))
               : poll.options.map((option, index) => {
-                  const isSelected = selected === index;
-                  const isSubmittingThis = isPending && isSelected;
+                const isSelected = selected === index;
+                const isSubmittingThis = isPending && isSelected;
 
-                  return (
-                    <motion.button
-                      className={`group relative w-full overflow-hidden rounded-2xl border text-left shadow-[inset_0_1px_0_var(--fg-6)] transition hover:border-poll-option-border-hover hover:bg-poll-option-bg-hover hover:shadow-[0_10px_26px_var(--shadow-soft),inset_0_1px_0_var(--fg-8)] ${
-                        isCompact ? "p-3" : "p-4"
-                      } ${
-                        isSelected
-                          ? "border-poll-option-border-selected bg-poll-option-bg-selected shadow-[0_14px_34px_var(--shadow-soft),0_0_0_1px_var(--fg-8),inset_0_1px_0_var(--fg-12)]"
-                          : "border-poll-option-border bg-poll-option-bg"
+                return (
+                  <motion.button
+                    className={`group relative w-full overflow-hidden rounded-2xl border text-left shadow-[inset_0_1px_0_var(--fg-6)] transition hover:border-poll-option-border-hover hover:bg-poll-option-bg-hover hover:shadow-[0_10px_26px_var(--shadow-soft),inset_0_1px_0_var(--fg-8)] ${isCompact ? "p-3" : "p-4"
+                      } ${isSelected
+                        ? "border-poll-option-border-selected bg-poll-option-bg-selected shadow-[0_14px_34px_var(--shadow-soft),0_0_0_1px_var(--fg-8),inset_0_1px_0_var(--fg-12)]"
+                        : "border-poll-option-border bg-poll-option-bg"
                       } ${isPending ? "cursor-wait" : ""}`}
-                      disabled={isPending}
-                      key={option.label}
-                      onClick={() => handlePick(index)}
-                      type="button"
-                      whileHover={isPending ? {} : { y: -2 }}
-                      whileTap={isPending ? {} : { scale: 0.98 }}
-                    >
+                    disabled={isPending}
+                    key={option.label}
+                    onClick={() => handlePick(index)}
+                    type="button"
+                    whileHover={isPending ? {} : { y: -2 }}
+                    whileTap={isPending ? {} : { scale: 0.98 }}
+                  >
+                    <span
+                      aria-hidden="true"
+                      className={`absolute inset-x-4 bottom-0 h-px bg-gradient-to-r ${option.accent} opacity-35`}
+                    />
+                    <div className="flex items-start gap-3">
                       <span
-                        aria-hidden="true"
-                        className={`absolute inset-x-4 bottom-0 h-px bg-gradient-to-r ${option.accent} opacity-35`}
-                      />
-                      <div className="flex items-start gap-3">
-                        <span
-                          className={`mt-0.5 grid shrink-0 place-items-center rounded-full border bg-poll-radio-bg transition group-hover:border-poll-option-border-hover ${
-                            isCompact ? "size-6" : "size-7"
+                        className={`mt-0.5 grid shrink-0 place-items-center rounded-full border bg-poll-radio-bg transition group-hover:border-poll-option-border-hover ${isCompact ? "size-6" : "size-7"
                           } ${isSelected ? "border-poll-option-border-selected" : "border-poll-radio-border"}`}
-                        >
-                          <span
-                            className={`rounded-full bg-gradient-to-br ${option.accent} shadow-[0_0_14px_var(--fg-14)] transition ${
-                              isCompact ? "size-2.5" : "size-3"
+                      >
+                        <span
+                          className={`rounded-full bg-gradient-to-br ${option.accent} shadow-[0_0_14px_var(--fg-14)] transition ${isCompact ? "size-2.5" : "size-3"
                             } ${isSelected ? "scale-110 opacity-100" : "scale-75 opacity-0"}`}
-                          />
-                        </span>
+                        />
+                      </span>
 
-                        <span className="min-w-0 flex-1">
-                          <span className="flex w-full items-start justify-between gap-4">
-                            <span className="block text-sm font-semibold text-poll-option-text">
-                              {option.label}
-                            </span>
-                            {(selected !== null || variant === "management") && (
-                              <span
-                                className={`shrink-0 tabular-nums text-sm font-bold leading-none text-poll-option-text ${
-                                  isSubmittingThis ? "animate-pulse" : ""
+                      <span className="min-w-0 flex-1">
+                        <span className="flex w-full items-start justify-between gap-4">
+                          <span className="block text-sm font-semibold text-poll-option-text">
+                            {option.label}
+                          </span>
+                          {(selected !== null || variant === "management") && (
+                            <span
+                              className={`shrink-0 tabular-nums text-sm font-bold leading-none text-poll-option-text ${isSubmittingThis ? "animate-pulse" : ""
                                 }`}
-                              >
-                                {displayedWidths[index]}
-                              </span>
-                            )}
-                          </span>
-
-                          <span
-                            className={`mt-1 text-xs leading-5 text-poll-option-muted ${
-                              isCompact && !showCompactOptionDescriptions
-                                ? "hidden"
-                                : "block"
-                            }`}
-                          >
-                            {option.description}
-                          </span>
-
-                          <span
-                            className={`block overflow-hidden rounded-full bg-poll-progress-track ${
-                              isCompact ? "mt-2 h-1" : "mt-3 h-1.5"
-                            }`}
-                          >
-                            {selected === null && variant !== "management" ? (
-                              <motion.span
-                                animate={{ x: ["-120%", "300%"] }}
-                                className={`block h-full w-1/3 bg-gradient-to-r ${option.accent} opacity-45`}
-                                transition={{ duration: 2, repeat: Infinity }}
-                              />
-                            ) : (
-                              <span
-                                className={`block h-full rounded-full bg-gradient-to-r ${option.accent} opacity-80 transition-[width] duration-500 ease-out`}
-                                style={{ width: displayedWidths[index] }}
-                              />
-                            )}
-                          </span>
+                            >
+                              {displayedWidths[index]}
+                            </span>
+                          )}
                         </span>
-                      </div>
-                    </motion.button>
-                  );
-                })}
+
+                        <span
+                          className={`mt-1 text-xs leading-5 text-poll-option-muted ${isCompact && !showCompactOptionDescriptions
+                            ? "hidden"
+                            : "block"
+                            }`}
+                        >
+                          {option.description}
+                        </span>
+
+                        <span
+                          className={`block overflow-hidden rounded-full bg-poll-progress-track ${isCompact ? "mt-2 h-1" : "mt-3 h-1.5"
+                            }`}
+                        >
+                          {selected === null && variant !== "management" ? (
+                            <motion.span
+                              animate={{ x: ["-120%", "300%"] }}
+                              className={`block h-full w-1/3 bg-gradient-to-r ${option.accent} opacity-45`}
+                              transition={{ duration: 2, repeat: Infinity }}
+                            />
+                          ) : (
+                            <span
+                              className={`block h-full rounded-full bg-gradient-to-r ${option.accent} opacity-80 transition-[width] duration-500 ease-out`}
+                              style={{ width: displayedWidths[index] }}
+                            />
+                          )}
+                        </span>
+                      </span>
+                    </div>
+                  </motion.button>
+                );
+              })}
           </div>
 
           {/* Vote error */}
@@ -461,11 +447,10 @@ export function PollPreview({
             >
               <motion.div
                 animate={{ opacity: 1, scale: 1, y: 0 }}
-                className={`relative w-[92%] overflow-hidden border border-poll-option-border bg-poll-auth-modal-bg text-left text-poll-auth-modal-text shadow-[0_34px_110px_var(--shadow-soft),0_0_76px_var(--glow-accent)] backdrop-blur-xl ${
-                  isCompact
-                    ? "max-w-sm rounded-2xl p-4"
-                    : "max-w-lg rounded-[1.6rem] p-5 sm:w-[80%] sm:rounded-[2rem] sm:p-7"
-                }`}
+                className={`relative w-[92%] overflow-hidden border border-poll-option-border bg-poll-auth-modal-bg text-left text-poll-auth-modal-text shadow-[0_34px_110px_var(--shadow-soft),0_0_76px_var(--glow-accent)] backdrop-blur-xl ${isCompact
+                  ? "max-w-sm rounded-2xl p-4"
+                  : "max-w-lg rounded-[1.6rem] p-5 sm:w-[80%] sm:rounded-[2rem] sm:p-7"
+                  }`}
                 exit={{ opacity: 0, scale: 0.96, y: 10 }}
                 initial={{ opacity: 0, scale: 0.92, y: 20 }}
                 transition={{ type: "spring", stiffness: 260, damping: 22 }}
@@ -477,26 +462,23 @@ export function PollPreview({
                 <div className="relative flex items-start justify-between gap-3">
                   <div>
                     <h3
-                      className={`font-black leading-tight text-poll-auth-modal-text ${
-                        isCompact ? "text-xl" : "text-2xl sm:text-4xl"
-                      }`}
+                      className={`font-bold leading-tight text-poll-auth-modal-text ${isCompact ? "text-xl" : "text-2xl sm:text-4xl"
+                        }`}
                     >
                       Sign in to reveal results
                     </h3>
                     <p
-                      className={`max-w-sm text-poll-auth-modal-muted ${
-                        isCompact
-                          ? "mt-1.5 text-xs leading-5"
-                          : "mt-2 text-sm leading-6 sm:mt-3 sm:text-base sm:leading-7"
-                      }`}
+                      className={`max-w-sm text-poll-auth-modal-muted ${isCompact
+                        ? "mt-1.5 text-xs leading-5"
+                        : "mt-2 text-sm leading-6 sm:mt-3 sm:text-base sm:leading-7"
+                        }`}
                     >
                       Cast your vote first, then see how people answered.
                     </p>
                   </div>
                   <div
-                    className={`grid shrink-0 place-items-center rounded-2xl bg-modal-cta-primary-bg text-modal-cta-primary-text shadow-[0_16px_42px_var(--fg-16),0_0_34px_var(--accent-alt-glow-soft)] ${
-                      isCompact ? "size-9" : "size-10 sm:size-12"
-                    }`}
+                    className={`grid shrink-0 place-items-center rounded-2xl bg-modal-cta-primary-bg text-modal-cta-primary-text shadow-[0_16px_42px_var(--fg-16),0_0_34px_var(--accent-alt-glow-soft)] ${isCompact ? "size-9" : "size-10 sm:size-12"
+                      }`}
                   >
                     {/* eslint-disable-next-line @next/next/no-img-element */}
                     <img
@@ -509,9 +491,8 @@ export function PollPreview({
 
                 {/* Blurred preview of results */}
                 <div
-                  className={`relative space-y-2 ${
-                    isCompact ? "mt-3" : "mt-5 sm:mt-7 sm:space-y-3.5"
-                  }`}
+                  className={`relative space-y-2 ${isCompact ? "mt-3" : "mt-5 sm:mt-7 sm:space-y-3.5"
+                    }`}
                 >
                   {poll.options.map((option) => (
                     <div className="opacity-80 blur-[1.5px]" key={option.label}>
@@ -530,12 +511,11 @@ export function PollPreview({
                 </div>
 
                 <div
-                  className={`relative grid gap-2 ${
-                    isCompact ? "mt-3" : "mt-5 gap-2.5 sm:mt-7"
-                  }`}
+                  className={`relative grid gap-2 ${isCompact ? "mt-3" : "mt-5 gap-2.5 sm:mt-7"
+                    }`}
                 >
                   <AppButton
-                    className="font-black"
+                    className="font-bold"
                     onClick={goToSignUp}
                     size={isCompact ? "sm" : "lg"}
                     type="button"

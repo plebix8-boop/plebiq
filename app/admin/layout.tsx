@@ -1,10 +1,10 @@
 import type { ReactNode } from "react";
-import Image from "next/image";
 import { redirect } from "next/navigation";
 import { createClient } from "@/utils/supabase/server";
 import { SidebarProfileCard } from "@/features/admin/components/sidebar-profile-card";
 import { SidebarNav } from "@/features/admin/components/sidebar-nav";
 import { AdminMobileNav } from "@/features/admin/components/admin-mobile-nav";
+import { ThemeLogo } from "@/components/theme-logo";
 
 export default async function AdminLayout({
   children,
@@ -39,9 +39,8 @@ export default async function AdminLayout({
       {/* Sidebar — desktop only */}
       <aside className="relative z-10 hidden h-screen w-[260px] shrink-0 flex-col overflow-y-auto border-r border-admin-divider bg-admin-sidebar-bg md:flex">
         <div className="border-b border-admin-divider px-5 py-4">
-          <Image
+          <ThemeLogo
             alt="Plebiq"
-            src="/logo.png"
             width={1266}
             height={435}
             className="h-9 w-auto"

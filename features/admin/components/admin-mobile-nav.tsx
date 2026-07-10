@@ -1,11 +1,11 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { ThemeSwitcher } from "@/components/theme-switcher";
 import { ClientSignOutButton } from "@/features/auth/components/client-sign-out-button";
+import { ThemeLogo } from "@/components/theme-logo";
 
 const navItems = [
   {
@@ -61,6 +61,17 @@ const navItems = [
       </svg>
     ),
   },
+  {
+    label: "Landing Page",
+    href: "/",
+    icon: (
+      <svg className="size-4" fill="none" stroke="currentColor" strokeWidth="1.8" viewBox="0 0 24 24">
+        <path strokeLinecap="round" strokeLinejoin="round" d="M3 11.5 12 4l9 7.5" />
+        <path strokeLinecap="round" strokeLinejoin="round" d="M5.5 10.5V20h13v-9.5" />
+        <path strokeLinecap="round" strokeLinejoin="round" d="M9.5 20v-5h5v5" />
+      </svg>
+    ),
+  },
 ];
 
 type AdminMobileNavProps = {
@@ -96,9 +107,8 @@ export function AdminMobileNav({ email, name, role }: AdminMobileNavProps) {
       {/* Top navbar */}
       <header className="flex shrink-0 items-center justify-between border-b border-admin-divider bg-admin-sidebar-bg/95 px-4 py-3 backdrop-blur-md md:hidden">
         <div className="flex items-center gap-2">
-          <Image
+          <ThemeLogo
             alt="Plebiq"
-            src="/logo.png"
             width={1266}
             height={435}
             className="h-7 w-auto"
@@ -135,9 +145,8 @@ export function AdminMobileNav({ email, name, role }: AdminMobileNavProps) {
         {/* Drawer header */}
         <div className="flex shrink-0 items-center justify-between border-b border-admin-divider px-5 py-4">
           <div>
-            <Image
+            <ThemeLogo
               alt="Plebiq"
-              src="/logo.png"
               width={1266}
               height={435}
               className="h-8 w-auto"

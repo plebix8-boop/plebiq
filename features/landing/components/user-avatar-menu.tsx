@@ -133,7 +133,7 @@ export function UserAvatarMenu() {
               )}
 
               <button
-                className="flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-sm text-landing-profile-menu-item-text transition duration-150 hover:bg-landing-profile-danger-bg-hover hover:text-landing-profile-danger-text disabled:cursor-not-allowed disabled:opacity-60"
+                className="flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-sm text-landing-profile-menu-item-text transition duration-150 hover:bg-landing-profile-menu-item-bg-hover hover:text-landing-profile-menu-item-text-hover disabled:cursor-not-allowed disabled:opacity-60"
                 disabled={isSigningOut}
                 onClick={handleSignOut}
                 type="button"

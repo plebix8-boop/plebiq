@@ -1,7 +1,7 @@
 import { Suspense } from "react";
-import Image from "next/image";
 import { unstable_cache } from "next/cache";
 import { AppButtonLink } from "@/components/ui/button";
+import { ThemeLogo } from "@/components/theme-logo";
 import { createAdminClient } from "@/utils/supabase/admin";
 import { LandingPage } from "@/features/landing/landing-page";
 import type { FeaturedPoll } from "@/features/landing/data";
@@ -103,9 +103,8 @@ function EmptyLandingState() {
 
       <div className="relative z-10 flex min-h-full flex-col">
         <header className="flex items-center justify-between">
-          <Image
+          <ThemeLogo
             alt="Plebiq"
-            src="/logo.png"
             width={1266}
             height={435}
             className="h-10 w-auto"
@@ -123,7 +122,7 @@ function EmptyLandingState() {
           <p className="mb-4 rounded-full border border-border bg-surface-soft px-4 py-2 text-xs font-semibold uppercase tracking-[0.2em] text-muted">
             Quiet for the moment
           </p>
-          <h1 className="text-4xl font-black leading-tight sm:text-6xl">
+          <h1 className="text-4xl font-bold leading-tight sm:text-6xl">
             New polls are coming soon.
           </h1>
           <p className="mt-5 max-w-xl text-base leading-7 text-muted sm:text-lg">
