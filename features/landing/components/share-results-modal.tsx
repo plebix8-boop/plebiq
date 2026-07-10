@@ -360,6 +360,7 @@ export function ShareResultsModal({
   percentages,
 }: ShareResultsModalProps) {
   const { effectiveTheme } = useTheme();
+  const [isMounted, setIsMounted] = useState(false);
   const [status, setStatus] = useState<string | null>(null);
   const [logoDataUrl, setLogoDataUrl] = useState<string | null>(null);
   const shareUrl = useMemo(() => buildShareUrl(poll.id), [poll.id]);
@@ -369,6 +370,10 @@ export function ShareResultsModal({
     [poll, percentages, shareUrl, effectiveTheme, logoDataUrl],
   );
   const previewUrl = useMemo(() => svgToPreviewUrl(shareImage.svg), [shareImage.svg]);
+
+  useEffect(() => {
+    setIsMounted(true);
+  }, []);
 
   useEffect(() => {
     let alive = true;
@@ -520,21 +525,21 @@ export function ShareResultsModal({
     },
   ];
 
-  if (typeof document === "undefined") return null;
+  if (!isMounted || typeof document === "undefined") return null;
 
   return createPortal(
     <AnimatePresence>
       {isOpen && (
         <motion.div
           animate={{ opacity: 1 }}
-          className="fixed inset-0 z-[80] flex items-center justify-center overflow-y-auto bg-black/50 p-4 backdrop-blur-xl"
+          className="fixed inset-0 z-[80] flex items-start justify-center overflow-y-auto bg-black/50 p-3 py-4 backdrop-blur-xl sm:items-center sm:p-4"
           exit={{ opacity: 0 }}
           initial={{ opacity: 0 }}
           onClick={onClose}
         >
           <motion.div
             animate={{ opacity: 1, scale: 1, y: 0 }}
-            className="relative grid max-h-[min(900px,92vh)] w-full max-w-5xl overflow-y-auto overflow-x-hidden rounded-[1.5rem] border border-poll-option-border bg-poll-auth-modal-bg text-poll-auth-modal-text shadow-[0_30px_90px_var(--shadow-soft)] md:grid-cols-[0.95fr_1.05fr]"
+            className="relative grid max-h-[calc(100dvh-2rem)] w-full max-w-5xl overflow-y-auto overflow-x-hidden rounded-[1.25rem] border border-poll-option-border bg-poll-auth-modal-bg text-poll-auth-modal-text shadow-[0_30px_90px_var(--shadow-soft)] sm:max-h-[min(900px,92vh)] sm:rounded-[1.5rem] md:grid-cols-[0.95fr_1.05fr]"
             exit={{ opacity: 0, scale: 0.96, y: 12 }}
             initial={{ opacity: 0, scale: 0.94, y: 20 }}
             onClick={(event) => event.stopPropagation()}
@@ -549,7 +554,7 @@ export function ShareResultsModal({
               <LuX aria-hidden="true" className="size-4" />
             </button>
 
-            <div className="min-h-0 pt-5 pb-12 sm:p-6 sm:pb-14">
+            <div className="min-h-0 p-4 pb-10 sm:p-6 sm:pb-14">
               <div className="mb-4">
                 <div>
                   <p className="text-xs font-bold uppercase tracking-[0.18em] text-poll-card-subtle">
@@ -663,12 +668,12 @@ export function ShareResultsModal({
 
             </div>
 
-            <div className="min-h-0 bg-poll-option-bg p-4 sm:p-6">
-              <div className="mx-auto max-h-full max-w-sm overflow-hidden rounded-[1.3rem] border border-poll-option-border bg-poll-card-bg shadow-[0_18px_50px_var(--shadow-soft)]">
+            <div className="min-h-0 bg-poll-option-bg p-3 sm:p-6">
+              <div className="mx-auto max-w-sm overflow-hidden rounded-[1.1rem] border border-poll-option-border bg-poll-card-bg shadow-[0_18px_50px_var(--shadow-soft)] sm:rounded-[1.3rem]">
                 {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img
                   alt="Generated Plebiq poll result share image preview"
-                  className="h-full w-full object-contain"
+                  className="max-h-[42svh] w-full object-contain md:max-h-full"
                   src={previewUrl}
                 />
               </div>

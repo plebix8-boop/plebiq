@@ -13,6 +13,8 @@ import { AppButton } from "@/components/ui/button";
 type PollPreviewProps = {
   poll: FeaturedPoll;
   variant?: "hero" | "feed" | "management";
+  /** Temporary preview control for validating the share modal layout. */
+  defaultShareOpen?: boolean;
   // Provided by LandingPage after the single batch fetch.
   // undefined = still resolving | null = no prior vote | string = optionId already voted
   existingVoteOptionId?: VoteState;
@@ -23,6 +25,7 @@ type PollPreviewProps = {
 export function PollPreview({
   poll,
   variant = "hero",
+  defaultShareOpen = false,
   existingVoteOptionId,
   freshOptionWidths,
 }: PollPreviewProps) {
@@ -39,7 +42,7 @@ export function PollPreview({
   );
   const [voteError, setVoteError] = useState<string | null>(null);
   const [showAuthModal, setShowAuthModal] = useState(false);
-  const [showShareModal, setShowShareModal] = useState(false);
+  const [showShareModal, setShowShareModal] = useState(defaultShareOpen);
   const [overlayStrength, setOverlayStrength] = useState(0.42);
 
   const imageRef = useRef<HTMLImageElement>(null);
