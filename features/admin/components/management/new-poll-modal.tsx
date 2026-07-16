@@ -156,7 +156,7 @@ export function NewPollModal({
 
   function handleSubmit() {
     const invalidOptionIds = options
-      .filter((option) => !option.label.trim() || !option.description.trim())
+      .filter((option) => !option.label.trim())
       .map((option) => option.id);
     const nextValidationErrors = {
       category: !categoryId,
@@ -440,7 +440,7 @@ export function NewPollModal({
                     <div className="space-y-2.5">
                       <AppInput
                         type="text"
-                        placeholder="Option label"
+                        placeholder="Option title"
                         value={option.label}
                         onChange={(event) =>
                           {
@@ -456,7 +456,7 @@ export function NewPollModal({
                       />
                       <AppInput
                         type="text"
-                        placeholder="Option description"
+                        placeholder="Option description (optional)"
                         value={option.description}
                         onChange={(event) =>
                           {
@@ -465,10 +465,6 @@ export function NewPollModal({
                               "description",
                               event.target.value,
                             );
-                            setValidationErrors((current) => ({
-                              ...current,
-                              optionIds: current.optionIds.filter((id) => id !== option.id),
-                            }));
                           }
                         }
                         tone="dark"

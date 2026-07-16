@@ -478,12 +478,10 @@ export async function createPoll(
       return { error: "Add at least two options for the poll." };
     }
 
-    const invalidOption = options.find(
-      (option) => !option.label || !option.description,
-    );
+    const invalidOption = options.find((option) => !option.label);
 
     if (invalidOption) {
-      return { error: "Each option needs both a label and description." };
+      return { error: "Each option needs a title." };
     }
 
     const closedAt = status === "closed" ? new Date().toISOString() : null;
@@ -602,12 +600,10 @@ export async function updatePoll(
       return { error: "Each poll needs at least two options." };
     }
 
-    const invalidOption = options.find(
-      (option) => !option.label || !option.description,
-    );
+    const invalidOption = options.find((option) => !option.label);
 
     if (invalidOption) {
-      return { error: "Every option needs both a label and description." };
+      return { error: "Every option needs a title." };
     }
 
     const closedAt = status === "closed" ? new Date().toISOString() : null;

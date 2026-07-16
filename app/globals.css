@@ -6,6 +6,7 @@
   --palette-navy-900: #0e304c;
   --palette-blue-600: #2563eb;
   --palette-sky-500: #2da3ff;
+  --palette-red-500: #ef4444;
   --palette-ice-50: #f4f8ff;
 
   --plebia-navy: var(--palette-navy-900);
@@ -39,8 +40,8 @@
   --success-soft: color-mix(in oklch, var(--palette-sky-500) 13%, var(--palette-ice-50));
   --warning: var(--palette-blue-600);
   --warning-soft: color-mix(in oklch, var(--palette-blue-600) 10%, var(--palette-ice-50));
-  --danger: var(--palette-navy-900);
-  --danger-soft: color-mix(in oklch, var(--palette-navy-900) 10%, var(--palette-ice-50));
+  --danger: var(--palette-red-500);
+  --danger-soft: color-mix(in oklch, var(--palette-red-500) 12%, var(--palette-ice-50));
   --info: var(--palette-blue-600);
   --info-soft: color-mix(in oklch, var(--palette-blue-600) 12%, var(--palette-ice-50));
 
@@ -198,7 +199,7 @@
   --admin-button-secondary-text: var(--button-secondary-text);
   --admin-button-disabled-bg: color-mix(in oklch, var(--palette-navy-900) 5%, var(--palette-ice-50));
   --admin-button-disabled-text: color-mix(in oklch, var(--palette-navy-900) 38%, var(--palette-ice-50));
-  --admin-danger-text: color-mix(in oklch, var(--palette-navy-900) 80%, var(--palette-sky-500));
+  --admin-danger-text: color-mix(in oklch, var(--palette-red-500) 88%, var(--palette-navy-900));
   --admin-success-text: color-mix(in oklch, var(--palette-blue-600) 80%, var(--palette-navy-900));
   --admin-success-label-text: color-mix(in oklch, var(--palette-navy-900) 58%, var(--palette-ice-50));
   --admin-badge-priority-bg: color-mix(in oklch, var(--palette-blue-600) 13%, var(--palette-ice-50));
@@ -287,8 +288,8 @@
     --success-soft: color-mix(in oklch, var(--palette-sky-500) 16%, transparent);
     --warning: var(--palette-blue-600);
     --warning-soft: color-mix(in oklch, var(--palette-blue-600) 16%, transparent);
-    --danger: var(--palette-sky-500);
-    --danger-soft: color-mix(in oklch, var(--palette-sky-500) 14%, transparent);
+    --danger: var(--palette-red-500);
+    --danger-soft: color-mix(in oklch, var(--palette-red-500) 14%, transparent);
     --info: var(--palette-blue-600);
     --info-soft: color-mix(in oklch, var(--palette-blue-600) 16%, transparent);
 
@@ -431,7 +432,7 @@
     --admin-button-secondary-text: color-mix(in oklch, var(--palette-ice-50) 80%, transparent);
     --admin-button-disabled-bg: color-mix(in oklch, var(--palette-ice-50) 4%, transparent);
     --admin-button-disabled-text: color-mix(in oklch, var(--palette-ice-50) 42%, transparent);
-    --admin-danger-text: var(--palette-sky-500);
+    --admin-danger-text: color-mix(in oklch, var(--palette-red-500) 88%, var(--palette-ice-50));
     --admin-success-text: var(--palette-sky-500);
     --admin-success-label-text: color-mix(in oklch, var(--palette-ice-50) 62%, transparent);
     --admin-badge-priority-bg: color-mix(in oklch, var(--palette-blue-600) 16%, transparent);
@@ -487,8 +488,8 @@
   --success-soft: color-mix(in oklch, var(--palette-sky-500) 16%, transparent);
   --warning: var(--palette-blue-600);
   --warning-soft: color-mix(in oklch, var(--palette-blue-600) 16%, transparent);
-  --danger: var(--palette-sky-500);
-  --danger-soft: color-mix(in oklch, var(--palette-sky-500) 14%, transparent);
+  --danger: var(--palette-red-500);
+  --danger-soft: color-mix(in oklch, var(--palette-red-500) 14%, transparent);
   --info: var(--palette-blue-600);
   --info-soft: color-mix(in oklch, var(--palette-blue-600) 16%, transparent);
 
@@ -631,7 +632,7 @@
   --admin-button-secondary-text: color-mix(in oklch, var(--palette-ice-50) 80%, transparent);
   --admin-button-disabled-bg: color-mix(in oklch, var(--palette-ice-50) 4%, transparent);
   --admin-button-disabled-text: color-mix(in oklch, var(--palette-ice-50) 42%, transparent);
-  --admin-danger-text: var(--palette-sky-500);
+  --admin-danger-text: color-mix(in oklch, var(--palette-red-500) 88%, var(--palette-ice-50));
   --admin-success-text: var(--palette-sky-500);
   --admin-success-label-text: color-mix(in oklch, var(--palette-ice-50) 62%, transparent);
   --admin-badge-priority-bg: color-mix(in oklch, var(--palette-blue-600) 16%, transparent);
