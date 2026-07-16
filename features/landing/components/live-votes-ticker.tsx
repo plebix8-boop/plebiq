@@ -15,37 +15,6 @@ export function LiveVotesTicker() {
   useEffect(() => {
     const removeTimers: number[] = [];
 
-    const playTick = () => {
-      try {
-        const AudioContextClass =
-          window.AudioContext ||
-          (window as Window & { webkitAudioContext?: typeof AudioContext })
-            .webkitAudioContext;
-        if (!AudioContextClass) {
-          return;
-        }
-
-        const context = new AudioContextClass();
-        const oscillator = context.createOscillator();
-        const gain = context.createGain();
-
-        oscillator.type = "triangle";
-        oscillator.frequency.value = 1000;
-        gain.gain.value = 0.015;
-
-        oscillator.connect(gain);
-        gain.connect(context.destination);
-        oscillator.start();
-
-        window.setTimeout(() => {
-          oscillator.stop();
-          context.close();
-        }, 40);
-      } catch {
-        // Audio can be blocked until the first user interaction.
-      }
-    };
-
     const getNextDelay = () => {
       const isFastBurst = Math.random() < 0.2;
       return isFastBurst
@@ -63,7 +32,6 @@ export function LiveVotesTicker() {
       };
 
       setItems((previousItems) => [newItem, ...previousItems].slice(0, 4));
-      playTick();
 
       const removeTimer = window.setTimeout(() => {
         setItems((previousItems) =>

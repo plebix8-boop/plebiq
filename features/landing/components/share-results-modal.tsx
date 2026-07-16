@@ -623,7 +623,7 @@ export function ShareResultsModal({
                 <p className="mb-2 text-xs font-bold uppercase tracking-[0.16em] text-poll-card-subtle">
                   Platforms
                 </p>
-                <div className="grid gap-2 sm:grid-cols-2">
+                <div className="grid grid-cols-2 gap-2">
                   {platformShares.map((option) => {
                     const Icon = option.Icon;
 

@@ -318,7 +318,7 @@ export function HeroSection({ featuredPoll, voteProps }: HeroSectionProps) {
                 } as CSSProperties
               }
             >
-              <PollPreview defaultShareOpen poll={featuredPoll} {...voteProps} />
+              <PollPreview poll={featuredPoll} {...voteProps} />
             </div>
           </div>
         </motion.div>
