@@ -88,6 +88,11 @@ export function NewPollModal({
   );
   const [result, setResult] = useState<AdminActionState>({});
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [validationErrors, setValidationErrors] = useState({
+    category: false,
+    optionIds: [] as string[],
+    title: false,
+  });
 
   useEffect(() => {
     const onKey = (event: KeyboardEvent) => {
@@ -150,6 +155,27 @@ export function NewPollModal({
   }
 
   function handleSubmit() {
+    const invalidOptionIds = options
+      .filter((option) => !option.label.trim() || !option.description.trim())
+      .map((option) => option.id);
+    const nextValidationErrors = {
+      category: !categoryId,
+      optionIds: invalidOptionIds,
+      title: !title.trim(),
+    };
+
+    if (
+      nextValidationErrors.title ||
+      nextValidationErrors.category ||
+      nextValidationErrors.optionIds.length > 0
+    ) {
+      setValidationErrors(nextValidationErrors);
+      setResult({
+        error: "Please fix the highlighted fields before saving this poll.",
+      });
+      return;
+    }
+
     if (options.length < 2) {
       setResult({ error: "Add at least two options." });
       return;
@@ -157,6 +183,7 @@ export function NewPollModal({
 
     setIsSubmitting(true);
     setResult({});
+    setValidationErrors({ category: false, optionIds: [], title: false });
 
     startTransition(async () => {
       try {
@@ -246,17 +273,28 @@ export function NewPollModal({
                 Title <span className="text-admin-danger-text">*</span>
               </label>
               <AppInput
+                aria-invalid={validationErrors.title}
                 type="text"
                 placeholder="Poll title"
                 value={title}
-                onChange={(event) => setTitle(event.target.value)}
+                onChange={(event) => {
+                  setTitle(event.target.value);
+                  setValidationErrors((current) => ({ ...current, title: false }));
+                }}
                 tone="dark"
-                className="py-2.5"
+                className={`py-2.5 ${validationErrors.title ? "border-admin-danger-text ring-2 ring-admin-danger-text/25" : ""}`}
               />
+              {validationErrors.title ? (
+                <p className="mt-1.5 text-xs font-semibold text-admin-danger-text">
+                  Enter a title for the poll.
+                </p>
+              ) : null}
             </div>
 
             <div>
-              <label className={labelClass}>Description</label>
+              <label className={labelClass}>
+                Description <span className="normal-case tracking-normal text-admin-text-subtle">(Optional)</span>
+              </label>
               <AppTextarea
                 rows={3}
                 placeholder="Add context for voters"
@@ -268,16 +306,24 @@ export function NewPollModal({
             </div>
 
             <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-              <div>
+              <div className={validationErrors.category ? "rounded-xl ring-2 ring-admin-danger-text/40" : ""}>
                 <label className={labelClass}>
                   Category <span className="text-admin-danger-text">*</span>
                 </label>
                 <AdminSelect
                   value={categoryId}
-                  onChange={setCategoryId}
+                  onChange={(value) => {
+                    setCategoryId(value);
+                    setValidationErrors((current) => ({ ...current, category: false }));
+                  }}
                   placeholder="Select category"
                   options={categories.map((c) => ({ value: c.id, label: c.name }))}
                 />
+                {validationErrors.category ? (
+                  <p className="mt-1.5 text-xs font-semibold text-admin-danger-text">
+                    Choose a category for this poll.
+                  </p>
+                ) : null}
               </div>
               <div>
                 <label className={labelClass}>Status</label>
@@ -369,7 +415,7 @@ export function NewPollModal({
                       dragIndex.current = null;
                       dragOverIndex.current = null;
                     }}
-                    className="rounded-xl border border-admin-card-border bg-admin-surface p-4 transition hover:border-admin-card-border-hover"
+                    className={`rounded-xl border bg-admin-surface p-4 transition ${validationErrors.optionIds.includes(option.id) ? "border-admin-danger-text ring-2 ring-admin-danger-text/20" : "border-admin-card-border hover:border-admin-card-border-hover"}`}
                   >
                     <div className="mb-3 flex items-center justify-between">
                       <div className="flex items-center gap-2">
@@ -397,7 +443,13 @@ export function NewPollModal({
                         placeholder="Option label"
                         value={option.label}
                         onChange={(event) =>
-                          updateOptionField(option.id, "label", event.target.value)
+                          {
+                            updateOptionField(option.id, "label", event.target.value);
+                            setValidationErrors((current) => ({
+                              ...current,
+                              optionIds: current.optionIds.filter((id) => id !== option.id),
+                            }));
+                          }
                         }
                         tone="dark"
                         className="py-2.5"
@@ -407,11 +459,17 @@ export function NewPollModal({
                         placeholder="Option description"
                         value={option.description}
                         onChange={(event) =>
-                          updateOptionField(
-                            option.id,
-                            "description",
-                            event.target.value,
-                          )
+                          {
+                            updateOptionField(
+                              option.id,
+                              "description",
+                              event.target.value,
+                            );
+                            setValidationErrors((current) => ({
+                              ...current,
+                              optionIds: current.optionIds.filter((id) => id !== option.id),
+                            }));
+                          }
                         }
                         tone="dark"
                         className="py-2.5"
@@ -423,8 +481,9 @@ export function NewPollModal({
             </div>
 
             {result.error ? (
-              <div className="rounded-2xl border border-admin-card-border bg-admin-surface px-4 py-3 text-sm text-admin-danger-text">
-                {result.error}
+              <div className="flex gap-3 rounded-2xl border border-admin-danger-text/60 bg-danger-soft px-4 py-3 text-sm font-semibold text-admin-danger-text shadow-[0_12px_32px_var(--shadow-soft)]" role="alert">
+                <span aria-hidden="true" className="grid size-6 shrink-0 place-items-center rounded-full bg-admin-danger-text text-xs font-black text-admin-bg">!</span>
+                <span className="pt-0.5">{result.error}</span>
               </div>
             ) : null}
           </div>

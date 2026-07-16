@@ -44,6 +44,10 @@ const CATEGORY_PILL_MARGIN_BOTTOM = 15;
 const OPTIONS_MARGIN_TOP = 10;
 const PROGRESS_BAR_MARGIN_BOTTOM = 10;
 const SUPPORTING_TEXT_TO_PROGRESS_GAP = 6;
+const QUESTION_FIRST_LINE_Y = 435;
+const QUESTION_LINE_HEIGHT = 57;
+const QUESTION_TO_OPTIONS_GAP = 54;
+const DEFAULT_OPTIONS_START_Y = 570;
 
 type ShareImageTheme = "light" | "dark";
 
@@ -188,7 +192,11 @@ function buildShareImage(
   const optionCount = results.length;
   const optionGap = 12 + PROGRESS_BAR_MARGIN_BOTTOM;
   const optionHeight = optionCount > 6 ? 104 : 114;
-  const startY = 560 + OPTIONS_MARGIN_TOP;
+  const questionLastLineY =
+    QUESTION_FIRST_LINE_Y + Math.max(0, questionLines.length - 1) * QUESTION_LINE_HEIGHT;
+  const startY =
+    Math.max(DEFAULT_OPTIONS_START_Y, questionLastLineY + QUESTION_TO_OPTIONS_GAP) +
+    OPTIONS_MARGIN_TOP;
   const contentHeight = startY + optionCount * (optionHeight + optionGap);
   const footerY = Math.max(1290, contentHeight + 40);
   const cardHeight = footerY + SHARE_FOOTER_HEIGHT + SHARE_FOOTER_BOTTOM_PADDING - 72;

@@ -211,7 +211,7 @@ export function HeroSection({ featuredPoll, voteProps }: HeroSectionProps) {
       <div className="pointer-events-none absolute -left-40 -top-40 h-[520px] w-[520px] rounded-full bg-accent/25 blur-[130px]" />
       <div className="pointer-events-none absolute -bottom-40 -right-40 h-[440px] w-[440px] rounded-full bg-accent-alt/20 blur-[120px]" />
 
-      <nav className="relative z-40 mx-auto px-6 mb-3 flex w-full max-w-[1600px] items-center justify-between">
+      <nav className="relative z-40 mx-auto lg:px-2 mb-3 flex w-full max-w-[1600px] items-center justify-between">
         <ThemeLogo
           alt="Plebiq"
           width={1266}
@@ -254,9 +254,9 @@ export function HeroSection({ featuredPoll, voteProps }: HeroSectionProps) {
             Speak up. The world is listening and deciding.
           </p>
 
-          <div className="mt-7 flex flex-col items-center gap-3 sm:flex-row lg:justify-start">
+          <div className="mt-7 flex flex-row items-center gap-2 sm:gap-3 lg:justify-start">
             <AppButton
-              className="group"
+              className="group px-3 text-xs sm:px-5 sm:text-sm"
               onClick={() => setShowPollModal(true)}
               size="lg"
               type="button"
@@ -276,6 +276,7 @@ export function HeroSection({ featuredPoll, voteProps }: HeroSectionProps) {
               </span>
             </AppButton>
             <AppButton
+              className="px-3 text-xs sm:px-5 sm:text-sm"
               onClick={scrollToFeed}
               variant="secondary"
               size="lg"

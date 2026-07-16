@@ -1,7 +1,7 @@
 import { notFound } from "next/navigation";
 import { createClient } from "@/utils/supabase/server";
 import { PollDetailView } from "@/features/admin/components/poll-detail/poll-detail-view";
-import type { AdminPoll } from "@/features/admin/types";
+import type { AdminPoll, AdminPollCountryTraffic } from "@/features/admin/types";
 
 export default async function PollDetailPage({
   params,
@@ -24,6 +24,11 @@ export default async function PollDetailPage({
     .eq("id", id)
     .single();
 
+  const { data: countryTraffic } = await supabase.rpc(
+    "get_admin_poll_country_traffic",
+    { p_poll_id: id },
+  );
+
   if (!poll) notFound();
 
   const normalized: AdminPoll = {
@@ -36,5 +41,10 @@ export default async function PollDetailPage({
     ),
   };
 
-  return <PollDetailView poll={normalized} />;
+  return (
+    <PollDetailView
+      countryTraffic={(countryTraffic ?? []) as AdminPollCountryTraffic[]}
+      poll={normalized}
+    />
+  );
 }

@@ -114,8 +114,8 @@ export function LandingPage({
         setWidthsMap(newWidthsMap);
       }
     });
-  // allPolls is stable (memoized), isAuthLoading + userId are primitives
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // allPolls is stable (memoized), isAuthLoading + userId are primitives
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isAuthLoading, userId]);
 
   useEffect(() => {

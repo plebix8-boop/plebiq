@@ -4,31 +4,31 @@ import { useTransition, useState } from "react";
 import Link from "next/link";
 import {
   LineChart, Line, XAxis, YAxis, CartesianGrid,
-  Tooltip, ResponsiveContainer,
+  Tooltip, ResponsiveContainer, PieChart, Pie, Cell, Legend,
 } from "recharts";
 import {
   togglePollFeatured,
   togglePollPinned,
   updatePollStatus,
 } from "@/features/admin/actions";
-import type { AdminPoll } from "@/features/admin/types";
+import type { AdminPoll, AdminPollCountryTraffic } from "@/features/admin/types";
 import { AppButtonLink } from "@/components/ui/button";
 
 // ─── Helpers ────────────────────────────────────────────────────────────────
 
-const OPTION_ACCENTS = [
-  "from-violet-500 to-fuchsia-500",
-  "from-sky-500 to-cyan-500",
-  "from-emerald-500 to-teal-500",
-  "from-rose-500 to-pink-500",
-  "from-amber-500 to-orange-500",
-  "from-indigo-500 to-blue-500",
+const CHART_COLORS = [
+  "var(--chart-primary)",
+  "var(--chart-secondary)",
+  "var(--accent-strong)",
+  "var(--success)",
+  "var(--warning)",
+  "var(--info)",
 ];
 
 const STATUS_CONFIG = {
-  live: { label: "Live", cls: "border-emerald-500/30 bg-emerald-500/15 text-emerald-400", dot: "bg-emerald-400 shadow-[0_0_8px_var(--success-glow)]" },
-  draft: { label: "Draft", cls: "border-slate-500/30 bg-slate-500/15 text-slate-400", dot: "bg-slate-400" },
-  closed: { label: "Closed", cls: "border-rose-500/30 bg-rose-500/15 text-rose-400", dot: "bg-rose-400" },
+  live: { label: "Live", cls: "border-admin-card-border-hover bg-success-soft text-admin-success-text", dot: "bg-admin-success-text" },
+  draft: { label: "Draft", cls: "border-admin-card-border bg-admin-surface text-admin-text-muted", dot: "bg-admin-text-muted" },
+  closed: { label: "Closed", cls: "border-admin-card-border-hover bg-danger-soft text-admin-danger-text", dot: "bg-admin-danger-text" },
 };
 
 function fmtNum(n: number) {
@@ -55,11 +55,11 @@ function fmtDatetime(iso: string | null) {
 }
 
 function getHealth(conversionPct: number, totalVotes: number) {
-  if (totalVotes === 0) return { label: "No Votes Yet", cls: "text-slate-400 bg-slate-400/10" };
-  if (conversionPct >= 60) return { label: "High Engagement", cls: "text-emerald-300 bg-emerald-400/10" };
-  if (conversionPct >= 35) return { label: "Good Engagement", cls: "text-sky-300 bg-sky-400/10" };
-  if (conversionPct >= 15) return { label: "Low Conversion", cls: "text-amber-300 bg-amber-400/10" };
-  return { label: "Needs Promotion", cls: "text-rose-300 bg-rose-400/10" };
+  if (totalVotes === 0) return { label: "No Votes Yet", cls: "text-admin-text-muted bg-admin-surface" };
+  if (conversionPct >= 60) return { label: "High Engagement", cls: "text-admin-success-text bg-success-soft" };
+  if (conversionPct >= 35) return { label: "Good Engagement", cls: "text-admin-nav-active-text bg-admin-nav-active-bg" };
+  if (conversionPct >= 15) return { label: "Low Conversion", cls: "text-admin-badge-priority-text bg-admin-badge-priority-bg" };
+  return { label: "Needs Promotion", cls: "text-admin-danger-text bg-danger-soft" };
 }
 
 function buildChartData(totalVotes: number, createdAt: string) {
@@ -92,10 +92,10 @@ function StatCard({
   label: string; value: string; sub?: string; accent?: string;
 }) {
   return (
-    <div className="rounded-2xl border border-white/8 bg-white/[0.04] p-5 backdrop-blur-sm">
-      <p className="text-[11px] font-bold uppercase tracking-widest text-slate-500">{label}</p>
-      <p className={`mt-2 text-2xl font-bold text-white`}>{value}</p>
-      {sub && <p className={`mt-1 text-xs font-medium ${accent ?? "text-slate-500"}`}>{sub}</p>}
+    <div className="rounded-2xl border border-admin-card-border bg-admin-card-bg p-5 backdrop-blur-sm">
+      <p className="text-[11px] font-bold uppercase tracking-widest text-admin-text-subtle">{label}</p>
+      <p className="mt-2 text-2xl font-bold text-admin-text">{value}</p>
+      {sub && <p className={`mt-1 text-xs font-medium ${accent ?? "text-admin-text-muted"}`}>{sub}</p>}
     </div>
   );
 }
@@ -110,11 +110,11 @@ function ActionButton({
   loading?: boolean;
 }) {
   const variants = {
-    default: "border-white/10 bg-white/5 text-slate-300 hover:border-white/20 hover:bg-white/10 hover:text-white",
-    danger: "border-rose-500/25 bg-rose-500/10 text-rose-300 hover:bg-rose-500/20",
-    success: "border-emerald-500/25 bg-emerald-500/10 text-emerald-300 hover:bg-emerald-500/20",
-    amber: "border-amber-500/25 bg-amber-500/10 text-amber-300 hover:bg-amber-500/20",
-    violet: "border-violet-500/25 bg-violet-500/10 text-violet-300 hover:bg-violet-500/20",
+    default: "border-admin-card-border bg-admin-surface text-admin-text-muted hover:border-admin-card-border-hover hover:bg-admin-surface-hover hover:text-admin-text",
+    danger: "border-admin-card-border-hover bg-danger-soft text-admin-danger-text hover:bg-admin-surface-hover",
+    success: "border-admin-card-border-hover bg-success-soft text-admin-success-text hover:bg-admin-surface-hover",
+    amber: "border-admin-badge-priority-border bg-admin-badge-priority-bg text-admin-badge-priority-text hover:bg-admin-surface-hover",
+    violet: "border-admin-badge-info-border bg-admin-badge-info-bg text-admin-badge-info-text hover:bg-admin-surface-hover",
   };
   return (
     <button
@@ -131,15 +131,21 @@ function ActionButton({
 
 const tooltipStyle = {
   backgroundColor: "var(--chart-tooltip-bg)",
-  border: "1px solid var(--fg-8)",
+  border: "1px solid var(--admin-card-border)",
   borderRadius: 12,
-  color: "var(--app-fg)",
+  color: "var(--admin-text)",
   fontSize: 12,
 };
 
 // ─── Main Component ───────────────────────────────────────────────────────────
 
-export function PollDetailView({ poll }: { poll: AdminPoll }) {
+export function PollDetailView({
+  countryTraffic,
+  poll,
+}: {
+  countryTraffic: AdminPollCountryTraffic[];
+  poll: AdminPoll;
+}) {
   const [isPending, startTransition] = useTransition();
   const [localPoll, setLocalPoll] = useState(poll);
   const [feedback, setFeedback] = useState<{ msg: string; ok: boolean } | null>(null);
@@ -189,19 +195,19 @@ export function PollDetailView({ poll }: { poll: AdminPoll }) {
     <div className="space-y-8 p-6 sm:p-8 lg:p-10">
 
       {/* Breadcrumb */}
-      <div className="flex items-center gap-2 text-sm text-slate-500">
-        <Link href="/admin/management" className="flex items-center gap-1.5 transition hover:text-white">
+      <div className="flex items-center gap-2 text-sm text-admin-text-subtle">
+        <Link href="/admin/management" className="flex items-center gap-1.5 transition hover:text-admin-text">
           <svg fill="none" height="14" viewBox="0 0 14 14" width="14">
             <path d="M9 11L5 7l4-4" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.6" />
           </svg>
           Poll Management
         </Link>
         <span>/</span>
-        <span className="max-w-[200px] truncate text-slate-400">{localPoll.title}</span>
+        <span className="max-w-[200px] truncate text-admin-text-muted">{localPoll.title}</span>
       </div>
 
       {/* Banner card */}
-      <div className="overflow-hidden rounded-3xl border border-white/8">
+      <div className="overflow-hidden rounded-3xl border border-admin-card-border bg-admin-card-bg">
         <div className="relative h-52 sm:h-64">
           {localPoll.image_url ? (
             /* eslint-disable-next-line @next/next/no-img-element */
@@ -211,9 +217,9 @@ export function PollDetailView({ poll }: { poll: AdminPoll }) {
               src={localPoll.image_url}
             />
           ) : (
-            <div className="h-full w-full bg-gradient-to-br from-violet-900/60 to-slate-900" />
+            <div className="h-full w-full bg-[linear-gradient(135deg,var(--admin-card-bg),var(--admin-surface-hover))]" />
           )}
-          <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/30 to-transparent" />
+          <div className="absolute inset-0 bg-[linear-gradient(to_top,var(--admin-bg),color-mix(in_oklch,var(--admin-bg)_35%,transparent),transparent)]" />
 
           {/* Badges */}
           <div className="absolute left-5 top-5 flex flex-wrap gap-2">
@@ -222,17 +228,17 @@ export function PollDetailView({ poll }: { poll: AdminPoll }) {
               {status.label}
             </span>
             {localPoll.category && (
-              <span className="rounded-full border border-white/15 bg-black/40 px-3 py-1 text-xs font-semibold text-white/80 backdrop-blur-md">
+              <span className="rounded-full border border-admin-card-border-hover bg-admin-card-bg px-3 py-1 text-xs font-semibold text-admin-text backdrop-blur-md">
                 {localPoll.category.name}
               </span>
             )}
             {localPoll.is_featured && (
-              <span className="rounded-full border border-amber-400/30 bg-amber-400/20 px-3 py-1 text-xs font-semibold text-amber-300 backdrop-blur-md">
+              <span className="rounded-full border border-admin-badge-priority-border bg-admin-badge-priority-bg px-3 py-1 text-xs font-semibold text-admin-badge-priority-text backdrop-blur-md">
                 ★ Featured
               </span>
             )}
             {localPoll.is_pinned && (
-              <span className="rounded-full border border-violet-400/30 bg-violet-400/20 px-3 py-1 text-xs font-semibold text-violet-300 backdrop-blur-md">
+              <span className="rounded-full border border-admin-badge-info-border bg-admin-badge-info-bg px-3 py-1 text-xs font-semibold text-admin-badge-info-text backdrop-blur-md">
                 ⊕ Pinned
               </span>
             )}
@@ -240,11 +246,11 @@ export function PollDetailView({ poll }: { poll: AdminPoll }) {
 
           {/* Title overlay */}
           <div className="absolute bottom-0 left-0 right-0 p-5 sm:p-6">
-            <h1 className="text-xl font-bold leading-tight text-white sm:text-2xl lg:text-3xl">
+            <h1 className="text-xl font-bold leading-tight text-admin-text sm:text-2xl lg:text-3xl">
               {localPoll.title}
             </h1>
             {localPoll.description && (
-              <p className="mt-1.5 max-w-2xl text-sm leading-relaxed text-white/55">
+              <p className="mt-1.5 max-w-2xl text-sm leading-relaxed text-admin-text-muted">
                 {localPoll.description}
               </p>
             )}
@@ -254,7 +260,7 @@ export function PollDetailView({ poll }: { poll: AdminPoll }) {
 
       {/* Feedback banner */}
       {feedback && (
-        <div className={`rounded-2xl border px-4 py-3 text-sm font-medium ${feedback.ok ? "border-emerald-500/25 bg-emerald-500/10 text-emerald-300" : "border-rose-500/25 bg-rose-500/10 text-rose-300"}`}>
+        <div className={`rounded-2xl border px-4 py-3 text-sm font-medium ${feedback.ok ? "border-admin-card-border-hover bg-success-soft text-admin-success-text" : "border-admin-card-border-hover bg-danger-soft text-admin-danger-text"}`}>
           {feedback.msg}
         </div>
       )}
@@ -265,25 +271,25 @@ export function PollDetailView({ poll }: { poll: AdminPoll }) {
           label="Total Votes"
           value={fmtNum(totalVotes)}
           sub={totalVotes === 0 ? "No votes yet" : `across ${localPoll.options.length} options`}
-          accent="text-violet-400"
+          accent="text-admin-nav-active-text"
         />
         <StatCard
           label="Total Views"
           value={fmtNum(views)}
           sub={views === 0 ? "No views yet" : "page impressions"}
-          accent="text-sky-400"
+          accent="text-admin-badge-info-text"
         />
         <StatCard
           label="Conversion"
           value={views > 0 ? `${conversionPct.toFixed(1)}%` : "—"}
           sub="votes ÷ views"
-          accent={conversionPct >= 35 ? "text-emerald-400" : "text-amber-400"}
+          accent={conversionPct >= 35 ? "text-admin-success-text" : "text-admin-badge-priority-text"}
         />
         <StatCard
           label="Options"
           value={String(localPoll.options.length)}
           sub={`${sortedOptions[0]?.label ?? "—"} leads`}
-          accent="text-fuchsia-400"
+          accent="text-admin-nav-active-text"
         />
       </div>
 
@@ -294,16 +300,16 @@ export function PollDetailView({ poll }: { poll: AdminPoll }) {
         <div className="space-y-6">
 
           {/* Results breakdown */}
-          <div className="rounded-2xl border border-white/8 bg-white/[0.04] p-6 backdrop-blur-sm">
-            <h2 className="mb-5 text-sm font-bold text-white">Results Breakdown</h2>
+          <div className="rounded-2xl border border-admin-card-border bg-admin-card-bg p-6 backdrop-blur-sm">
+            <h2 className="mb-5 text-sm font-bold text-admin-text">Results Breakdown</h2>
             <div className="space-y-4">
               {sortedOptions.length === 0 ? (
-                <p className="text-sm text-slate-500">No options found.</p>
+                <p className="text-sm text-admin-text-muted">No options found.</p>
               ) : (
                 sortedOptions.map((option, index) => {
                   const votes = option.vote_count ?? 0;
                   const pct = totalVotes > 0 ? (votes / totalVotes) * 100 : 0;
-                  const accent = OPTION_ACCENTS[index % OPTION_ACCENTS.length];
+                  const accent = CHART_COLORS[index % CHART_COLORS.length];
                   const isLeader = index === 0 && totalVotes > 0;
 
                   return (
@@ -311,27 +317,27 @@ export function PollDetailView({ poll }: { poll: AdminPoll }) {
                       <div className="mb-2 flex items-center justify-between gap-3">
                         <div className="flex min-w-0 items-center gap-2">
                           {isLeader && (
-                            <span className="shrink-0 rounded-full bg-amber-400/15 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider text-amber-300">
+                            <span className="shrink-0 rounded-full bg-admin-badge-priority-bg px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider text-admin-badge-priority-text">
                               Leading
                             </span>
                           )}
-                          <span className="truncate text-sm font-semibold text-white">
+                          <span className="truncate text-sm font-semibold text-admin-text">
                             {option.label}
                           </span>
                         </div>
                         <div className="flex shrink-0 items-center gap-3 text-sm">
-                          <span className="font-bold text-white">{pct.toFixed(1)}%</span>
-                          <span className="text-slate-500">{fmtNum(votes)} votes</span>
+                          <span className="font-bold text-admin-text">{pct.toFixed(1)}%</span>
+                          <span className="text-admin-text-muted">{fmtNum(votes)} votes</span>
                         </div>
                       </div>
-                      <div className="h-2.5 overflow-hidden rounded-full bg-white/8">
+                      <div className="h-2.5 overflow-hidden rounded-full bg-admin-surface-hover">
                         <div
-                          className={`h-full rounded-full bg-gradient-to-r ${accent} transition-all duration-700`}
-                          style={{ width: `${Math.max(pct, totalVotes > 0 ? 1 : 0)}%` }}
+                          className="h-full rounded-full transition-all duration-700"
+                          style={{ background: accent, width: `${Math.max(pct, totalVotes > 0 ? 1 : 0)}%` }}
                         />
                       </div>
                       {option.description && (
-                        <p className="mt-1 text-xs text-slate-600">{option.description}</p>
+                        <p className="mt-1 text-xs text-admin-text-subtle">{option.description}</p>
                       )}
                     </div>
                   );
@@ -341,15 +347,15 @@ export function PollDetailView({ poll }: { poll: AdminPoll }) {
           </div>
 
           {/* Votes over time chart */}
-          <div className="rounded-2xl border border-white/8 bg-white/[0.04] p-6 backdrop-blur-sm">
+          <div className="rounded-2xl border border-admin-card-border bg-admin-card-bg p-6 backdrop-blur-sm">
             <div className="mb-5 flex items-center justify-between">
-              <h2 className="text-sm font-bold text-white">Votes Over Time</h2>
+              <h2 className="text-sm font-bold text-admin-text">Votes Over Time</h2>
               <div className="flex gap-1">
                 {(["7d", "30d"] as const).map((f) => (
                   <button
                     key={f}
                     onClick={() => setChartFilter(f)}
-                    className={`rounded-lg px-3 py-1 text-xs font-semibold transition ${chartFilter === f ? "bg-violet-500/20 text-violet-300" : "text-slate-500 hover:text-slate-300"}`}
+                    className={`rounded-lg px-3 py-1 text-xs font-semibold transition ${chartFilter === f ? "bg-admin-nav-active-bg text-admin-nav-active-text" : "text-admin-text-subtle hover:text-admin-text"}`}
                     type="button"
                   >
                     {f === "7d" ? "7 Days" : "30 Days"}
@@ -360,7 +366,7 @@ export function PollDetailView({ poll }: { poll: AdminPoll }) {
             {totalVotes > 0 ? (
               <ResponsiveContainer height={200} width="100%">
                 <LineChart data={chartData}>
-                  <CartesianGrid stroke="var(--fg-5)" strokeDasharray="3 3" />
+                  <CartesianGrid stroke="var(--admin-divider)" strokeDasharray="3 3" />
                   <XAxis axisLine={false} dataKey="date" tick={{ fill: "var(--chart-tick)", fontSize: 11 }} tickLine={false} />
                   <YAxis axisLine={false} tick={{ fill: "var(--chart-tick)", fontSize: 11 }} tickLine={false} />
                   <Tooltip contentStyle={tooltipStyle} />
@@ -368,8 +374,50 @@ export function PollDetailView({ poll }: { poll: AdminPoll }) {
                 </LineChart>
               </ResponsiveContainer>
             ) : (
-              <div className="flex h-[200px] items-center justify-center text-sm text-slate-500">
+              <div className="flex h-[200px] items-center justify-center text-sm text-admin-text-muted">
                 No votes recorded yet.
+              </div>
+            )}
+          </div>
+
+          {/* Country traffic */}
+          <div className="rounded-2xl border border-admin-card-border bg-admin-card-bg p-6 backdrop-blur-sm">
+            <div className="mb-4">
+              <h2 className="text-sm font-bold text-admin-text">Traffic by Country</h2>
+              <p className="mt-1 text-xs text-admin-text-muted">
+                Country distribution of authenticated participants in this poll.
+              </p>
+            </div>
+            {countryTraffic.length > 0 ? (
+              <ResponsiveContainer height={280} width="100%">
+                <PieChart>
+                  <Pie
+                    cx="50%"
+                    cy="46%"
+                    data={countryTraffic}
+                    dataKey="value"
+                    innerRadius={56}
+                    nameKey="country"
+                    outerRadius={92}
+                    paddingAngle={2}
+                  >
+                    {countryTraffic.map((entry, index) => (
+                      <Cell
+                        fill={CHART_COLORS[index % CHART_COLORS.length]}
+                        key={entry.country}
+                        stroke="var(--admin-card-bg)"
+                      />
+                    ))}
+                  </Pie>
+                  <Tooltip contentStyle={tooltipStyle} />
+                  <Legend
+                    formatter={(value) => <span className="text-xs text-admin-text-muted">{value}</span>}
+                  />
+                </PieChart>
+              </ResponsiveContainer>
+            ) : (
+              <div className="flex h-[220px] items-center justify-center text-center text-sm text-admin-text-muted">
+                Country traffic will appear after users vote on this poll.
               </div>
             )}
           </div>
@@ -379,8 +427,8 @@ export function PollDetailView({ poll }: { poll: AdminPoll }) {
         <div className="space-y-5">
 
           {/* Actions */}
-          <div className="rounded-2xl border border-white/8 bg-white/[0.04] p-5 backdrop-blur-sm">
-            <h2 className="mb-4 text-xs font-bold uppercase tracking-widest text-slate-500">Actions</h2>
+          <div className="rounded-2xl border border-admin-card-border bg-admin-card-bg p-5 backdrop-blur-sm">
+            <h2 className="mb-4 text-xs font-bold uppercase tracking-widest text-admin-text-subtle">Actions</h2>
             <div className="flex flex-col gap-2.5">
               <AppButtonLink
                 href="/admin/management"
@@ -442,13 +490,13 @@ export function PollDetailView({ poll }: { poll: AdminPoll }) {
           </div>
 
           {/* Health */}
-          <div className="rounded-2xl border border-white/8 bg-white/[0.04] p-5 backdrop-blur-sm">
-            <h2 className="mb-3 text-xs font-bold uppercase tracking-widest text-slate-500">Health</h2>
+          <div className="rounded-2xl border border-admin-card-border bg-admin-card-bg p-5 backdrop-blur-sm">
+            <h2 className="mb-3 text-xs font-bold uppercase tracking-widest text-admin-text-subtle">Health</h2>
             <span className={`inline-flex items-center gap-2 rounded-full px-3 py-1.5 text-sm font-bold ${health.cls}`}>
               <span className="size-2 rounded-full bg-current opacity-70" />
               {health.label}
             </span>
-            <p className="mt-3 text-xs leading-relaxed text-slate-500">
+            <p className="mt-3 text-xs leading-relaxed text-admin-text-muted">
               {conversionPct >= 60 ? "Strong engagement — more users who view this poll are voting." :
                 conversionPct >= 35 ? "Good performance. Consider featuring to boost reach." :
                   conversionPct >= 15 ? "Conversion is below average. Try pinning or featuring." :
@@ -458,8 +506,8 @@ export function PollDetailView({ poll }: { poll: AdminPoll }) {
           </div>
 
           {/* Poll metadata */}
-          <div className="rounded-2xl border border-white/8 bg-white/[0.04] p-5 backdrop-blur-sm">
-            <h2 className="mb-4 text-xs font-bold uppercase tracking-widest text-slate-500">Details</h2>
+          <div className="rounded-2xl border border-admin-card-border bg-admin-card-bg p-5 backdrop-blur-sm">
+            <h2 className="mb-4 text-xs font-bold uppercase tracking-widest text-admin-text-subtle">Details</h2>
             <dl className="space-y-3 text-sm">
               {[
                 { label: "Created", value: fmtDatetime(localPoll.created_at) },
@@ -470,8 +518,8 @@ export function PollDetailView({ poll }: { poll: AdminPoll }) {
                 { label: "Poll ID", value: localPoll.id.slice(0, 8) + "…" },
               ].map(({ label, value }) => (
                 <div key={label} className="flex items-start justify-between gap-3">
-                  <dt className="shrink-0 text-slate-500">{label}</dt>
-                  <dd className="text-right font-medium text-slate-300">{value}</dd>
+                  <dt className="shrink-0 text-admin-text-subtle">{label}</dt>
+                  <dd className="text-right font-medium text-admin-text-muted">{value}</dd>
                 </div>
               ))}
             </dl>

@@ -183,6 +183,11 @@ export type AdminPoll = {
   options: AdminPollOption[];
 };
 
+export type AdminPollCountryTraffic = {
+  country: string;
+  value: number;
+};
+
 export type AdminSchemaStatus = {
   ready: boolean;
   message?: string;

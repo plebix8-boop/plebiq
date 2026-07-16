@@ -152,10 +152,7 @@ async function PollsContent() {
 
   const polls = (rawPolls as RawPoll[]).map(toFeaturedPoll);
 
-  const featured =
-    polls.find((_, i) => (rawPolls as RawPoll[])[i].is_featured) ??
-    polls.find((_, i) => (rawPolls as RawPoll[])[i].is_pinned) ??
-    polls[0];
+  const featured = polls[0];
 
   const uniqueCategories = [
     ...new Set(

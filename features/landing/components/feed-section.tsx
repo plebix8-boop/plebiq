@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import type { FeaturedPoll } from "../data";
 import type { VoteProps } from "../landing-page";
 import { PollPreview } from "./poll-preview";
@@ -11,6 +11,56 @@ type FeedSectionProps = {
 
 export function FeedSection({ polls, categories, getVoteProps }: FeedSectionProps) {
   const [activeCategory, setActiveCategory] = useState("All");
+  const categoryListRef = useRef<HTMLDivElement>(null);
+  const [categoryScroll, setCategoryScroll] = useState({
+    canScrollLeft: false,
+    canScrollRight: false,
+  });
+
+  useEffect(() => {
+    const categoryList = categoryListRef.current;
+    if (!categoryList) return;
+
+    let frame = 0;
+    const updateScrollControls = () => {
+      window.cancelAnimationFrame(frame);
+      frame = window.requestAnimationFrame(() => {
+        const maxScrollLeft = categoryList.scrollWidth - categoryList.clientWidth;
+        const nextState = {
+          canScrollLeft: categoryList.scrollLeft > 2,
+          canScrollRight: categoryList.scrollLeft < maxScrollLeft - 2,
+        };
+
+        setCategoryScroll((currentState) =>
+          currentState.canScrollLeft === nextState.canScrollLeft &&
+          currentState.canScrollRight === nextState.canScrollRight
+            ? currentState
+            : nextState,
+        );
+      });
+    };
+
+    updateScrollControls();
+    categoryList.addEventListener("scroll", updateScrollControls, { passive: true });
+    const resizeObserver = new ResizeObserver(updateScrollControls);
+    resizeObserver.observe(categoryList);
+
+    return () => {
+      window.cancelAnimationFrame(frame);
+      categoryList.removeEventListener("scroll", updateScrollControls);
+      resizeObserver.disconnect();
+    };
+  }, [categories]);
+
+  function scrollCategories(direction: "left" | "right") {
+    const categoryList = categoryListRef.current;
+    if (!categoryList) return;
+
+    categoryList.scrollBy({
+      behavior: "smooth",
+      left: categoryList.clientWidth * 0.7 * (direction === "left" ? -1 : 1),
+    });
+  }
 
   const visiblePolls =
     activeCategory === "All"
@@ -37,20 +87,62 @@ export function FeedSection({ polls, categories, getVoteProps }: FeedSectionProp
             </p>
           </div>
 
-          <div className="-mx-1 flex gap-2 overflow-x-auto px-1 pb-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
-            {categories.map((category) => (
-              <button
-                className={`shrink-0 rounded-full border px-4 py-2 text-sm font-semibold transition ${activeCategory === category
-                  ? "border-transparent bg-filter-active-bg text-filter-active-text"
-                  : "border-border bg-filter-idle-bg text-filter-idle-text hover:bg-filter-idle-bg-hover hover:text-filter-idle-text-hover"
-                  }`}
-                key={category}
-                onClick={() => setActiveCategory(category)}
-                type="button"
-              >
-                {category}
-              </button>
-            ))}
+          <div className="relative min-w-0">
+            <div
+              className="-mx-1 flex gap-2 overflow-x-auto px-1 pb-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+              ref={categoryListRef}
+            >
+              {categories.map((category) => (
+                <button
+                  className={`shrink-0 rounded-full border px-4 py-2 text-sm font-semibold transition ${activeCategory === category
+                    ? "border-transparent bg-filter-active-bg text-filter-active-text"
+                    : "border-border bg-filter-idle-bg text-filter-idle-text hover:bg-filter-idle-bg-hover hover:text-filter-idle-text-hover"
+                    }`}
+                  key={category}
+                  onClick={(event) => {
+                    setActiveCategory(category);
+                    event.currentTarget.scrollIntoView({
+                      behavior: "smooth",
+                      block: "nearest",
+                      inline: "center",
+                    });
+                  }}
+                  type="button"
+                >
+                  {category}
+                </button>
+              ))}
+            </div>
+
+            {categoryScroll.canScrollLeft && (
+              <div className="pointer-events-none absolute bottom-1 left-0 top-0 flex w-12 items-center bg-gradient-to-r from-app-bg via-app-bg/90 to-transparent pr-2">
+                <button
+                  aria-label="Scroll categories left"
+                  className="pointer-events-auto inline-flex size-8 items-center justify-center rounded-full border border-button-secondary-border bg-button-secondary-bg text-button-secondary-text shadow-[0_6px_18px_var(--shadow-soft)] transition hover:bg-button-secondary-bg-hover"
+                  onClick={() => scrollCategories("left")}
+                  type="button"
+                >
+                  <svg aria-hidden="true" className="size-4" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+                    <path d="m15 18-6-6 6-6" strokeLinecap="round" strokeLinejoin="round" />
+                  </svg>
+                </button>
+              </div>
+            )}
+
+            {categoryScroll.canScrollRight && (
+              <div className="pointer-events-none absolute bottom-1 right-0 top-0 flex w-12 items-center justify-end bg-gradient-to-l from-app-bg via-app-bg/90 to-transparent pl-2">
+                <button
+                  aria-label="Scroll categories right"
+                  className="pointer-events-auto inline-flex size-8 items-center justify-center rounded-full border border-button-secondary-border bg-button-secondary-bg text-button-secondary-text shadow-[0_6px_18px_var(--shadow-soft)] transition hover:bg-button-secondary-bg-hover"
+                  onClick={() => scrollCategories("right")}
+                  type="button"
+                >
+                  <svg aria-hidden="true" className="size-4" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+                    <path d="m9 18 6-6-6-6" strokeLinecap="round" strokeLinejoin="round" />
+                  </svg>
+                </button>
+              </div>
+            )}
           </div>
         </div>
 
