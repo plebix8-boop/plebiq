@@ -216,7 +216,7 @@ export function HeroSection({ featuredPoll, voteProps }: HeroSectionProps) {
           alt="Plebiq"
           width={1266}
           height={435}
-          className="h-9 w-auto sm:h-10"
+          className="h-15 w-auto sm:h-15"
           priority
         />
 

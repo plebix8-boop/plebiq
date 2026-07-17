@@ -3,6 +3,17 @@ export type AdminActionState = {
   success?: string;
 };
 
+export type AdminUserRecord = {
+  id: string;
+  email: string;
+  name: string | null;
+  role: "admin" | "user";
+  provider: string;
+  country: string | null;
+  createdAt: string;
+  lastSignInAt: string | null;
+};
+
 export type CategoryActionState = {
   error?: string;
   success?: string;

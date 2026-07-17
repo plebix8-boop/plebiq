@@ -29,7 +29,7 @@ export function AdminSidebar({ email, name, role }: AdminSidebarProps) {
             alt="Plebiq"
             width={1266}
             height={435}
-            className="h-10 w-auto"
+            className="h-15 w-auto"
             priority
           />
           <p className="text-xs uppercase tracking-[0.28em] text-white/40">
@@ -50,11 +50,10 @@ export function AdminSidebar({ email, name, role }: AdminSidebarProps) {
             <Link
               key={item.href}
               href={item.href}
-              className={`rounded-xl px-4 py-3 text-sm font-semibold transition ${
-                active
-                  ? "bg-white/12 text-white shadow-[inset_0_1px_0_var(--fg-6)]"
-                  : "text-white/55 hover:bg-white/6 hover:text-white"
-              }`}
+              className={`rounded-xl px-4 py-3 text-sm font-semibold transition ${active
+                ? "bg-white/12 text-white shadow-[inset_0_1px_0_var(--fg-6)]"
+                : "text-white/55 hover:bg-white/6 hover:text-white"
+                }`}
             >
               {item.label}
             </Link>

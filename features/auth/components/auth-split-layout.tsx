@@ -153,7 +153,7 @@ export function AuthSplitLayout({
               alt="Plebiq"
               width={1266}
               height={435}
-              className="h-9 w-auto"
+              className="h-15 w-auto"
               priority
             />
           </Link>

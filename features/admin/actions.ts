@@ -308,6 +308,94 @@ export async function createCategory(
   }
 }
 
+export async function changeUserRole(
+  targetUserId: string,
+  nextRole: "admin" | "user",
+): Promise<AdminActionState> {
+  try {
+    const { user: actingUser } = await requireAdmin();
+
+    if (!targetUserId) {
+      return { error: "Choose a user to update." };
+    }
+
+    if (nextRole !== "admin" && nextRole !== "user") {
+      return { error: "That role is not allowed." };
+    }
+
+    if (actingUser.id === targetUserId && nextRole === "user") {
+      return { error: "You cannot remove your own admin access." };
+    }
+
+    const adminSupabase = createAdminClient();
+    const { data: targetResult, error: targetError } =
+      await adminSupabase.auth.admin.getUserById(targetUserId);
+    const targetUser = targetResult.user;
+
+    if (targetError || !targetUser) {
+      return { error: targetError?.message ?? "User not found." };
+    }
+
+    const previousRole = targetUser.app_metadata.role === "admin" ? "admin" : "user";
+
+    if (previousRole === nextRole) {
+      return { success: `This user is already ${nextRole === "admin" ? "an admin" : "a normal user"}.` };
+    }
+
+    if (previousRole === "admin" && nextRole === "user") {
+      const authUsers = await listAllAuthUsers();
+      const adminCount = authUsers.filter(
+        (authUser) => authUser.app_metadata?.role === "admin",
+      ).length;
+
+      if (adminCount <= 1) {
+        return { error: "The final administrator cannot be demoted." };
+      }
+    }
+
+    const { error: updateError } = await adminSupabase.auth.admin.updateUserById(
+      targetUserId,
+      {
+        app_metadata: {
+          ...targetUser.app_metadata,
+          role: nextRole,
+        },
+      },
+    );
+
+    if (updateError) {
+      return { error: updateError.message };
+    }
+
+    const { error: auditError } = await adminSupabase
+      .from("admin_role_changes")
+      .insert({
+        acting_admin_id: actingUser.id,
+        new_role: nextRole,
+        previous_role: previousRole,
+        target_user_email: targetUser.email ?? null,
+        target_user_id: targetUserId,
+      });
+
+    if (auditError) {
+      console.error("[admin-role-change] Audit insert failed:", auditError.message);
+    }
+
+    revalidatePath("/admin/users");
+
+    return {
+      success:
+        nextRole === "admin"
+          ? "Admin access granted. The user must refresh their session or sign in again."
+          : "Admin access removed. The user must refresh their session or sign in again.",
+    };
+  } catch (error) {
+    return {
+      error: error instanceof Error ? error.message : "Unable to update the user role.",
+    };
+  }
+}
+
 export async function updateFeedback(
   _previousState: AdminActionState,
   formData: FormData,
