@@ -206,9 +206,9 @@ export function PollPreview({
         >
           {/* Question + description */}
           <div>
-            <p className="mb-2 text-[10px] font-bold uppercase tracking-[0.2em] text-poll-card-subtle">
+            {/* <p className="mb-2 text-[10px] font-bold uppercase tracking-[0.2em] text-poll-card-subtle">
               {poll.tag}
-            </p>
+            </p> */}
             <h2
               className={`font-semibold leading-[1.3] text-poll-card-text ${isCompact ? "text-lg" : "text-xl lg:text-2xl"
                 }`}
