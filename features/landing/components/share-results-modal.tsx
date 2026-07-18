@@ -103,6 +103,7 @@ const SHARE_IMAGE_PALETTES = {
 } as const;
 
 const logoDataUrlPromises = new Map<ShareImageTheme, Promise<string>>();
+const LOGO_LOAD_RETRY_DELAYS = [0, 300, 1200] as const;
 
 function escapeXml(value: string) {
   return value
@@ -153,7 +154,7 @@ function loadLogoDataUrl(theme: ShareImageTheme) {
   let logoDataUrlPromise = logoDataUrlPromises.get(theme);
 
   if (!logoDataUrlPromise) {
-    logoDataUrlPromise = fetch(theme === "dark" ? "/logo-dark.png" : "/logo.png")
+    const request = fetch(theme === "dark" ? "/logo-dark.png" : "/logo.png")
       .then((response) => {
         if (!response.ok) throw new Error("Could not load Plebiq logo.");
         return response.blob();
@@ -167,6 +168,14 @@ function loadLogoDataUrl(theme: ShareImageTheme) {
             reader.readAsDataURL(blob);
           }),
       );
+
+    logoDataUrlPromise = request.catch((error) => {
+      // Do not permanently cache a transient network or FileReader failure.
+      if (logoDataUrlPromises.get(theme) === logoDataUrlPromise) {
+        logoDataUrlPromises.delete(theme);
+      }
+      throw error;
+    });
     logoDataUrlPromises.set(theme, logoDataUrlPromise);
   }
 
@@ -382,21 +391,34 @@ export function ShareResultsModal({
     if (!isOpen) return undefined;
 
     let alive = true;
+    let retryTimeout: number | undefined;
 
-    void loadLogoDataUrl(effectiveTheme)
-      .then((dataUrl) => {
+    async function loadLogo(attempt: number) {
+      try {
+        const dataUrl = await loadLogoDataUrl(effectiveTheme);
         if (alive) {
           setLogoDataUrl(dataUrl);
         }
-      })
-      .catch(() => {
-        if (alive) {
+      } catch {
+        const nextAttempt = attempt + 1;
+        if (alive && nextAttempt < LOGO_LOAD_RETRY_DELAYS.length) {
+          retryTimeout = window.setTimeout(
+            () => void loadLogo(nextAttempt),
+            LOGO_LOAD_RETRY_DELAYS[nextAttempt],
+          );
+        } else if (alive) {
           setLogoDataUrl(null);
         }
-      });
+      }
+    }
+
+    void loadLogo(0);
 
     return () => {
       alive = false;
+      if (retryTimeout !== undefined) {
+        window.clearTimeout(retryTimeout);
+      }
     };
   }, [effectiveTheme, isOpen]);
 

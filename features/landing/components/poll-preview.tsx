@@ -2,8 +2,9 @@
 
 import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 import dynamic from "next/dynamic";
+import Image, { type ImageLoaderProps } from "next/image";
 import { useRouter } from "next/navigation";
-import { useEffect, useState, useTransition } from "react";
+import { useState, useTransition } from "react";
 import { useAuth } from "@/contexts/auth-context";
 import { castVote } from "../actions";
 import type { VoteState } from "../landing-page";
@@ -15,6 +16,46 @@ const ShareResultsModal = dynamic(
   () => import("./share-results-modal").then((module) => module.ShareResultsModal),
   { ssr: false },
 );
+
+function canOptimizePollImage(src: string) {
+  try {
+    const url = new URL(src);
+    return (
+      url.hostname === "images.unsplash.com" ||
+      (url.hostname.endsWith(".supabase.co") &&
+        url.pathname.includes("/storage/v1/object/public/"))
+    );
+  } catch {
+    return false;
+  }
+}
+
+function pollImageLoader({ src, width, quality }: ImageLoaderProps) {
+  const url = new URL(src);
+
+  if (url.hostname === "images.unsplash.com") {
+    url.searchParams.set("auto", "format");
+    url.searchParams.set("fit", "crop");
+    url.searchParams.set("q", String(quality ?? 75));
+    url.searchParams.set("w", String(width));
+    return url.toString();
+  }
+
+  if (
+    url.hostname.endsWith(".supabase.co") &&
+    url.pathname.includes("/storage/v1/object/public/")
+  ) {
+    url.pathname = url.pathname.replace(
+      "/storage/v1/object/public/",
+      "/storage/v1/render/image/public/",
+    );
+    url.searchParams.set("quality", String(quality ?? 75));
+    url.searchParams.set("resize", "cover");
+    url.searchParams.set("width", String(width));
+  }
+
+  return url.toString();
+}
 
 type PollPreviewProps = {
   poll: FeaturedPoll;
@@ -40,13 +81,11 @@ export function PollPreview({
   const [isPending, startTransition] = useTransition();
 
   // ── Auth from context — zero DB calls ──────────────────────────────────────
-  const { isSignedIn, isAuthLoading } = useAuth();
+  const { isSignedIn } = useAuth();
 
   // ── Local interaction state ────────────────────────────────────────────────
-  const [selected, setSelected] = useState<number | null>(null);
-  const [displayedWidths, setDisplayedWidths] = useState<string[]>(
-    freshOptionWidths ?? poll.options.map((o) => o.previewWidth),
-  );
+  const [localSelected, setLocalSelected] = useState<number | null>(null);
+  const [localWidths, setLocalWidths] = useState<string[] | null>(null);
   const [voteError, setVoteError] = useState<string | null>(null);
   const [showAuthModal, setShowAuthModal] = useState(false);
   const [showShareModal, setShowShareModal] = useState(false);
@@ -56,36 +95,26 @@ export function PollPreview({
   const isMotionActive =
     activityEnabled && isInView && isPageVisible && !shouldReduceMotion;
   const isCompact = variant !== "hero";
+  const optimizeImage = canOptimizePollImage(poll.image);
   const showCompactOptionDescriptions =
     variant === "management" || variant === "feed";
 
-  // Show shimmer while auth is loading OR while parent hasn't resolved vote state yet
-  // (existingVoteOptionId === undefined means the batch fetch is still in flight)
-  const isLoadingVoteState = variant !== "management" && (isAuthLoading || existingVoteOptionId === undefined);
+  const existingSelected = existingVoteOptionId
+    ? poll.options.findIndex((option) => option.id === existingVoteOptionId)
+    : -1;
+  const selected =
+    localSelected ?? (existingSelected >= 0 ? existingSelected : null);
+  const displayedWidths =
+    localWidths ??
+    freshOptionWidths ??
+    poll.options.map((option) => option.previewWidth);
   const hasResults = selected !== null || variant === "management";
-
-  // ── Sync parent-resolved vote state into local state ──────────────────────
-  // Runs once when existingVoteOptionId transitions from undefined to a real value
-  useEffect(() => {
-    if (existingVoteOptionId === undefined) return;
-
-    if (existingVoteOptionId) {
-      const idx = poll.options.findIndex((o) => o.id === existingVoteOptionId);
-      if (idx !== -1) setSelected(idx);
-    }
-
-    if (freshOptionWidths) {
-      setDisplayedWidths(freshOptionWidths);
-    }
-    // Only re-run when the parent provides the resolved value for the first time
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [existingVoteOptionId]);
 
   // ── Image brightness → overlay opacity ────────────────────────────────────
   // ── Vote handler ───────────────────────────────────────────────────────────
   function handlePick(index: number) {
     if (variant === "management") {
-      setSelected(index);
+      setLocalSelected(index);
       return;
     }
 
@@ -96,13 +125,13 @@ export function PollPreview({
 
     // Mock data (no IDs) → visual-only selection, no DB call
     if (!poll.id || !poll.options[index].id) {
-      setSelected(index);
+      setLocalSelected(index);
       return;
     }
 
     if (isPending) return;
 
-    setSelected(index); // optimistic
+    setLocalSelected(index); // optimistic
     setVoteError(null);
 
     startTransition(async () => {
@@ -113,7 +142,7 @@ export function PollPreview({
         return;
       }
 
-      setDisplayedWidths(
+      setLocalWidths(
         poll.options.map((opt) => {
           const match = result.options.find((o) => o.optionId === opt.id);
           if (!match) return opt.previewWidth;
@@ -156,14 +185,21 @@ export function PollPreview({
           className={`relative overflow-hidden ${isCompact ? "h-[132px] lg:h-[148px]" : "h-[170px] lg:h-[218px]"
             }`}
         >
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img
+          <Image
             alt=""
-            className="h-full w-full object-cover"
-            crossOrigin="anonymous"
+            className="object-cover"
             decoding="async"
+            fetchPriority={isCompact ? "auto" : "high"}
+            fill
+            loader={optimizeImage ? pollImageLoader : undefined}
             loading={isCompact ? "lazy" : "eager"}
+            sizes={
+              isCompact
+                ? "(min-width: 1280px) 31vw, (min-width: 768px) 48vw, 100vw"
+                : "(min-width: 1024px) 624px, 100vw"
+            }
             src={poll.image}
+            unoptimized={!optimizeImage}
           />
           <div className="absolute inset-x-0 bottom-0 h-24 bg-gradient-to-t from-black/55 to-transparent" />
 
@@ -239,38 +275,9 @@ export function PollPreview({
             </div>
           ) : null}
 
-          {/* Options — skeleton while resolving, real buttons once ready */}
+          {/* Public options render immediately; personalization is applied in the background. */}
           <div className="space-y-2">
-            {isLoadingVoteState
-              ? poll.options.map((_, index) => (
-                <div
-                  className={`relative w-full overflow-hidden rounded-2xl border border-poll-option-border bg-poll-option-bg ${isCompact ? "p-3" : "p-4"
-                    }`}
-                  key={index}
-                >
-                  {/* Sliding shimmer */}
-                  <div
-                    className={`animate-shimmer pointer-events-none absolute inset-0 ${isMotionActive ? "" : "shimmer-paused"}`}
-                  />
-                  <div className="flex items-start gap-3">
-                    <div
-                      className={`mt-0.5 shrink-0 rounded-full bg-poll-radio-bg ${isCompact ? "size-6" : "size-7"
-                        }`}
-                    />
-                    <div className="min-w-0 flex-1">
-                      <div className="h-3.5 w-2/5 rounded-full bg-poll-progress-track" />
-                      {(showCompactOptionDescriptions || !isCompact) && (
-                        <div className="mt-1.5 h-3 w-4/5 rounded-full bg-poll-progress-track" />
-                      )}
-                      <div
-                        className={`rounded-full bg-poll-progress-track ${isCompact ? "mt-2 h-1" : "mt-3 h-1.5"
-                          }`}
-                      />
-                    </div>
-                  </div>
-                </div>
-              ))
-              : poll.options.map((option, index) => {
+            {poll.options.map((option, index) => {
                 const isSelected = selected === index;
                 const isSubmittingThis = isPending && isSelected;
 

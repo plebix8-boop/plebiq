@@ -3,8 +3,6 @@
 import dynamic from "next/dynamic";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useScroll } from "framer-motion";
-import { createClient } from "@/utils/supabase/client";
-import { useAuth } from "@/contexts/auth-context";
 import { FeedSection } from "./components/feed-section";
 import { HeroSection } from "./components/hero-section";
 import type { FeaturedPoll } from "./data";
@@ -33,19 +31,13 @@ export type VoteProps = {
 
 // ── helpers ──────────────────────────────────────────────────────────────────
 
-function computeFreshWidths(
-  poll: FeaturedPoll,
-  optionRows: { id: string; poll_id: string; vote_count: number | null }[],
-): string[] | undefined {
-  const rows = optionRows.filter((o) => o.poll_id === poll.id);
-  const total = rows.reduce((sum, o) => sum + (o.vote_count ?? 0), 0);
-  if (total === 0) return undefined;
-
-  return poll.options.map((opt) => {
-    const match = rows.find((o) => o.id === opt.id);
-    return `${Math.max(4, Math.round(((match?.vote_count ?? 0) / total) * 100))}%`;
-  });
-}
+type LandingBootstrapResponse = {
+  results: Array<{
+    pollId: string;
+    options: Array<{ optionId: string; votePercentage: number }>;
+  }>;
+  votes: Array<{ optionId: string; pollId: string }>;
+};
 
 // ── component ─────────────────────────────────────────────────────────────────
 
@@ -59,8 +51,6 @@ export function LandingPage({
     target: spacerRef,
     offset: ["start start", "end start"],
   });
-
-  const { userId, isAuthLoading } = useAuth();
 
   // Map<pollId, optionId | null> — null means no vote, undefined (missing key) means loading
   const [voteMap, setVoteMap] = useState<Map<string, string | null> | null>(null);
@@ -101,67 +91,65 @@ export function LandingPage({
     });
   }, [featuredPoll, feedPolls]);
 
-  // Batch fetch: one vote query + one poll_options query for every poll on the page
+  // One background request personalizes the already-rendered public poll UI.
   useEffect(() => {
-    if (isAuthLoading) return;
+    if (allPolls.length === 0) return undefined;
 
-    if (!userId || allPolls.length === 0) {
-      // Not signed in — nothing to fetch, mark all polls as "no vote"
-      setVoteMap(new Map(allPolls.map((p) => [p.id!, null])));
-      return;
-    }
+    const controller = new AbortController();
+    const pollIds = allPolls.map((poll) => poll.id!);
 
-    const pollIds = allPolls.map((p) => p.id!);
-    const supabase = createClient();
-    let cancelled = false;
-
-    Promise.all([
-      supabase
-        .from("votes")
-        .select("poll_id, option_id")
-        .in("poll_id", pollIds)
-        .eq("user_id", userId),
-
-      supabase
-        .from("poll_options")
-        .select("id, poll_id, vote_count")
-        .in("poll_id", pollIds),
-    ])
-      .then(([{ data: votes }, { data: options }]) => {
-      if (cancelled) return;
-
-      // Build vote map — every pollId gets an entry (null = no vote)
-      const newVoteMap = new Map<string, string | null>(
-        pollIds.map((id) => [id, null]),
-      );
-      for (const v of votes ?? []) {
-        newVoteMap.set(v.poll_id as string, v.option_id as string);
-      }
-      setVoteMap(newVoteMap);
-
-      // Build fresh widths map
-      if (options && options.length > 0) {
-        const rows = options as { id: string; poll_id: string; vote_count: number | null }[];
-        const newWidthsMap = new Map<string, string[]>();
-        for (const poll of allPolls) {
-          const widths = computeFreshWidths(poll, rows);
-          if (widths) newWidthsMap.set(poll.id!, widths);
+    fetch("/api/landing/bootstrap", {
+      cache: "no-store",
+      credentials: "same-origin",
+      signal: controller.signal,
+    })
+      .then((response) => {
+        if (!response.ok) throw new Error("Unable to personalize landing polls.");
+        return response.json() as Promise<LandingBootstrapResponse>;
+      })
+      .then(({ results, votes }) => {
+        const nextVoteMap = new Map<string, string | null>(
+          pollIds.map((id) => [id, null]),
+        );
+        for (const vote of votes) {
+          if (nextVoteMap.has(vote.pollId)) {
+            nextVoteMap.set(vote.pollId, vote.optionId);
+          }
         }
-        setWidthsMap(newWidthsMap);
-      }
+        setVoteMap(nextVoteMap);
+
+        const resultsByPoll = new Map(
+          results.map((result) => [result.pollId, result.options]),
+        );
+        const nextWidthsMap = new Map<string, string[]>();
+        for (const poll of allPolls) {
+          const resultOptions = resultsByPoll.get(poll.id!);
+          if (!resultOptions) continue;
+
+          nextWidthsMap.set(
+            poll.id!,
+            poll.options.map((option) => {
+              const result = resultOptions.find(
+                (candidate) => candidate.optionId === option.id,
+              );
+              return result
+                ? `${Math.max(4, Math.round(result.votePercentage))}%`
+                : option.previewWidth;
+            }),
+          );
+        }
+        setWidthsMap(nextWidthsMap);
       })
       .catch(() => {
-        if (!cancelled) {
+        if (!controller.signal.aborted) {
           setVoteMap(new Map(allPolls.map((poll) => [poll.id!, null])));
         }
       });
 
     return () => {
-      cancelled = true;
+      controller.abort();
     };
-    // allPolls is stable (memoized), isAuthLoading + userId are primitives
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [isAuthLoading, userId]);
+  }, [allPolls]);
 
   useEffect(() => {
     const pollId = new URLSearchParams(window.location.search).get("poll");

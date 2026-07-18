@@ -2,7 +2,7 @@
 
 import { readFile } from "node:fs/promises";
 import path from "node:path";
-import { revalidatePath } from "next/cache";
+import { revalidatePath, revalidateTag } from "next/cache";
 import { createAdminClient } from "@/utils/supabase/admin";
 import { createClient } from "@/utils/supabase/server";
 import { feedbackStatuses, type FeedbackStatus } from "@/features/feedback/types";
@@ -15,6 +15,10 @@ import type {
 
 function normalizeText(value: FormDataEntryValue | null) {
   return typeof value === "string" ? value.trim() : "";
+}
+
+function revalidateLandingPolls() {
+  revalidateTag("landing-polls", "max");
 }
 
 function normalizeNullableText(value: FormDataEntryValue | null) {
@@ -300,6 +304,7 @@ export async function createCategory(
 
     revalidatePath("/admin");
     revalidatePath("/admin/management");
+    revalidateLandingPolls();
     return { success: "Category created.", category };
   } catch (error) {
     return {
@@ -494,6 +499,7 @@ export async function updateCategory(
 
     revalidatePath("/admin");
     revalidatePath("/admin/management");
+    revalidateLandingPolls();
     return { success: "Category updated.", category };
   } catch (error) {
     return {
@@ -525,6 +531,7 @@ export async function deleteCategory(
 
     revalidatePath("/admin");
     revalidatePath("/admin/management");
+    revalidateLandingPolls();
     return {
       success: "Category deleted.",
       deletedCategoryId: categoryId,
@@ -611,6 +618,7 @@ export async function createPoll(
 
     revalidatePath("/admin");
     revalidatePath("/admin/management");
+    revalidateLandingPolls();
     return { success: "Poll created." };
   } catch (error) {
     return {
@@ -651,6 +659,7 @@ export async function updatePollFlags(formData: FormData) {
 
   revalidatePath("/admin");
   revalidatePath("/admin/management");
+  revalidateLandingPolls();
 }
 
 export async function updatePoll(
@@ -769,6 +778,7 @@ export async function updatePoll(
 
     revalidatePath("/admin");
     revalidatePath("/admin/management");
+    revalidateLandingPolls();
     return { success: "Poll updated." };
   } catch (error) {
     return {
@@ -809,6 +819,7 @@ export async function reorderPolls(sortedPollIds: string[]) {
 
   revalidatePath("/admin");
   revalidatePath("/admin/management");
+  revalidateLandingPolls();
 }
 
 export async function createMockUsers(
@@ -1202,6 +1213,7 @@ export async function updatePollStatus(
     revalidatePath(`/admin/polls/${pollId}`);
     revalidatePath("/admin/management");
     revalidatePath("/admin");
+    revalidateLandingPolls();
     return { success: `Poll set to ${status}.` };
   } catch (error) {
     return { error: error instanceof Error ? error.message : "Unable to update status." };
@@ -1224,6 +1236,7 @@ export async function togglePollFeatured(
     revalidatePath(`/admin/polls/${pollId}`);
     revalidatePath("/admin/management");
     revalidatePath("/admin");
+    revalidateLandingPolls();
     return { success: nextValue ? "Poll featured." : "Poll unfeatured." };
   } catch (error) {
     return { error: error instanceof Error ? error.message : "Unable to toggle featured." };
@@ -1246,6 +1259,7 @@ export async function togglePollPinned(
     revalidatePath(`/admin/polls/${pollId}`);
     revalidatePath("/admin/management");
     revalidatePath("/admin");
+    revalidateLandingPolls();
     return { success: nextValue ? "Poll pinned." : "Poll unpinned." };
   } catch (error) {
     return { error: error instanceof Error ? error.message : "Unable to toggle pinned." };

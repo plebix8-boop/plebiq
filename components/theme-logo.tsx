@@ -25,7 +25,7 @@ export function ThemeLogo({
       alt={alt}
       className={className}
       height={height}
-      priority={priority}
+      preload={priority}
       src={effectiveTheme === "dark" ? "/logo-dark.png" : "/logo.png"}
       width={width}
     />

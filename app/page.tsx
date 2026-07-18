@@ -92,7 +92,7 @@ const fetchLivePolls = unstable_cache(
     return data as RawPoll[] | null;
   },
   ["landing-polls"],
-  { revalidate: 60 },
+  { revalidate: 60, tags: ["landing-polls"] },
 );
 
 function EmptyLandingState() {
@@ -143,6 +143,55 @@ function EmptyLandingState() {
   );
 }
 
+function LandingFallback() {
+  return (
+    <main className="relative min-h-screen overflow-hidden bg-hero-bg px-5 py-6 text-hero-text sm:px-8 lg:px-10">
+      <div className="decorative-blur absolute -left-40 -top-40 h-[520px] w-[520px] rounded-full bg-accent/25 blur-[130px]" />
+      <div className="decorative-blur absolute -bottom-40 -right-40 h-[440px] w-[440px] rounded-full bg-accent-alt/20 blur-[120px]" />
+
+      <div className="relative z-10 mx-auto w-full max-w-[1600px]">
+        <nav className="flex items-center justify-between lg:px-2">
+          <ThemeLogo
+            alt="Plebiq"
+            className="h-15 w-auto"
+            height={435}
+            priority
+            width={1266}
+          />
+          <div className="h-10 w-24 rounded-full bg-hero-button-secondary-bg" />
+        </nav>
+
+        <section className="grid min-h-[calc(100svh-96px)] items-center gap-10 lg:grid-cols-[minmax(0,0.94fr)_minmax(500px,624px)]">
+          <div className="max-w-[760px]">
+            <div className="mb-5 h-8 w-52 rounded-full bg-hero-pill-bg" />
+            <h1 className="text-[2.65rem] font-semibold leading-[1.02] sm:text-[3.25rem] lg:text-[4rem] xl:text-[4.625rem]">
+              If you stay quiet, others will decide.
+            </h1>
+            <p className="mt-5 text-lg leading-8 text-hero-text-muted">
+              Speak up. The world is listening and deciding.
+            </p>
+            <div className="mt-7 flex gap-3">
+              <div className="h-11 w-36 rounded-full bg-button-primary-bg" />
+              <div className="h-11 w-36 rounded-full bg-hero-button-secondary-bg" />
+            </div>
+          </div>
+
+          <div className="hidden h-[620px] overflow-hidden rounded-[1.65rem] bg-poll-card-bg lg:block">
+            <div className="h-[218px] bg-poll-progress-track" />
+            <div className="space-y-5 p-6">
+              <div className="h-7 w-4/5 rounded-full bg-poll-progress-track" />
+              <div className="h-4 w-full rounded-full bg-poll-progress-track" />
+              {[0, 1, 2].map((item) => (
+                <div className="h-24 rounded-2xl bg-poll-option-bg" key={item} />
+              ))}
+            </div>
+          </div>
+        </section>
+      </div>
+    </main>
+  );
+}
+
 async function PollsContent() {
   const rawPolls = await fetchLivePolls();
 
@@ -175,7 +224,7 @@ async function PollsContent() {
 
 export default function Home() {
   return (
-    <Suspense fallback={<div className="min-h-screen bg-app-bg" />}>
+    <Suspense fallback={<LandingFallback />}>
       <PollsContent />
     </Suspense>
   );

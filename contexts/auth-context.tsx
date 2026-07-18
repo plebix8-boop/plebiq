@@ -47,9 +47,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     const supabase = createClient();
 
-    supabase.auth.getUser().then(({ data }) => {
-      setUserId(data.user?.id ?? null);
-      setUser(profileFromUser(data.user));
+    // Session hydration is local and avoids a blocking auth network round trip.
+    // Server actions still validate the user before any protected mutation.
+    supabase.auth.getSession().then(({ data }) => {
+      setUserId(data.session?.user.id ?? null);
+      setUser(profileFromUser(data.session?.user));
       setIsAuthLoading(false);
     });
 

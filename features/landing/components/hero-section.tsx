@@ -50,13 +50,13 @@ export function HeroSection({ featuredPoll, isActive, onShareResults, voteProps 
   const isPageVisible = usePageVisible();
   const isDesktop = useMediaQuery("(min-width: 1024px)");
   const isMotionActive = isActive && isPageVisible && !shouldReduceMotion;
-  const [displayText, setDisplayText] = useState("");
+  const [displayText, setDisplayText] = useState(heroPhrases[0].text);
   const [phraseIndex, setPhraseIndex] = useState(0);
-  const [phase, setPhase] = useState<TypePhase>("typing");
+  const [phase, setPhase] = useState<TypePhase>("pause");
   const [showPollModal, setShowPollModal] = useState(false);
   const [previewScale, setPreviewScale] = useState(HERO_PREVIEW_MAX_SCALE);
   const [previewHeight, setPreviewHeight] = useState(HERO_PREVIEW_FALLBACK_HEIGHT);
-  const charIndexRef = useRef(0);
+  const charIndexRef = useRef(heroPhrases[0].text.length);
   const timerRef = useRef<number | null>(null);
   const previewSlotRef = useRef<HTMLDivElement>(null);
   const previewFrameRef = useRef<HTMLDivElement>(null);
@@ -248,7 +248,7 @@ export function HeroSection({ featuredPoll, isActive, onShareResults, voteProps 
         <motion.div
           animate={{ opacity: 1, y: 0 }}
           className="flex min-h-0 w-full max-w-[760px] flex-col items-start justify-center lg:block"
-          initial={{ opacity: 0, y: 24 }}
+          initial={false}
           transition={{ duration: 0.6 }}
         >
           <div className="mb-5 inline-flex items-center gap-2 rounded-full bg-hero-pill-bg px-4 py-2 text-xs text-hero-pill-text">
@@ -308,7 +308,7 @@ export function HeroSection({ featuredPoll, isActive, onShareResults, voteProps 
         <motion.div
           animate={{ opacity: 1, scale: 1, y: 0 }}
           className="relative hidden min-h-0 w-full max-w-[min(92vw,624px)] flex-1 justify-center lg:flex lg:h-full lg:max-w-[624px] lg:flex-none lg:items-center lg:justify-end"
-          initial={{ opacity: 0, scale: 0.94, y: 24 }}
+          initial={false}
           ref={previewSlotRef}
           transition={{ delay: 0.15 }}
         >
