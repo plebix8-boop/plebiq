@@ -139,7 +139,7 @@ export function PollPreview({
       data-poll-id={poll.id}
       ref={viewportRef}
     >
-      <article className="relative overflow-hidden rounded-[1.65rem] bg-poll-card-bg text-poll-card-text shadow-[0_14px_45px_var(--shadow-soft)]">
+      <article className="relative overflow-hidden rounded-[1.65rem] bg-poll-card-bg text-poll-card-text">
         <div className="pointer-events-none absolute inset-0 bg-gradient-to-br from-poll-card-sheen via-transparent to-transparent" />
 
         {/* Banner image */}
