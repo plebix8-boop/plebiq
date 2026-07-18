@@ -133,6 +133,15 @@ export function PollPreview({
     router.push("/auth");
   }
 
+  function openShareResults() {
+    if (onShareResults) {
+      onShareResults(poll, displayedWidths);
+      return;
+    }
+
+    setShowShareModal(true);
+  }
+
   return (
     <div
       className="mx-auto w-full scroll-mt-8"
@@ -216,53 +225,19 @@ export function PollPreview({
             </p>
           </div>
 
-          {/* Results/share action */}
-          <div className={isCompact ? "sm:block" : "space-y-2"}>
-            {hasResults ? (
-              <button
-                className="inline-flex items-center gap-2 rounded-full border border-poll-option-border bg-poll-option-bg px-3 py-1.5 text-xs font-bold text-poll-option-text transition hover:border-poll-option-border-hover hover:bg-poll-option-bg-hover"
-                onClick={() => {
-                  if (onShareResults) {
-                    onShareResults(poll, displayedWidths);
-                    return;
-                  }
-                  setShowShareModal(true);
-                }}
-                type="button"
-              >
-                <svg
-                  aria-hidden="true"
-                  className="size-3.5"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    d="M7.5 12.5 16.5 7.5M7.5 11.5l9 5"
-                    stroke="currentColor"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth="2"
-                  />
-                  <circle cx="5.5" cy="12" r="2.75" stroke="currentColor" strokeWidth="2" />
-                  <circle cx="18.5" cy="6.5" r="2.75" stroke="currentColor" strokeWidth="2" />
-                  <circle cx="18.5" cy="17.5" r="2.75" stroke="currentColor" strokeWidth="2" />
-                </svg>
-                Share results
-              </button>
-            ) : (
-              <div className="inline-flex items-center gap-1 rounded-full bg-poll-badge-bg px-3 py-1 text-xs font-medium text-poll-badge-text">
-                <span aria-hidden="true" className="grid size-6 place-items-center">
-                  {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img
-                    alt=""
-                    className="size-5 object-contain drop-shadow-[0_1px_3px_var(--fg-25)]"
-                    src="/privacy-icon.ico"
-                  />
-                </span>
-                Results reveal after voting
-              </div>
-            )}
-          </div>
+          {!hasResults ? (
+            <div className="inline-flex w-fit items-center gap-1 rounded-full bg-poll-badge-bg px-3 py-1 text-xs font-medium text-poll-badge-text">
+              <span aria-hidden="true" className="grid size-6 place-items-center">
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img
+                  alt=""
+                  className="size-5 object-contain drop-shadow-[0_1px_3px_var(--fg-25)]"
+                  src="/privacy-icon.ico"
+                />
+              </span>
+              Results reveal after voting
+            </div>
+          ) : null}
 
           {/* Options — skeleton while resolving, real buttons once ready */}
           <div className="space-y-2">
@@ -374,6 +349,58 @@ export function PollPreview({
                   </motion.button>
                 );
               })}
+
+            {hasResults ? (
+              <motion.button
+                className={`group relative flex w-full items-center gap-3 overflow-hidden rounded-2xl border border-poll-option-border bg-poll-option-bg text-left shadow-[inset_0_1px_0_var(--fg-6)] transition hover:border-poll-option-border-hover hover:bg-poll-option-bg-hover ${isCompact ? "p-3" : "p-4"}`}
+                onClick={openShareResults}
+                type="button"
+                whileHover={{ y: -2 }}
+                whileTap={{ scale: 0.98 }}
+              >
+                <span
+                  aria-hidden="true"
+                  className={`grid shrink-0 place-items-center rounded-full bg-button-primary-bg text-button-primary-text ${isCompact ? "size-10" : "size-12"}`}
+                >
+                  <svg className={isCompact ? "size-4" : "size-5"} fill="none" viewBox="0 0 24 24">
+                    <path
+                      d="M7.5 12.5 16.5 7.5M7.5 11.5l9 5"
+                      stroke="currentColor"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth="2"
+                    />
+                    <circle cx="5.5" cy="12" r="2.75" stroke="currentColor" strokeWidth="2" />
+                    <circle cx="18.5" cy="6.5" r="2.75" stroke="currentColor" strokeWidth="2" />
+                    <circle cx="18.5" cy="17.5" r="2.75" stroke="currentColor" strokeWidth="2" />
+                  </svg>
+                </span>
+
+                <span className="min-w-0 flex-1">
+                  <span className="block text-sm font-bold text-poll-option-text">
+                    Share results
+                  </span>
+                  <span className="mt-0.5 block text-xs leading-5 text-poll-option-muted">
+                    See how others voted in this poll
+                  </span>
+                </span>
+
+                <span
+                  aria-hidden="true"
+                  className={`grid shrink-0 place-items-center rounded-full bg-button-primary-bg text-button-primary-text transition group-hover:translate-x-0.5 ${isCompact ? "size-9" : "size-11"}`}
+                >
+                  <svg className={isCompact ? "size-4" : "size-5"} fill="none" viewBox="0 0 24 24">
+                    <path
+                      d="M5 12h14m-5-5 5 5-5 5"
+                      stroke="currentColor"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth="2"
+                    />
+                  </svg>
+                </span>
+              </motion.button>
+            ) : null}
           </div>
 
           {/* Vote error */}
