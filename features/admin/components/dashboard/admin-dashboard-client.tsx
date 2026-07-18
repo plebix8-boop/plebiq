@@ -50,7 +50,7 @@ function createEmptyDashboardState(): DashboardApiState {
 function ShimmerBlock({ className }: { className: string }) {
   return (
     <div
-      className={`animate-shimmer rounded-xl bg-[linear-gradient(110deg,var(--fg-5)_8%,var(--fg-14)_18%,var(--fg-5)_33%)] bg-[length:200%_100%] ${className}`}
+      className={`animate-shimmer rounded-xl bg-[var(--fg-5)] ${className}`}
     />
   );
 }

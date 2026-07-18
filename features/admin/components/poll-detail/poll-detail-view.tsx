@@ -1,6 +1,6 @@
 "use client";
 
-import { useTransition, useState } from "react";
+import { useMemo, useTransition, useState } from "react";
 import Link from "next/link";
 import {
   LineChart, Line, XAxis, YAxis, CartesianGrid,
@@ -157,7 +157,10 @@ export function PollDetailView({
   const health = getHealth(conversionPct, totalVotes);
   const status = STATUS_CONFIG[localPoll.status] ?? STATUS_CONFIG.draft;
 
-  const allChartData = buildChartData(totalVotes, localPoll.created_at);
+  const allChartData = useMemo(
+    () => buildChartData(totalVotes, localPoll.created_at),
+    [localPoll.created_at, totalVotes],
+  );
   const chartData = chartFilter === "7d" ? allChartData.slice(-7) : allChartData;
 
   const sortedOptions = [...localPoll.options].sort(
@@ -214,6 +217,7 @@ export function PollDetailView({
             <img
               alt={localPoll.title}
               className="h-full w-full object-cover"
+              decoding="async"
               src={localPoll.image_url}
             />
           ) : (
@@ -300,7 +304,10 @@ export function PollDetailView({
         <div className="space-y-6">
 
           {/* Results breakdown */}
-          <div className="rounded-2xl border border-admin-card-border bg-admin-card-bg p-6 backdrop-blur-sm">
+          <div
+            className="rounded-2xl border border-admin-card-border bg-admin-card-bg p-6 backdrop-blur-sm"
+            style={{ containIntrinsicSize: "300px", contentVisibility: "auto" }}
+          >
             <h2 className="mb-5 text-sm font-bold text-admin-text">Results Breakdown</h2>
             <div className="space-y-4">
               {sortedOptions.length === 0 ? (
@@ -347,7 +354,10 @@ export function PollDetailView({
           </div>
 
           {/* Votes over time chart */}
-          <div className="rounded-2xl border border-admin-card-border bg-admin-card-bg p-6 backdrop-blur-sm">
+          <div
+            className="rounded-2xl border border-admin-card-border bg-admin-card-bg p-6 backdrop-blur-sm"
+            style={{ containIntrinsicSize: "360px", contentVisibility: "auto" }}
+          >
             <div className="mb-5 flex items-center justify-between">
               <h2 className="text-sm font-bold text-admin-text">Votes Over Time</h2>
               <div className="flex gap-1">
@@ -381,7 +391,10 @@ export function PollDetailView({
           </div>
 
           {/* Country traffic */}
-          <div className="rounded-2xl border border-admin-card-border bg-admin-card-bg p-6 backdrop-blur-sm">
+          <div
+            className="rounded-2xl border border-admin-card-border bg-admin-card-bg p-6 backdrop-blur-sm"
+            style={{ containIntrinsicSize: "360px", contentVisibility: "auto" }}
+          >
             <div className="mb-4">
               <h2 className="text-sm font-bold text-admin-text">Traffic by Country</h2>
               <p className="mt-1 text-xs text-admin-text-muted">

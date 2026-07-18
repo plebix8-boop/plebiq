@@ -98,8 +98,8 @@ const fetchLivePolls = unstable_cache(
 function EmptyLandingState() {
   return (
     <main className="relative grid min-h-screen overflow-hidden bg-app-bg px-5 py-8 text-app-fg">
-      <div className="pointer-events-none absolute -left-40 -top-40 h-[520px] w-[520px] rounded-full bg-accent/20 blur-[130px]" />
-      <div className="pointer-events-none absolute -bottom-40 -right-40 h-[440px] w-[440px] rounded-full bg-accent-alt/15 blur-[120px]" />
+      <div className="decorative-blur absolute -left-40 -top-40 h-[520px] w-[520px] rounded-full bg-accent/20 blur-[130px]" />
+      <div className="decorative-blur absolute -bottom-40 -right-40 h-[440px] w-[440px] rounded-full bg-accent-alt/15 blur-[120px]" />
 
       <div className="relative z-10 flex min-h-full flex-col">
         <header className="flex items-center justify-between">

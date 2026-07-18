@@ -128,6 +128,8 @@ export function AdminPollBrowser({
               <img
                 alt=""
                 className="h-full w-full object-cover"
+                decoding="async"
+                loading="lazy"
                 src={
                   poll.image_url ||
                   "https://images.unsplash.com/photo-1516321318423-f06f85e504b3?q=80&w=1600&auto=format&fit=crop"

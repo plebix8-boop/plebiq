@@ -32,8 +32,8 @@ export default async function AdminLayout({
   return (
     <div className="flex h-screen overflow-hidden bg-admin-shell-bg text-admin-text">
       <div className="pointer-events-none fixed inset-0 z-0">
-        <div className="absolute -left-40 -top-40 h-[520px] w-[520px] rounded-full bg-purple-700/20 blur-[130px]" />
-        <div className="absolute -bottom-40 -right-40 h-[440px] w-[440px] rounded-full bg-blue-700/20 blur-[120px]" />
+        <div className="decorative-blur absolute -left-40 -top-40 h-[520px] w-[520px] rounded-full bg-purple-700/20 blur-[130px]" />
+        <div className="decorative-blur absolute -bottom-40 -right-40 h-[440px] w-[440px] rounded-full bg-blue-700/20 blur-[120px]" />
       </div>
 
       {/* Sidebar — desktop only */}

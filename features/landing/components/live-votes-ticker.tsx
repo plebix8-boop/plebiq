@@ -1,6 +1,7 @@
 import { motion } from "framer-motion";
 import { useEffect, useRef, useState } from "react";
 import { liveVoteUsers } from "../data";
+import { useMediaQuery } from "@/hooks/use-runtime-activity";
 
 type VoteToast = {
   id: number;
@@ -8,12 +9,15 @@ type VoteToast = {
   code: string;
 };
 
-export function LiveVotesTicker() {
+export function LiveVotesTicker({ isActive }: { isActive: boolean }) {
   const [items, setItems] = useState<VoteToast[]>([]);
   const timeoutRef = useRef<number | null>(null);
+  const isVisibleBreakpoint = useMediaQuery("(min-width: 640px)");
 
   useEffect(() => {
-    const removeTimers: number[] = [];
+    if (!isActive || !isVisibleBreakpoint) return undefined;
+
+    const removeTimers = new Set<number>();
 
     const getNextDelay = () => {
       const isFastBurst = Math.random() < 0.2;
@@ -34,12 +38,13 @@ export function LiveVotesTicker() {
       setItems((previousItems) => [newItem, ...previousItems].slice(0, 4));
 
       const removeTimer = window.setTimeout(() => {
+        removeTimers.delete(removeTimer);
         setItems((previousItems) =>
           previousItems.filter((item) => item.id !== newItem.id),
         );
       }, 5000);
 
-      removeTimers.push(removeTimer);
+      removeTimers.add(removeTimer);
       timeoutRef.current = window.setTimeout(addItem, getNextDelay());
     };
 
@@ -50,8 +55,9 @@ export function LiveVotesTicker() {
         window.clearTimeout(timeoutRef.current);
       }
       removeTimers.forEach((timer) => window.clearTimeout(timer));
+      removeTimers.clear();
     };
-  }, []);
+  }, [isActive, isVisibleBreakpoint]);
 
   return (
     <div className="pointer-events-none absolute right-4 top-20 z-30 hidden max-w-[min(22rem,calc(100vw-2rem))] flex-col items-end gap-3 sm:flex lg:right-8">
@@ -73,6 +79,7 @@ export function LiveVotesTicker() {
           <img
             alt=""
             className="h-4 w-6 object-contain"
+            decoding="async"
             src={`https://flagcdn.com/${user.code}.svg`}
           />
           <span className="font-semibold">{user.name}</span>

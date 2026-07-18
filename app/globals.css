@@ -976,18 +976,52 @@ html {
   scroll-behavior: smooth;
 }
 
-@keyframes shimmer {
+@keyframes shimmer-slide {
   0% {
-    background-position: 200% 0;
+    transform: translateX(-120%);
   }
 
   100% {
-    background-position: -200% 0;
+    transform: translateX(120%);
   }
 }
 
 .animate-shimmer {
-  animation: shimmer 1.8s linear infinite;
+  overflow: hidden;
+  position: relative;
+}
+
+.animate-shimmer::after {
+  animation: shimmer-slide 1.8s linear infinite;
+  background: linear-gradient(110deg, transparent 20%, var(--fg-14) 50%, transparent 80%);
+  content: "";
+  inset: 0;
+  position: absolute;
+  transform: translateX(-120%);
+}
+
+.animate-shimmer.shimmer-paused::after {
+  animation-play-state: paused;
+}
+
+.decorative-blur {
+  isolation: isolate;
+  pointer-events: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    scroll-behavior: auto !important;
+    transition-duration: 0.01ms !important;
+  }
 }
 
 .scrollbar-thin {

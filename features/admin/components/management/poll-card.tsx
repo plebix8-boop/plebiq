@@ -19,6 +19,8 @@ export function PollCard({ poll, onEdit }: { poll: ManagedPoll; onEdit: () => vo
           src={poll.image_url}
           alt={poll.title}
           className="h-full w-full object-cover transition duration-500 group-hover:scale-105"
+          decoding="async"
+          loading="lazy"
         />
         <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent" />
 

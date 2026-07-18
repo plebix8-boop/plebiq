@@ -2,6 +2,7 @@ import {
   AnimatePresence,
   motion,
   type MotionValue,
+  useReducedMotion,
 } from "framer-motion";
 import { useEffect, useRef, useState, type CSSProperties } from "react";
 import { heroPhrases } from "../data";
@@ -13,11 +14,14 @@ import { SignInNavButton, UserAvatarMenu } from "./user-avatar-menu";
 import { useAuth } from "@/contexts/auth-context";
 import { AppButton } from "@/components/ui/button";
 import { ThemeLogo } from "@/components/theme-logo";
+import { useMediaQuery, usePageVisible } from "@/hooks/use-runtime-activity";
 
 type HeroSectionProps = {
   scrollYProgress: MotionValue<number>;
   featuredPoll: FeaturedPoll;
   voteProps: VoteProps;
+  onShareResults: (poll: FeaturedPoll, percentages: string[]) => void;
+  isActive: boolean;
 };
 
 type TypePhase = "typing" | "pause" | "deleting";
@@ -40,8 +44,12 @@ function cleanWord(word: string) {
     .toLowerCase();
 }
 
-export function HeroSection({ featuredPoll, voteProps }: HeroSectionProps) {
+export function HeroSection({ featuredPoll, isActive, onShareResults, voteProps }: HeroSectionProps) {
   const { user } = useAuth();
+  const shouldReduceMotion = useReducedMotion();
+  const isPageVisible = usePageVisible();
+  const isDesktop = useMediaQuery("(min-width: 1024px)");
+  const isMotionActive = isActive && isPageVisible && !shouldReduceMotion;
   const [displayText, setDisplayText] = useState("");
   const [phraseIndex, setPhraseIndex] = useState(0);
   const [phase, setPhase] = useState<TypePhase>("typing");
@@ -58,6 +66,8 @@ export function HeroSection({ featuredPoll, voteProps }: HeroSectionProps) {
   }
 
   useEffect(() => {
+    if (!isMotionActive) return undefined;
+
     const currentPhrase = heroPhrases[phraseIndex].text;
 
     if (phase === "typing") {
@@ -106,7 +116,7 @@ export function HeroSection({ featuredPoll, voteProps }: HeroSectionProps) {
         window.clearTimeout(timerRef.current);
       }
     };
-  }, [phase, phraseIndex]);
+  }, [isMotionActive, phase, phraseIndex]);
 
   useEffect(() => {
     let frame = 0;
@@ -151,13 +161,16 @@ export function HeroSection({ featuredPoll, voteProps }: HeroSectionProps) {
   }, [featuredPoll]);
 
   const renderText = () => {
+    const textToRender = shouldReduceMotion
+      ? heroPhrases[phraseIndex].text
+      : displayText;
     const highlights = heroPhrases[phraseIndex].highlight.map((word) =>
       word.toLowerCase(),
     );
     const parts: Array<{ text: string; type: "word" | "space" }> = [];
     let currentWord = "";
 
-    displayText.split("").forEach((char) => {
+    textToRender.split("").forEach((char) => {
       if (char === " ") {
         if (currentWord) {
           parts.push({ text: currentWord, type: "word" });
@@ -208,8 +221,8 @@ export function HeroSection({ featuredPoll, voteProps }: HeroSectionProps) {
       className="fixed inset-0 z-10 h-screen bg-hero-bg px-5 py-6 text-hero-text sm:px-8 lg:px-10"
       id="hero"
     >
-      <div className="pointer-events-none absolute -left-40 -top-40 h-[520px] w-[520px] rounded-full bg-accent/25 blur-[130px]" />
-      <div className="pointer-events-none absolute -bottom-40 -right-40 h-[440px] w-[440px] rounded-full bg-accent-alt/20 blur-[120px]" />
+      <div className="decorative-blur absolute -left-40 -top-40 h-[520px] w-[520px] rounded-full bg-accent/25 blur-[130px]" />
+      <div className="decorative-blur absolute -bottom-40 -right-40 h-[440px] w-[440px] rounded-full bg-accent-alt/20 blur-[120px]" />
 
       <nav className="relative z-40 mx-auto lg:px-2 mb-3 flex w-full max-w-[1600px] items-center justify-between">
         <ThemeLogo
@@ -227,7 +240,7 @@ export function HeroSection({ featuredPoll, voteProps }: HeroSectionProps) {
         )}
       </nav>
 
-      <LiveVotesTicker />
+      <LiveVotesTicker isActive={isMotionActive} />
 
       <motion.div
         className="z-10 mx-auto flex h-[calc(100svh-104px)] w-full max-w-[1600px] flex-col items-start justify-center gap-6 pt-[4svh] lg:grid lg:h-[calc(100svh-116px)] lg:grid-cols-[minmax(0,0.94fr)_minmax(500px,624px)] lg:items-center lg:justify-center lg:gap-10 lg:pt-0 xl:gap-14"
@@ -246,7 +259,7 @@ export function HeroSection({ featuredPoll, voteProps }: HeroSectionProps) {
           <div className="flex min-h-[132px] items-center sm:min-h-[150px] lg:min-h-[164px] xl:min-h-[188px]">
             <h1 className="text-[2.65rem] font-semibold leading-[1.02] tracking-normal sm:text-[3.25rem] lg:text-[4rem] xl:text-[4.625rem]">
               {renderText()}
-              <span className="ml-1 inline-block h-[1em] w-[3px] animate-pulse rounded bg-accent" />
+              <span className={`ml-1 inline-block h-[1em] w-[3px] rounded bg-accent ${isMotionActive ? "animate-pulse" : ""}`} />
             </h1>
           </div>
 
@@ -318,7 +331,9 @@ export function HeroSection({ featuredPoll, voteProps }: HeroSectionProps) {
                 } as CSSProperties
               }
             >
-              <PollPreview poll={featuredPoll} {...voteProps} />
+              {isDesktop ? (
+                <PollPreview activityEnabled={isMotionActive} onShareResults={onShareResults} poll={featuredPoll} {...voteProps} />
+              ) : null}
             </div>
           </div>
         </motion.div>
@@ -360,7 +375,7 @@ export function HeroSection({ featuredPoll, voteProps }: HeroSectionProps) {
                 </button>
               </div>
               <div className="min-h-0 overflow-y-auto pr-1 [scrollbar-width:thin]">
-                <PollPreview poll={featuredPoll} {...voteProps} />
+                <PollPreview activityEnabled={isMotionActive} onShareResults={onShareResults} poll={featuredPoll} {...voteProps} />
               </div>
             </motion.div>
           </motion.div>

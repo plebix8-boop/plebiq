@@ -5,6 +5,7 @@ import { AuthProvider } from "@/contexts/auth-context";
 import { ThemeProvider } from "@/contexts/theme-context";
 import { NavigationProgress } from "@/components/navigation-progress";
 import { PageTransition } from "@/components/page-transition";
+import { MotionProvider } from "@/components/motion-provider";
 import "./globals.css";
 
 const geistSans = Geist({
@@ -53,8 +54,10 @@ export default function RootLayout({
       <body className="min-h-full flex flex-col" suppressHydrationWarning>
         <ThemeProvider>
           <AuthProvider>
-            <NavigationProgress />
-            <PageTransition>{children}</PageTransition>
+            <MotionProvider>
+              <NavigationProgress />
+              <PageTransition>{children}</PageTransition>
+            </MotionProvider>
           </AuthProvider>
         </ThemeProvider>
         <Analytics />

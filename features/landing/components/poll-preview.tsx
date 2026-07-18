@@ -1,14 +1,20 @@
 "use client";
 
-import { AnimatePresence, motion } from "framer-motion";
+import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
+import dynamic from "next/dynamic";
 import { useRouter } from "next/navigation";
-import { useEffect, useRef, useState, useTransition } from "react";
+import { useEffect, useState, useTransition } from "react";
 import { useAuth } from "@/contexts/auth-context";
 import { castVote } from "../actions";
 import type { VoteState } from "../landing-page";
 import type { FeaturedPoll } from "../data";
-import { ShareResultsModal } from "./share-results-modal";
 import { AppButton } from "@/components/ui/button";
+import { useElementInView, usePageVisible } from "@/hooks/use-runtime-activity";
+
+const ShareResultsModal = dynamic(
+  () => import("./share-results-modal").then((module) => module.ShareResultsModal),
+  { ssr: false },
+);
 
 type PollPreviewProps = {
   poll: FeaturedPoll;
@@ -18,6 +24,8 @@ type PollPreviewProps = {
   existingVoteOptionId?: VoteState;
   // Fresh server percentages; falls back to poll.options[].previewWidth when absent
   freshOptionWidths?: string[];
+  onShareResults?: (poll: FeaturedPoll, percentages: string[]) => void;
+  activityEnabled?: boolean;
 };
 
 export function PollPreview({
@@ -25,6 +33,8 @@ export function PollPreview({
   variant = "hero",
   existingVoteOptionId,
   freshOptionWidths,
+  onShareResults,
+  activityEnabled = true,
 }: PollPreviewProps) {
   const router = useRouter();
   const [isPending, startTransition] = useTransition();
@@ -40,9 +50,11 @@ export function PollPreview({
   const [voteError, setVoteError] = useState<string | null>(null);
   const [showAuthModal, setShowAuthModal] = useState(false);
   const [showShareModal, setShowShareModal] = useState(false);
-  const [overlayStrength, setOverlayStrength] = useState(0.42);
-
-  const imageRef = useRef<HTMLImageElement>(null);
+  const { isInView, ref: viewportRef } = useElementInView<HTMLDivElement>();
+  const isPageVisible = usePageVisible();
+  const shouldReduceMotion = useReducedMotion();
+  const isMotionActive =
+    activityEnabled && isInView && isPageVisible && !shouldReduceMotion;
   const isCompact = variant !== "hero";
   const showCompactOptionDescriptions =
     variant === "management" || variant === "feed";
@@ -70,39 +82,6 @@ export function PollPreview({
   }, [existingVoteOptionId]);
 
   // ── Image brightness → overlay opacity ────────────────────────────────────
-  useEffect(() => {
-    const image = imageRef.current;
-    if (!image) return;
-
-    const updateOverlay = () => {
-      try {
-        const canvas = document.createElement("canvas");
-        const context = canvas.getContext("2d");
-        if (!context) return;
-
-        canvas.width = 20;
-        canvas.height = 20;
-        context.drawImage(image, 0, 0, 20, 20);
-
-        const imageData = context.getImageData(0, 0, 20, 20).data;
-        let totalBrightness = 0;
-
-        for (let i = 0; i < imageData.length; i += 4) {
-          totalBrightness +=
-            (imageData[i] + imageData[i + 1] + imageData[i + 2]) / 3;
-        }
-
-        setOverlayStrength(0.28 + (totalBrightness / (imageData.length / 4) / 255) * 0.34);
-      } catch {
-        setOverlayStrength(0.42);
-      }
-    };
-
-    if (image.complete) { updateOverlay(); return; }
-    image.addEventListener("load", updateOverlay);
-    return () => image.removeEventListener("load", updateOverlay);
-  }, [poll.image]);
-
   // ── Vote handler ───────────────────────────────────────────────────────────
   function handlePick(index: number) {
     if (variant === "management") {
@@ -155,7 +134,11 @@ export function PollPreview({
   }
 
   return (
-    <div className="mx-auto w-full scroll-mt-8" data-poll-id={poll.id}>
+    <div
+      className="mx-auto w-full scroll-mt-8"
+      data-poll-id={poll.id}
+      ref={viewportRef}
+    >
       <article className="relative overflow-hidden rounded-[1.65rem] bg-poll-card-bg text-poll-card-text shadow-[0_14px_45px_var(--shadow-soft)]">
         <div className="pointer-events-none absolute inset-0 bg-gradient-to-br from-poll-card-sheen via-transparent to-transparent" />
 
@@ -169,61 +152,38 @@ export function PollPreview({
             alt=""
             className="h-full w-full object-cover"
             crossOrigin="anonymous"
-            ref={imageRef}
+            decoding="async"
+            loading={isCompact ? "lazy" : "eager"}
             src={poll.image}
           />
-          {/*
-          <div
-            className="absolute inset-0"
-            style={{
-              backgroundColor: `color-mix(in oklch, var(--app-bg) ${Math.round(
-                overlayStrength * 100,
-              )}%, transparent)`,
-            }}
-          />
-          <div
-            className="absolute inset-0"
-            style={{
-              background: `linear-gradient(to bottom, color-mix(in oklch, var(--app-bg) ${Math.round(
-                overlayStrength * 25,
-              )}%, transparent) 0%, color-mix(in oklch, var(--app-bg) ${Math.round(
-                overlayStrength * 70,
-              )}%, transparent) 54%, color-mix(in oklch, var(--app-bg) ${Math.round(
-                (overlayStrength + 0.18) * 100,
-              )}%, transparent) 100%)`,
-            }}
-          />
-          */}
           <div className="absolute inset-x-0 bottom-0 h-24 bg-gradient-to-t from-black/55 to-transparent" />
 
           {/* LIVE badge */}
-          <motion.div
-            animate={{
-              boxShadow: [
-                "0 0 0 0 var(--poll-live-ring)",
-                "0 0 0 8px transparent",
-                "0 0 0 0 transparent",
-              ],
-            }}
-            className="absolute left-4 top-4 inline-flex h-7 items-center gap-2 rounded-full bg-poll-badge-bg px-3 backdrop-blur-md"
-            transition={{ duration: 1.6, repeat: Infinity, ease: "easeOut" }}
-          >
+          <div className="absolute left-4 top-4 inline-flex h-7 items-center gap-2 rounded-full bg-poll-badge-bg px-3 shadow-[0_0_8px_var(--poll-live-ring)] backdrop-blur-md">
             <span className="relative flex size-2.5 shrink-0">
               <motion.span
-                animate={{ opacity: [0.75, 0], scale: [1, 2.6] }}
+                animate={
+                  isMotionActive
+                    ? { opacity: [0.75, 0], scale: [1, 2.6] }
+                    : { opacity: 0.75, scale: 1 }
+                }
                 className="absolute inline-flex h-full w-full rounded-full bg-button-primary-bg"
-                transition={{ duration: 1.35, repeat: Infinity, ease: "easeOut" }}
+                transition={{ duration: 1.35, repeat: isMotionActive ? Infinity : 0, ease: "easeOut" }}
               />
               <motion.span
-                animate={{ opacity: [1, 0.55, 1], scale: [1, 0.82, 1] }}
+                animate={
+                  isMotionActive
+                    ? { opacity: [1, 0.55, 1], scale: [1, 0.82, 1] }
+                    : { opacity: 1, scale: 1 }
+                }
                 className="relative inline-flex size-2.5 rounded-full bg-button-primary-bg shadow-[0_0_16px_var(--poll-live-glow)]"
-                transition={{ duration: 1.1, repeat: Infinity, ease: "easeInOut" }}
+                transition={{ duration: 1.1, repeat: isMotionActive ? Infinity : 0, ease: "easeInOut" }}
               />
             </span>
             <span className="text-[10px] font-bold leading-none tracking-widest text-poll-badge-text">
               LIVE
             </span>
-          </motion.div>
+          </div>
 
           <div className="absolute right-4 top-4 inline-flex h-7 items-center rounded-full border border-transparent bg-button-primary-bg px-3 text-[10px] font-bold uppercase leading-none tracking-[0.16em] text-button-primary-text backdrop-blur-md">
             {poll.category}
@@ -261,7 +221,13 @@ export function PollPreview({
             {hasResults ? (
               <button
                 className="inline-flex items-center gap-2 rounded-full border border-poll-option-border bg-poll-option-bg px-3 py-1.5 text-xs font-bold text-poll-option-text transition hover:border-poll-option-border-hover hover:bg-poll-option-bg-hover"
-                onClick={() => setShowShareModal(true)}
+                onClick={() => {
+                  if (onShareResults) {
+                    onShareResults(poll, displayedWidths);
+                    return;
+                  }
+                  setShowShareModal(true);
+                }}
                 type="button"
               >
                 <svg
@@ -309,12 +275,7 @@ export function PollPreview({
                 >
                   {/* Sliding shimmer */}
                   <div
-                    className="animate-shimmer pointer-events-none absolute inset-0"
-                    style={{
-                      background:
-                        "linear-gradient(90deg, transparent 0%, var(--fg-7) 50%, transparent 100%)",
-                      backgroundSize: "200% 100%",
-                    }}
+                    className={`animate-shimmer pointer-events-none absolute inset-0 ${isMotionActive ? "" : "shimmer-paused"}`}
                   />
                   <div className="flex items-start gap-3">
                     <div
@@ -374,7 +335,7 @@ export function PollPreview({
                           </span>
                           {(selected !== null || variant === "management") && (
                             <span
-                              className={`shrink-0 tabular-nums text-sm font-bold leading-none text-poll-option-text ${isSubmittingThis ? "animate-pulse" : ""
+                              className={`shrink-0 tabular-nums text-sm font-bold leading-none text-poll-option-text ${isSubmittingThis && isMotionActive ? "animate-pulse" : ""
                                 }`}
                             >
                               {displayedWidths[index]}
@@ -397,9 +358,9 @@ export function PollPreview({
                         >
                           {selected === null && variant !== "management" ? (
                             <motion.span
-                              animate={{ x: ["-120%", "300%"] }}
+                              animate={isMotionActive ? { x: ["-120%", "300%"] } : { x: "0%" }}
                               className={`block h-full w-1/3 bg-gradient-to-r ${option.accent} opacity-45`}
-                              transition={{ duration: 2, repeat: Infinity }}
+                              transition={{ duration: 2, repeat: isMotionActive ? Infinity : 0 }}
                             />
                           ) : (
                             <span
@@ -540,12 +501,14 @@ export function PollPreview({
           )}
         </AnimatePresence>
       </article>
-      <ShareResultsModal
-        isOpen={showShareModal}
-        onClose={() => setShowShareModal(false)}
-        percentages={displayedWidths}
-        poll={poll}
-      />
+      {showShareModal ? (
+        <ShareResultsModal
+          isOpen
+          onClose={() => setShowShareModal(false)}
+          percentages={displayedWidths}
+          poll={poll}
+        />
+      ) : null}
     </div>
   );
 }

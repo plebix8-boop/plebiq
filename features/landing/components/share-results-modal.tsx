@@ -368,7 +368,6 @@ export function ShareResultsModal({
   percentages,
 }: ShareResultsModalProps) {
   const { effectiveTheme } = useTheme();
-  const [isMounted, setIsMounted] = useState(false);
   const [status, setStatus] = useState<string | null>(null);
   const [logoDataUrl, setLogoDataUrl] = useState<string | null>(null);
   const shareUrl = useMemo(() => buildShareUrl(poll.id), [poll.id]);
@@ -380,10 +379,8 @@ export function ShareResultsModal({
   const previewUrl = useMemo(() => svgToPreviewUrl(shareImage.svg), [shareImage.svg]);
 
   useEffect(() => {
-    setIsMounted(true);
-  }, []);
+    if (!isOpen) return undefined;
 
-  useEffect(() => {
     let alive = true;
 
     void loadLogoDataUrl(effectiveTheme)
@@ -401,15 +398,10 @@ export function ShareResultsModal({
     return () => {
       alive = false;
     };
-  }, [effectiveTheme]);
+  }, [effectiveTheme, isOpen]);
 
   useEffect(() => {
-    if (!isOpen) {
-      setStatus(null);
-      return undefined;
-    }
-
-    if (!status) {
+    if (!isOpen || !status) {
       return undefined;
     }
 
@@ -420,6 +412,11 @@ export function ShareResultsModal({
   async function createShareImage() {
     const logo = logoDataUrl ?? (await loadLogoDataUrl(effectiveTheme));
     return buildShareImage(poll, percentages, shareUrl, effectiveTheme, logo);
+  }
+
+  function closeModal() {
+    setStatus(null);
+    onClose();
   }
 
   async function withStatus(action: () => Promise<void>, success: string) {
@@ -533,7 +530,7 @@ export function ShareResultsModal({
     },
   ];
 
-  if (!isMounted || typeof document === "undefined") return null;
+  if (typeof document === "undefined") return null;
 
   return createPortal(
     <AnimatePresence>
@@ -543,7 +540,7 @@ export function ShareResultsModal({
           className="fixed inset-0 z-[80] flex items-start justify-center overflow-y-auto bg-black/50 p-3 py-4 backdrop-blur-xl sm:items-center sm:p-4"
           exit={{ opacity: 0 }}
           initial={{ opacity: 0 }}
-          onClick={onClose}
+          onClick={closeModal}
         >
           <motion.div
             animate={{ opacity: 1, scale: 1, y: 0 }}
@@ -556,7 +553,7 @@ export function ShareResultsModal({
             <button
               aria-label="Close share results"
               className="absolute right-4 top-4 z-20 grid size-9 place-items-center rounded-full border border-poll-option-border bg-poll-option-bg text-poll-option-text transition hover:bg-poll-option-bg-hover"
-              onClick={onClose}
+              onClick={closeModal}
               type="button"
             >
               <LuX aria-hidden="true" className="size-4" />

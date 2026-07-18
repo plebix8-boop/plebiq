@@ -151,7 +151,10 @@ function ChartCard({
   children: React.ReactNode;
 }) {
   return (
-    <div className="rounded-2xl border border-admin-card-border bg-admin-card-bg p-5">
+    <div
+      className="rounded-2xl border border-admin-card-border bg-admin-card-bg p-5"
+      style={{ containIntrinsicSize: "300px", contentVisibility: "auto" }}
+    >
       <h2 className="text-sm font-semibold text-admin-text">{title}</h2>
       <div className="mt-4 h-[240px]">{children}</div>
     </div>

@@ -30,9 +30,9 @@ export function AuthSplitLayout({
       <div className="relative hidden overflow-hidden bg-app-bg lg:flex lg:flex-col lg:items-center lg:justify-center lg:px-8">
 
         {/* Glow blobs */}
-        <div className="pointer-events-none absolute -left-32 top-1/4 h-[500px] w-[500px] rounded-full bg-accent/20 blur-[120px]" />
-        <div className="pointer-events-none absolute -right-32 bottom-1/4 h-[400px] w-[400px] rounded-full bg-accent-alt/15 blur-[110px]" />
-        <div className="pointer-events-none absolute left-1/2 top-1/2 h-[280px] w-[280px] -translate-x-1/2 -translate-y-1/2 rounded-full bg-info/10 blur-[90px]" />
+        <div className="decorative-blur absolute -left-32 top-1/4 h-[500px] w-[500px] rounded-full bg-accent/20 blur-[120px]" />
+        <div className="decorative-blur absolute -right-32 bottom-1/4 h-[400px] w-[400px] rounded-full bg-accent-alt/15 blur-[110px]" />
+        <div className="decorative-blur absolute left-1/2 top-1/2 h-[280px] w-[280px] -translate-x-1/2 -translate-y-1/2 rounded-full bg-info/10 blur-[90px]" />
 
         <div className="relative z-10 max-w-[450px]">
 
@@ -59,6 +59,7 @@ export function AuthSplitLayout({
               <img
                 alt=""
                 className="h-full w-full object-cover"
+                decoding="async"
                 src="https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?q=80&w=1600&auto=format&fit=crop"
               />
               {/* LIVE badge */}

@@ -7,9 +7,10 @@ type FeedSectionProps = {
   polls: FeaturedPoll[];
   categories: string[];
   getVoteProps: (pollId: string | undefined) => VoteProps;
+  onShareResults: (poll: FeaturedPoll, percentages: string[]) => void;
 };
 
-export function FeedSection({ polls, categories, getVoteProps }: FeedSectionProps) {
+export function FeedSection({ polls, categories, getVoteProps, onShareResults }: FeedSectionProps) {
   const [activeCategory, setActiveCategory] = useState("All");
   const categoryListRef = useRef<HTMLDivElement>(null);
   const [categoryScroll, setCategoryScroll] = useState({
@@ -148,8 +149,14 @@ export function FeedSection({ polls, categories, getVoteProps }: FeedSectionProp
 
         <div className="grid gap-5 md:grid-cols-2 xl:grid-cols-3">
           {visiblePolls.map((poll) => (
-            <div key={poll.question}>
-              <PollPreview poll={poll} variant="feed" {...getVoteProps(poll.id)} />
+            <div
+              key={poll.id ?? poll.question}
+              style={{
+                containIntrinsicSize: "640px",
+                contentVisibility: "auto",
+              }}
+            >
+              <PollPreview onShareResults={onShareResults} poll={poll} variant="feed" {...getVoteProps(poll.id)} />
             </div>
           ))}
         </div>

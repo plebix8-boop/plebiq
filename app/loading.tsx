@@ -1,8 +1,8 @@
 export default function Loading() {
   return (
     <div className="relative flex min-h-screen flex-col items-center justify-center overflow-hidden bg-app-bg">
-      <div className="pointer-events-none absolute -left-40 -top-40 h-[520px] w-[520px] rounded-full bg-accent/20 blur-[130px]" />
-      <div className="pointer-events-none absolute -bottom-40 -right-40 h-[440px] w-[440px] rounded-full bg-accent-alt/15 blur-[120px]" />
+      <div className="decorative-blur absolute -left-40 -top-40 h-[520px] w-[520px] rounded-full bg-accent/20 blur-[130px]" />
+      <div className="decorative-blur absolute -bottom-40 -right-40 h-[440px] w-[440px] rounded-full bg-accent-alt/15 blur-[120px]" />
 
       <div className="relative flex flex-col items-center gap-6">
         {/* Spinning ring */}

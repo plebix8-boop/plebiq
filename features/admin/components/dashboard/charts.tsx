@@ -36,7 +36,10 @@ function ChartCard({
   children: React.ReactNode;
 }) {
   return (
-    <div className="rounded-2xl border border-admin-card-border bg-admin-card-bg p-6 backdrop-blur-sm">
+    <div
+      className="rounded-2xl border border-admin-card-border bg-admin-card-bg p-6 backdrop-blur-sm"
+      style={{ containIntrinsicSize: "300px", contentVisibility: "auto" }}
+    >
       <div className="mb-5 flex items-center justify-between gap-4">
         <h3 className="text-sm font-semibold text-admin-text">{title}</h3>
         {filters && (

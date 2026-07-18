@@ -1,5 +1,6 @@
 "use client";
 
+import dynamic from "next/dynamic";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useScroll } from "framer-motion";
 import { createClient } from "@/utils/supabase/client";
@@ -7,6 +8,14 @@ import { useAuth } from "@/contexts/auth-context";
 import { FeedSection } from "./components/feed-section";
 import { HeroSection } from "./components/hero-section";
 import type { FeaturedPoll } from "./data";
+
+const ShareResultsModal = dynamic(
+  () =>
+    import("./components/share-results-modal").then(
+      (module) => module.ShareResultsModal,
+    ),
+  { ssr: false },
+);
 
 type LandingPageProps = {
   featuredPoll: FeaturedPoll;
@@ -57,6 +66,29 @@ export function LandingPage({
   const [voteMap, setVoteMap] = useState<Map<string, string | null> | null>(null);
   // Map<pollId, string[]> — fresh width percentages from the DB
   const [widthsMap, setWidthsMap] = useState<Map<string, string[]>>(new Map());
+  const [shareSelection, setShareSelection] = useState<{
+    percentages: string[];
+    poll: FeaturedPoll;
+  } | null>(null);
+  const [isShareOpen, setIsShareOpen] = useState(false);
+  const [isHeroActive, setIsHeroActive] = useState(true);
+
+  function openShareResults(poll: FeaturedPoll, percentages: string[]) {
+    setShareSelection({ percentages, poll });
+    setIsShareOpen(true);
+  }
+
+  useEffect(() => {
+    const spacer = spacerRef.current;
+    if (!spacer) return undefined;
+
+    const observer = new IntersectionObserver(
+      ([entry]) => setIsHeroActive(entry.isIntersecting),
+      { threshold: 0.05 },
+    );
+    observer.observe(spacer);
+    return () => observer.disconnect();
+  }, []);
 
   // All polls including the hero, deduplicated by id
   const allPolls = useMemo(() => {
@@ -81,6 +113,7 @@ export function LandingPage({
 
     const pollIds = allPolls.map((p) => p.id!);
     const supabase = createClient();
+    let cancelled = false;
 
     Promise.all([
       supabase
@@ -93,7 +126,10 @@ export function LandingPage({
         .from("poll_options")
         .select("id, poll_id, vote_count")
         .in("poll_id", pollIds),
-    ]).then(([{ data: votes }, { data: options }]) => {
+    ])
+      .then(([{ data: votes }, { data: options }]) => {
+      if (cancelled) return;
+
       // Build vote map — every pollId gets an entry (null = no vote)
       const newVoteMap = new Map<string, string | null>(
         pollIds.map((id) => [id, null]),
@@ -113,7 +149,16 @@ export function LandingPage({
         }
         setWidthsMap(newWidthsMap);
       }
-    });
+      })
+      .catch(() => {
+        if (!cancelled) {
+          setVoteMap(new Map(allPolls.map((poll) => [poll.id!, null])));
+        }
+      });
+
+    return () => {
+      cancelled = true;
+    };
     // allPolls is stable (memoized), isAuthLoading + userId are primitives
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isAuthLoading, userId]);
@@ -151,6 +196,8 @@ export function LandingPage({
       <HeroSection
         scrollYProgress={scrollYProgress}
         featuredPoll={featuredPoll}
+        isActive={isHeroActive}
+        onShareResults={openShareResults}
         voteProps={getVoteProps(featuredPoll.id)}
       />
       {/* Scroll spacer: 100vh of scroll room drives the hero exit animation */}
@@ -159,7 +206,16 @@ export function LandingPage({
         polls={feedPolls}
         categories={feedCategories}
         getVoteProps={getVoteProps}
+        onShareResults={openShareResults}
       />
+      {shareSelection ? (
+        <ShareResultsModal
+          isOpen={isShareOpen}
+          onClose={() => setIsShareOpen(false)}
+          percentages={shareSelection.percentages}
+          poll={shareSelection.poll}
+        />
+      ) : null}
     </main>
   );
 }
