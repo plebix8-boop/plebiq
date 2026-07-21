@@ -27,6 +27,7 @@ export function ThemeLogo({
       height={height}
       preload={priority}
       src={effectiveTheme === "dark" ? "/logo-dark.png" : "/logo.png"}
+      sizes="(max-width: 640px) 126px, 180px"
       width={width}
     />
   );

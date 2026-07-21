@@ -2,8 +2,11 @@ import type { Metadata } from "next";
 import { LegalPage } from "@/features/legal/legal-page";
 
 export const metadata: Metadata = {
-  title: "Terms of Service | Plebiq",
+  title: "Terms of Service",
   description: "Terms of Service for Plebiq.",
+  alternates: { canonical: "/terms-of-service" },
+  openGraph: { type: "article", url: "https://plebiq.com/terms-of-service", title: "Terms of Service | Plebiq", description: "Terms of Service for Plebiq.", images: [{ url: "/logo.png", width: 1266, height: 435, alt: "Plebiq" }] },
+  twitter: { card: "summary_large_image", title: "Terms of Service | Plebiq", description: "Terms of Service for Plebiq.", images: ["/logo.png"] },
 };
 
 const sections = [

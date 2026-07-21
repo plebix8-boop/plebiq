@@ -6,6 +6,7 @@ import { ThemeProvider } from "@/contexts/theme-context";
 import { NavigationProgress } from "@/components/navigation-progress";
 import { PageTransition } from "@/components/page-transition";
 import { MotionProvider } from "@/components/motion-provider";
+import { SiteStructuredData } from "@/components/structured-data";
 import "./globals.css";
 
 const geistSans = Geist({
@@ -19,8 +20,37 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Plebiq -- the world votes here",
-  description: "Plebiq -- the world votes here",
+  metadataBase: new URL("https://plebiq.com"),
+  title: {
+    default: "Plebiq — the world votes here",
+    template: "%s | Plebiq",
+  },
+  description:
+    "Plebiq is a social voting platform where the world shares opinions and votes on the questions that matter.",
+  alternates: {
+    canonical: "/",
+  },
+  openGraph: {
+    type: "website",
+    url: "https://plebiq.com",
+    siteName: "Plebiq",
+    title: "Plebiq — the world votes here",
+    description:
+      "Share your opinion, discover what people think, and vote on Plebiq.",
+    locale: "en_US",
+    images: [{ url: "/logo.png", width: 1266, height: 435, alt: "Plebiq" }],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Plebiq — the world votes here",
+    description:
+      "Share your opinion, discover what people think, and vote on Plebiq.",
+    images: ["/logo.png"],
+  },
+  robots: {
+    index: true,
+    follow: true,
+  },
 };
 
 const themeInitScript = `
@@ -52,6 +82,7 @@ export default function RootLayout({
         <script dangerouslySetInnerHTML={{ __html: themeInitScript }} />
       </head>
       <body className="min-h-full flex flex-col" suppressHydrationWarning>
+        <SiteStructuredData />
         <ThemeProvider>
           <AuthProvider>
             <MotionProvider>

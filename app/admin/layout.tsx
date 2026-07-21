@@ -1,6 +1,12 @@
 import type { ReactNode } from "react";
 import { redirect } from "next/navigation";
+import type { Metadata } from "next";
 import { createClient } from "@/utils/supabase/server";
+
+export const metadata: Metadata = {
+  title: "Admin",
+  robots: { index: false, follow: false },
+};
 import { SidebarProfileCard } from "@/features/admin/components/sidebar-profile-card";
 import { SidebarNav } from "@/features/admin/components/sidebar-nav";
 import { AdminMobileNav } from "@/features/admin/components/admin-mobile-nav";

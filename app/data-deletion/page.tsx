@@ -2,8 +2,11 @@ import type { Metadata } from "next";
 import { LegalPage } from "@/features/legal/legal-page";
 
 export const metadata: Metadata = {
-  title: "Data Deletion | Plebiq",
+  title: "Data Deletion",
   description: "Data deletion instructions for Plebiq.",
+  alternates: { canonical: "/data-deletion" },
+  openGraph: { type: "article", url: "https://plebiq.com/data-deletion", title: "Data Deletion | Plebiq", description: "Data deletion instructions for Plebiq.", images: [{ url: "/logo.png", width: 1266, height: 435, alt: "Plebiq" }] },
+  twitter: { card: "summary_large_image", title: "Data Deletion | Plebiq", description: "Data deletion instructions for Plebiq.", images: ["/logo.png"] },
 };
 
 const sections = [
