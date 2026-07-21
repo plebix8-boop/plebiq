@@ -38,14 +38,14 @@ export const metadata: Metadata = {
     description:
       "Share your opinion, discover what people think, and vote on Plebiq.",
     locale: "en_US",
-    images: [{ url: "/logo.png", width: 1266, height: 435, alt: "Plebiq" }],
+    images: [{ url: "/opengraph-image", width: 1200, height: 630, alt: "Plebiq - the world votes here" }],
   },
   twitter: {
     card: "summary_large_image",
     title: "Plebiq — the world votes here",
     description:
       "Share your opinion, discover what people think, and vote on Plebiq.",
-    images: ["/logo.png"],
+    images: ["/opengraph-image"],
   },
   robots: {
     index: true,

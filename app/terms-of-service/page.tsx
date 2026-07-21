@@ -5,8 +5,8 @@ export const metadata: Metadata = {
   title: "Terms of Service",
   description: "Terms of Service for Plebiq.",
   alternates: { canonical: "/terms-of-service" },
-  openGraph: { type: "article", url: "https://plebiq.com/terms-of-service", title: "Terms of Service | Plebiq", description: "Terms of Service for Plebiq.", images: [{ url: "/logo.png", width: 1266, height: 435, alt: "Plebiq" }] },
-  twitter: { card: "summary_large_image", title: "Terms of Service | Plebiq", description: "Terms of Service for Plebiq.", images: ["/logo.png"] },
+  openGraph: { type: "article", url: "https://plebiq.com/terms-of-service", title: "Terms of Service | Plebiq", description: "Terms of Service for Plebiq.", images: [{ url: "/opengraph-image", width: 1200, height: 630, alt: "Plebiq - the world votes here" }] },
+  twitter: { card: "summary_large_image", title: "Terms of Service | Plebiq", description: "Terms of Service for Plebiq.", images: ["/opengraph-image"] },
 };
 
 const sections = [

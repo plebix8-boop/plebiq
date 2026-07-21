@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { SiteFooter } from "@/components/site-footer";
 
 type LegalSection = {
   title: string;
@@ -14,8 +15,9 @@ type LegalPageProps = {
 
 export function LegalPage({ title, description, updated, sections }: LegalPageProps) {
   return (
-    <main className="min-h-screen bg-app-bg px-5 py-10 text-app-fg sm:px-8 lg:px-10">
-      <div className="mx-auto max-w-3xl">
+    <>
+      <main className="min-h-screen bg-app-bg px-5 py-10 text-app-fg sm:px-8 lg:px-10">
+        <div className="mx-auto max-w-3xl">
         <Link
           href="/"
           className="inline-flex items-center text-sm font-semibold text-accent transition hover:text-accent-alt"
@@ -46,7 +48,9 @@ export function LegalPage({ title, description, updated, sections }: LegalPagePr
             </section>
           ))}
         </div>
-      </div>
-    </main>
+        </div>
+      </main>
+      <SiteFooter />
+    </>
   );
 }

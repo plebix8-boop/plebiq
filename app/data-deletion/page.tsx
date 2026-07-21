@@ -5,8 +5,8 @@ export const metadata: Metadata = {
   title: "Data Deletion",
   description: "Data deletion instructions for Plebiq.",
   alternates: { canonical: "/data-deletion" },
-  openGraph: { type: "article", url: "https://plebiq.com/data-deletion", title: "Data Deletion | Plebiq", description: "Data deletion instructions for Plebiq.", images: [{ url: "/logo.png", width: 1266, height: 435, alt: "Plebiq" }] },
-  twitter: { card: "summary_large_image", title: "Data Deletion | Plebiq", description: "Data deletion instructions for Plebiq.", images: ["/logo.png"] },
+  openGraph: { type: "article", url: "https://plebiq.com/data-deletion", title: "Data Deletion | Plebiq", description: "Data deletion instructions for Plebiq.", images: [{ url: "/opengraph-image", width: 1200, height: 630, alt: "Plebiq - the world votes here" }] },
+  twitter: { card: "summary_large_image", title: "Data Deletion | Plebiq", description: "Data deletion instructions for Plebiq.", images: ["/opengraph-image"] },
 };
 
 const sections = [

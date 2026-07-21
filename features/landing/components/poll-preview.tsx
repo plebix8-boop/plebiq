@@ -186,7 +186,7 @@ export function PollPreview({
             }`}
         >
           <Image
-            alt=""
+            alt={poll.question}
             className="object-cover"
             decoding="async"
             fetchPriority={isCompact ? "auto" : "high"}

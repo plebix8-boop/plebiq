@@ -5,6 +5,7 @@ import { ThemeLogo } from "@/components/theme-logo";
 import { createAdminClient } from "@/utils/supabase/admin";
 import { LandingPage } from "@/features/landing/landing-page";
 import type { FeaturedPoll } from "@/features/landing/data";
+import { SiteFooter } from "@/components/site-footer";
 
 const OPTION_ACCENTS = [
   "from-accent to-accent-alt",
@@ -196,7 +197,12 @@ async function PollsContent() {
   const rawPolls = await fetchLivePolls();
 
   if (!rawPolls || rawPolls.length === 0) {
-    return <EmptyLandingState />;
+    return (
+      <>
+        <EmptyLandingState />
+        <SiteFooter />
+      </>
+    );
   }
 
   const polls = (rawPolls as RawPoll[]).map(toFeaturedPoll);
@@ -214,11 +220,14 @@ async function PollsContent() {
   const categories = ["All", ...uniqueCategories];
 
   return (
-    <LandingPage
-      featuredPoll={featured}
-      feedPolls={polls}
-      feedCategories={categories}
-    />
+    <>
+      <LandingPage
+        featuredPoll={featured}
+        feedPolls={polls}
+        feedCategories={categories}
+      />
+      <SiteFooter />
+    </>
   );
 }
 

@@ -4,6 +4,7 @@ import { createClient } from "@/utils/supabase/server";
 
 export const metadata: Metadata = {
   title: "Reset password",
+  alternates: { canonical: null },
   robots: { index: false, follow: false },
 };
 

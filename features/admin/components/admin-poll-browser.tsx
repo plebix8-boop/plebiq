@@ -126,7 +126,7 @@ export function AdminPollBrowser({
             <div className="relative h-44 overflow-hidden">
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img
-                alt=""
+                alt={poll.title}
                 className="h-full w-full object-cover"
                 decoding="async"
                 loading="lazy"
