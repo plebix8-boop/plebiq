@@ -27,6 +27,20 @@ function parseValue(value: string) {
   return isNaN(d.getTime()) ? null : d;
 }
 
+/** Converts an ISO timestamp to the picker's local "YYYY-MM-DDTHH:mm" value. */
+export function isoToLocalInput(iso: string | null | undefined) {
+  if (!iso) return "";
+  const d = new Date(iso);
+  if (isNaN(d.getTime())) return "";
+  return `${d.getFullYear()}-${pad2(d.getMonth() + 1)}-${pad2(d.getDate())}T${pad2(d.getHours())}:${pad2(d.getMinutes())}`;
+}
+
+/** Converts the picker's local value to an absolute ISO timestamp (UTC). */
+export function localInputToIso(value: string) {
+  const d = parseValue(value);
+  return d ? d.toISOString() : "";
+}
+
 function formatDisplay(value: string) {
   const d = parseValue(value);
   if (!d) return "";
@@ -277,7 +291,7 @@ export function AdminDateTimePicker({
 
   return (
     <div className="relative">
-      {name && <input type="hidden" name={name} value={value} />}
+      {name && <input type="hidden" name={name} value={localInputToIso(value)} />}
       <button
         ref={buttonRef}
         type="button"

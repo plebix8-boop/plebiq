@@ -5,10 +5,20 @@ import { AppInput, AppTextarea } from "@/components/form-controls";
 import { AppButton } from "@/components/ui/button";
 import { useRouter } from "next/navigation";
 import { createPoll, updatePoll } from "@/features/admin/actions";
-import type { AdminActionState, AdminPoll, AdminPollOption } from "@/features/admin/types";
+import {
+  POLL_STATUSES,
+  POLL_STATUS_LABELS,
+  type AdminActionState,
+  type AdminPoll,
+  type AdminPollOption,
+} from "@/features/admin/types";
 import type { ManagedCategory } from "./category-management-modal";
 import { AdminSelect } from "@/features/admin/components/ui/admin-select";
-import { AdminDateTimePicker } from "@/features/admin/components/ui/admin-date-time-picker";
+import {
+  AdminDateTimePicker,
+  isoToLocalInput,
+  localInputToIso,
+} from "@/features/admin/components/ui/admin-date-time-picker";
 import { AdminToggle } from "@/features/admin/components/ui/admin-toggle";
 
 type EditableOption = {
@@ -63,6 +73,8 @@ export function NewPollModal({
   const router = useRouter();
   const isEdit = Boolean(poll);
   const overlayRef = useRef<HTMLDivElement>(null);
+  const pointerDownOnOverlay = useRef(false);
+  const [dragEnabledId, setDragEnabledId] = useState<string | null>(null);
   const dragIndex = useRef<number | null>(null);
   const dragOverIndex = useRef<number | null>(null);
 
@@ -76,9 +88,7 @@ export function NewPollModal({
   );
   const [categoryId, setCategoryId] = useState(poll?.category?.id ?? "");
   const [status, setStatus] = useState<AdminPoll["status"]>(poll?.status ?? "draft");
-  const [expiresAt, setExpiresAt] = useState(
-    poll?.expires_at ? poll.expires_at.slice(0, 16) : "",
-  );
+  const [expiresAt, setExpiresAt] = useState(isoToLocalInput(poll?.expires_at));
   const [isFeatured, setIsFeatured] = useState(Boolean(poll?.is_featured));
   const [isPinned, setIsPinned] = useState(Boolean(poll?.is_pinned));
   const [options, setOptions] = useState<EditableOption[]>(() =>
@@ -94,25 +104,84 @@ export function NewPollModal({
     title: false,
   });
 
+  const currentSnapshot = JSON.stringify({
+    title,
+    description,
+    imageUrl,
+    sortOrder,
+    categoryId,
+    status,
+    expiresAt,
+    isFeatured,
+    isPinned,
+    options: options.map((option) => [option.id, option.label, option.description]),
+  });
+
+  const [initialSnapshot] = useState(currentSnapshot);
+  const isDirty = currentSnapshot !== initialSnapshot;
+
+  function requestClose() {
+    if (
+      isSubmitting ||
+      (isDirty && !window.confirm("Discard your unsaved changes?"))
+    ) {
+      return;
+    }
+
+    onClose();
+  }
+
+  const requestCloseRef = useRef(requestClose);
+
+  useEffect(() => {
+    requestCloseRef.current = requestClose;
+  });
+
   useEffect(() => {
     const onKey = (event: KeyboardEvent) => {
       if (event.key === "Escape") {
-        onClose();
+        requestCloseRef.current();
       }
     };
 
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
-  }, [onClose]);
+  }, []);
 
   function addOption() {
     setOptions((current) => [...current, createOption()]);
   }
 
   function removeOption(id: string) {
+    const existing = poll?.options.find((option) => option.id === id);
+    const votes = existing?.vote_count ?? 0;
+
+    if (
+      votes > 0 &&
+      !window.confirm(
+        `This option has ${votes.toLocaleString()} vote${votes === 1 ? "" : "s"}. Removing it deletes those votes when you save. Remove it anyway?`,
+      )
+    ) {
+      return;
+    }
+
     setOptions((current) =>
       current.length <= 2 ? current : current.filter((option) => option.id !== id),
     );
+  }
+
+  function moveOption(index: number, delta: -1 | 1) {
+    setOptions((current) => {
+      const target = index + delta;
+
+      if (target < 0 || target >= current.length) {
+        return current;
+      }
+
+      const next = [...current];
+      [next[index], next[target]] = [next[target], next[index]];
+      return next;
+    });
   }
 
   function updateOptionField(
@@ -152,6 +221,7 @@ export function NewPollModal({
     });
     dragIndex.current = null;
     dragOverIndex.current = null;
+    setDragEnabledId(null);
   }
 
   function handleSubmit() {
@@ -181,6 +251,11 @@ export function NewPollModal({
       return;
     }
 
+    if (imageUrl.trim() && !/^https?:\/\/\S+$/i.test(imageUrl.trim())) {
+      setResult({ error: "Image URL must start with http:// or https://." });
+      return;
+    }
+
     setIsSubmitting(true);
     setResult({});
     setValidationErrors({ category: false, optionIds: [], title: false });
@@ -194,7 +269,7 @@ export function NewPollModal({
         formData.set("status", status);
         formData.set("imageUrl", imageUrl);
         formData.set("sortOrder", sortOrder);
-        formData.set("expiresAt", expiresAt);
+        formData.set("expiresAt", localInputToIso(expiresAt));
         formData.set(
           "optionsJson",
           JSON.stringify(
@@ -239,15 +314,23 @@ export function NewPollModal({
   return (
     <div
       ref={overlayRef}
-      onClick={(event) => {
-        if (event.target === overlayRef.current) {
-          onClose();
-        }
+      onMouseDown={(event) => {
+        pointerDownOnOverlay.current = event.target === overlayRef.current;
       }}
-      className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4 backdrop-blur-sm"
+      onClick={(event) => {
+        if (pointerDownOnOverlay.current && event.target === overlayRef.current) {
+          requestClose();
+        }
+        pointerDownOnOverlay.current = false;
+      }}
+      className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-3 backdrop-blur-sm sm:p-4"
     >
-      <div className="relative flex max-h-[90vh] w-full max-w-3xl flex-col overflow-hidden rounded-2xl border border-admin-card-border bg-admin-card-bg text-admin-text shadow-2xl">
-        <div className="flex shrink-0 items-center justify-between border-b border-admin-divider px-6 py-4">
+      <div
+        role="dialog"
+        aria-modal="true"
+        aria-label={isEdit ? "Edit poll" : "Create new poll"}
+        className="relative flex max-h-[92dvh] w-full max-w-3xl flex-col overflow-hidden rounded-2xl border border-admin-card-border bg-admin-card-bg text-admin-text shadow-2xl">
+        <div className="flex shrink-0 items-center justify-between border-b border-admin-divider px-4 py-3 sm:px-6 sm:py-4">
           <div>
             <h2 className="text-base font-bold text-admin-text">
               {isEdit ? "Edit Poll" : "Create New Poll"}
@@ -257,7 +340,8 @@ export function NewPollModal({
             </p>
           </div>
           <button
-            onClick={onClose}
+            onClick={requestClose}
+            aria-label="Close"
             className="flex size-8 items-center justify-center rounded-lg text-admin-text-muted transition hover:bg-admin-button-secondary-bg-hover hover:text-admin-text"
           >
             <svg className="size-4" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
@@ -266,7 +350,7 @@ export function NewPollModal({
           </button>
         </div>
 
-        <div className="scrollbar-thin flex-1 overflow-y-auto px-6 py-5">
+        <div className="scrollbar-thin flex-1 overflow-y-auto px-4 py-4 sm:px-6 sm:py-5">
           <div className="space-y-5">
             <div>
               <label className={labelClass}>
@@ -330,11 +414,7 @@ export function NewPollModal({
                 <AdminSelect
                   value={status}
                   onChange={(v) => setStatus(v as AdminPoll["status"])}
-                  options={[
-                    { value: "draft", label: "Draft" },
-                    { value: "live", label: "Live" },
-                    { value: "closed", label: "Closed" },
-                  ]}
+                  options={POLL_STATUSES.map((value) => ({ value, label: POLL_STATUS_LABELS[value] }))}
                 />
               </div>
             </div>
@@ -407,34 +487,64 @@ export function NewPollModal({
                 {options.map((option, index) => (
                   <div
                     key={option.id}
-                    draggable
+                    draggable={dragEnabledId === option.id}
                     onDragStart={() => onDragStart(index)}
                     onDragOver={(event) => onDragOver(event, index)}
                     onDrop={onDrop}
                     onDragEnd={() => {
                       dragIndex.current = null;
                       dragOverIndex.current = null;
+                      setDragEnabledId(null);
                     }}
                     className={`rounded-xl border bg-admin-surface p-4 transition ${validationErrors.optionIds.includes(option.id) ? "border-admin-danger-text ring-2 ring-admin-danger-text/20" : "border-admin-card-border hover:border-admin-card-border-hover"}`}
                   >
                     <div className="mb-3 flex items-center justify-between">
                       <div className="flex items-center gap-2">
-                        <span className="cursor-grab active:cursor-grabbing" title="Drag to reorder">
+                        <span
+                          className="hidden cursor-grab active:cursor-grabbing md:inline-flex"
+                          title="Drag to reorder"
+                          onMouseDown={() => setDragEnabledId(option.id)}
+                          onMouseUp={() => setDragEnabledId(null)}
+                        >
                           <GripIcon />
                         </span>
                         <span className="text-xs font-semibold text-admin-text-muted">
                           Option {index + 1}
                         </span>
                       </div>
-                      {options.length > 2 ? (
+                      <div className="flex items-center gap-1">
                         <button
                           type="button"
-                          onClick={() => removeOption(option.id)}
-                          className="rounded-lg px-2 py-1 text-xs font-semibold text-admin-danger-text transition hover:bg-admin-surface-hover"
+                          onClick={() => moveOption(index, -1)}
+                          disabled={index === 0}
+                          aria-label={`Move option ${index + 1} up`}
+                          className="grid size-8 place-items-center rounded-lg text-admin-text-muted transition hover:bg-admin-surface-hover hover:text-admin-text disabled:cursor-not-allowed disabled:opacity-30"
                         >
-                          Remove
+                          <svg className="size-4" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                            <path d="M4 10l4-4 4 4" />
+                          </svg>
                         </button>
-                      ) : null}
+                        <button
+                          type="button"
+                          onClick={() => moveOption(index, 1)}
+                          disabled={index === options.length - 1}
+                          aria-label={`Move option ${index + 1} down`}
+                          className="grid size-8 place-items-center rounded-lg text-admin-text-muted transition hover:bg-admin-surface-hover hover:text-admin-text disabled:cursor-not-allowed disabled:opacity-30"
+                        >
+                          <svg className="size-4" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                            <path d="M4 6l4 4 4-4" />
+                          </svg>
+                        </button>
+                        {options.length > 2 ? (
+                          <button
+                            type="button"
+                            onClick={() => removeOption(option.id)}
+                            className="rounded-lg px-2 py-1 text-xs font-semibold text-admin-danger-text transition hover:bg-admin-surface-hover"
+                          >
+                            Remove
+                          </button>
+                        ) : null}
+                      </div>
                     </div>
 
                     <div className="space-y-2.5">
@@ -476,34 +586,33 @@ export function NewPollModal({
               </div>
             </div>
 
-            {result.error ? (
-              <div className="flex gap-3 rounded-2xl border border-admin-danger-text/60 bg-danger-soft px-4 py-3 text-sm font-semibold text-admin-danger-text shadow-[0_12px_32px_var(--shadow-soft)]" role="alert">
-                <span aria-hidden="true" className="grid size-6 shrink-0 place-items-center rounded-full bg-admin-danger-text text-xs font-black text-admin-bg">!</span>
-                <span className="pt-0.5">{result.error}</span>
-              </div>
-            ) : null}
           </div>
         </div>
 
-        <div className="flex shrink-0 items-center justify-end gap-3 border-t border-admin-divider px-6 py-4">
-          <AppButton
-            onClick={onClose}
-            variant="secondary"
-          >
-            Cancel
-          </AppButton>
-          <AppButton
-            onClick={handleSubmit}
-            disabled={isSubmitting}
-          >
-            {isSubmitting
-              ? isEdit
-                ? "Updating..."
-                : "Creating..."
-              : isEdit
-                ? "Update Poll"
-                : "Create Poll"}
-          </AppButton>
+        <div className="shrink-0 border-t border-admin-divider px-4 py-3 sm:px-6 sm:py-4">
+          {result.error ? (
+            <div
+              className="mb-3 flex gap-3 rounded-2xl border border-admin-danger-text/60 bg-danger-soft px-4 py-3 text-sm font-semibold text-admin-danger-text"
+              role="alert"
+            >
+              <span aria-hidden="true" className="grid size-6 shrink-0 place-items-center rounded-full bg-admin-danger-text text-xs font-black text-admin-bg">!</span>
+              <span className="pt-0.5">{result.error}</span>
+            </div>
+          ) : null}
+          <div className="flex items-center justify-end gap-3">
+            <AppButton onClick={requestClose} variant="secondary">
+              Cancel
+            </AppButton>
+            <AppButton onClick={handleSubmit} disabled={isSubmitting}>
+              {isSubmitting
+                ? isEdit
+                  ? "Updating..."
+                  : "Creating..."
+                : isEdit
+                  ? "Update Poll"
+                  : "Create Poll"}
+            </AppButton>
+          </div>
         </div>
       </div>
     </div>

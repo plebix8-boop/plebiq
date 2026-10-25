@@ -1,7 +1,7 @@
 import Link from "next/link";
 import type { ComponentProps, ButtonHTMLAttributes } from "react";
 
-type ButtonVariant = "primary" | "secondary";
+type ButtonVariant = "primary" | "secondary" | "danger";
 type ButtonSize = "sm" | "md" | "lg" | "icon";
 
 const baseClasses =
@@ -12,6 +12,8 @@ const variantClasses: Record<ButtonVariant, string> = {
     "border border-transparent bg-button-primary-bg text-button-primary-text shadow-[0_8px_22px_var(--shadow-soft)] hover:bg-button-primary-bg-hover",
   secondary:
     "border border-button-secondary-border bg-button-secondary-bg text-button-secondary-text shadow-[inset_0_1px_0_var(--fg-7)] hover:bg-button-secondary-bg-hover",
+  danger:
+    "border border-admin-danger-text/40 bg-danger-soft text-admin-danger-text hover:bg-admin-danger-text/15",
 };
 
 const sizeClasses: Record<ButtonSize, string> = {

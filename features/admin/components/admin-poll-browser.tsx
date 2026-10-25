@@ -1,17 +1,22 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import type { AdminCategory, AdminPoll } from "@/features/admin/types";
+import {
+  POLL_STATUSES,
+  POLL_STATUS_LABELS,
+  type AdminCategory,
+  type AdminPoll,
+} from "@/features/admin/types";
 
 type AdminPollBrowserProps = {
   categories: AdminCategory[];
   polls: AdminPoll[];
 };
 
-const statusFilters = ["All", "draft", "live", "closed"] as const;
+const statusFilters = ["All", ...POLL_STATUSES] as const;
 
 function formatStatus(status: AdminPoll["status"]) {
-  return status.charAt(0).toUpperCase() + status.slice(1);
+  return POLL_STATUS_LABELS[status];
 }
 
 function formatDate(value: string | null) {
@@ -39,6 +44,10 @@ function getStatusClasses(status: AdminPoll["status"]) {
 
   if (status === "closed") {
     return "border-white/10 bg-white/8 text-white/65";
+  }
+
+  if (status === "coming_soon") {
+    return "border-sky-300/20 bg-sky-300/12 text-sky-100";
   }
 
   return "border-amber-300/20 bg-amber-300/12 text-amber-100";
@@ -84,7 +93,7 @@ export function AdminPollBrowser({
                       : "bg-white/8 text-white/65 hover:bg-white/12 hover:text-white"
                     }`}
                 >
-                  {status}
+                  {status === "All" ? "All" : POLL_STATUS_LABELS[status]}
                 </button>
               ))}
             </div>

@@ -6,11 +6,13 @@ import { revalidatePath, revalidateTag } from "next/cache";
 import { createAdminClient } from "@/utils/supabase/admin";
 import { createClient } from "@/utils/supabase/server";
 import { feedbackStatuses, type FeedbackStatus } from "@/features/feedback/types";
-import type {
-  AdminActionState,
-  CategoryActionState,
-  MockUserSeedState,
-  VoteCampaignState,
+import {
+  isPollStatus,
+  type AdminActionState,
+  type CategoryActionState,
+  type MockUserSeedState,
+  type PollStatus,
+  type VoteCampaignState,
 } from "./types";
 
 function normalizeText(value: FormDataEntryValue | null) {
@@ -565,6 +567,10 @@ export async function createPoll(
       return { error: "Poll title is required." };
     }
 
+    if (!isPollStatus(status)) {
+      return { error: "Choose a valid poll status." };
+    }
+
     if (!categoryId) {
       return { error: "Choose a category for the poll." };
     }
@@ -613,6 +619,8 @@ export async function createPoll(
     );
 
     if (optionsError) {
+      // Don't leave a half-created poll (no options) behind.
+      await supabase.from("polls").delete().eq("id", createdPoll.id);
       return { error: optionsError.message };
     }
 
@@ -636,6 +644,11 @@ export async function updatePollFlags(formData: FormData) {
   }
 
   const status = normalizeText(formData.get("status")) || "draft";
+
+  if (!isPollStatus(status)) {
+    throw new Error("Choose a valid poll status.");
+  }
+
   const isFeatured = normalizeBoolean(formData.get("isFeatured"));
   const isPinned = normalizeBoolean(formData.get("isPinned"));
   const sortOrder = normalizeInteger(formData.get("sortOrder"));
@@ -687,6 +700,10 @@ export async function updatePoll(
 
     if (!title) {
       return { error: "Poll title is required." };
+    }
+
+    if (!isPollStatus(status)) {
+      return { error: "Choose a valid poll status." };
     }
 
     if (!categoryId) {
@@ -1199,13 +1216,21 @@ export async function deleteVoteCampaign(
 
 export async function updatePollStatus(
   pollId: string,
-  status: "live" | "closed" | "draft",
+  status: PollStatus,
 ): Promise<AdminActionState> {
   try {
+    if (!isPollStatus(status)) {
+      return { error: "Choose a valid poll status." };
+    }
+
     const { supabase } = await requireAdmin();
     const { error } = await supabase
       .from("polls")
-      .update({ status, updated_at: new Date().toISOString() })
+      .update({
+        status,
+        closed_at: status === "closed" ? new Date().toISOString() : null,
+        updated_at: new Date().toISOString(),
+      })
       .eq("id", pollId);
 
     if (error) return { error: error.message };
@@ -1214,9 +1239,42 @@ export async function updatePollStatus(
     revalidatePath("/admin/management");
     revalidatePath("/admin");
     revalidateLandingPolls();
-    return { success: `Poll set to ${status}.` };
+    return { success: `Poll set to ${status.replace("_", " ")}.` };
   } catch (error) {
     return { error: error instanceof Error ? error.message : "Unable to update status." };
+  }
+}
+
+export async function deletePoll(pollId: string): Promise<AdminActionState> {
+  try {
+    if (typeof pollId !== "string" || !uuidPattern.test(pollId)) {
+      return { error: "Invalid poll id." };
+    }
+
+    const { supabase } = await requireAdmin();
+    const { data, error } = await supabase
+      .from("polls")
+      .delete()
+      .eq("id", pollId)
+      .select("id");
+
+    if (error) {
+      return { error: error.message };
+    }
+
+    if (!data?.length) {
+      return { error: "Poll not found or already deleted." };
+    }
+
+    revalidatePath("/admin");
+    revalidatePath("/admin/management");
+    revalidatePath("/admin/polls");
+    revalidateLandingPolls();
+    return { success: "Poll deleted." };
+  } catch (error) {
+    return {
+      error: error instanceof Error ? error.message : "Unable to delete poll.",
+    };
   }
 }
 

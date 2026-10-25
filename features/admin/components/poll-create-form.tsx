@@ -4,7 +4,12 @@ import { useActionState, useState } from "react";
 import { AppInput, AppTextarea } from "@/components/form-controls";
 import { AppButton } from "@/components/ui/button";
 import { createPoll } from "@/features/admin/actions";
-import type { AdminActionState, AdminCategory } from "@/features/admin/types";
+import {
+  POLL_STATUSES,
+  POLL_STATUS_LABELS,
+  type AdminActionState,
+  type AdminCategory,
+} from "@/features/admin/types";
 import { AdminSelect } from "@/features/admin/components/ui/admin-select";
 import { AdminDateTimePicker } from "@/features/admin/components/ui/admin-date-time-picker";
 import { AdminToggle } from "@/features/admin/components/ui/admin-toggle";
@@ -150,11 +155,7 @@ export function PollCreateForm({ categories }: PollCreateFormProps) {
             name="status"
             value={pollStatus}
             onChange={setPollStatus}
-            options={[
-              { value: "draft", label: "Draft" },
-              { value: "live", label: "Live" },
-              { value: "closed", label: "Closed" },
-            ]}
+            options={POLL_STATUSES.map((value) => ({ value, label: POLL_STATUS_LABELS[value] }))}
           />
         </div>
 

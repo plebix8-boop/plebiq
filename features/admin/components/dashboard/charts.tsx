@@ -37,18 +37,18 @@ function ChartCard({
 }) {
   return (
     <div
-      className="rounded-2xl border border-admin-card-border bg-admin-card-bg p-6 backdrop-blur-sm"
+      className="rounded-2xl border border-admin-card-border bg-admin-card-bg p-4 backdrop-blur-sm sm:p-6"
       style={{ containIntrinsicSize: "300px", contentVisibility: "auto" }}
     >
-      <div className="mb-5 flex items-center justify-between gap-4">
+      <div className="mb-5 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between sm:gap-4">
         <h3 className="text-sm font-semibold text-admin-text">{title}</h3>
         {filters && (
-          <div className="flex gap-1">
+          <div className="-mx-1 flex gap-1 overflow-x-auto px-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
             {filters.map((f) => (
               <button
                 key={f.value}
                 onClick={() => onFilterChange?.(f.value)}
-                className={`rounded-lg px-3 py-1 text-xs font-semibold transition ${
+                className={`shrink-0 whitespace-nowrap rounded-lg px-3 py-1.5 text-xs font-semibold transition ${
                   activeFilter === f.value
                     ? "bg-admin-nav-active-bg text-admin-nav-active-text"
                     : "text-admin-text-muted hover:text-admin-text"

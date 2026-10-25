@@ -6,8 +6,11 @@ export type PollOption = {
   previewWidth: string;
 };
 
+export type PollDisplayStatus = "draft" | "coming_soon" | "live" | "closed";
+
 export type FeaturedPoll = {
   id?: string;
+  status?: PollDisplayStatus;
   tag: string;
   category: string;
   image: string;

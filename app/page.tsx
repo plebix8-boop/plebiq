@@ -35,6 +35,8 @@ type RawPoll = {
   is_pinned: boolean | null;
   sort_order: number | null;
   image_url: string | null;
+  status: "live" | "coming_soon";
+  created_at?: string;
   category: { id: string; name: string; slug: string } | { id: string; name: string; slug: string }[] | null;
   options: RawOption[];
 };
@@ -55,9 +57,10 @@ function toFeaturedPoll(poll: RawPoll): FeaturedPoll {
 
   return {
     id: poll.id,
+    status: poll.status,
     tag: poll.is_featured
       ? "Featured live poll"
-      : (category?.name ?? "Live poll"),
+      : (category?.name ?? (poll.status === "coming_soon" ? "Coming soon" : "Live poll")),
     category: category?.name ?? "General",
     image: poll.image_url || FALLBACK_IMAGE,
     question: poll.title,
@@ -75,22 +78,46 @@ function toFeaturedPoll(poll: RawPoll): FeaturedPoll {
   };
 }
 
+const POLL_SELECT = `
+  id, title, description, status, is_featured, is_pinned, sort_order, image_url, created_at,
+  category:categories(id, name, slug),
+  options:poll_options(id, label, description, sort_order, vote_count)
+`;
+
 const fetchLivePolls = unstable_cache(
   async () => {
     const supabase = createAdminClient();
-    const { data } = await supabase
+    const { data: live } = await supabase
       .from("polls")
-      .select(
-        `
-          id, title, description, is_featured, is_pinned, sort_order, image_url,
-          category:categories(id, name, slug),
-          options:poll_options(id, label, description, sort_order, vote_count)
-        `,
-      )
-      .eq("status", "live")
-      .order("sort_order", { ascending: true, nullsFirst: false })
-      .order("created_at", { ascending: false });
-    return data as RawPoll[] | null;
+      .select(POLL_SELECT)
+      .eq("status", "live");
+
+    // Coming-soon polls are queried separately so a database that has not been
+    // migrated yet (no 'coming_soon' enum value) can never hide the live polls.
+    const { data: comingSoon, error: comingSoonError } = await supabase
+      .from("polls")
+      .select(POLL_SELECT)
+      .eq("status", "coming_soon");
+
+    const polls = [
+      ...((live as unknown as RawPoll[] | null) ?? []),
+      ...(comingSoonError ? [] : ((comingSoon as unknown as RawPoll[] | null) ?? [])),
+    ];
+
+    if (!live && !polls.length) {
+      return null;
+    }
+
+    return polls.sort((a, b) => {
+      const orderA = a.sort_order ?? Number.POSITIVE_INFINITY;
+      const orderB = b.sort_order ?? Number.POSITIVE_INFINITY;
+
+      if (orderA !== orderB) {
+        return orderA < orderB ? -1 : 1;
+      }
+
+      return (b.created_at ?? "").localeCompare(a.created_at ?? "");
+    });
   },
   ["landing-polls"],
   { revalidate: 60, tags: ["landing-polls"] },

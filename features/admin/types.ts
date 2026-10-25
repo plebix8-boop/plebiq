@@ -1,3 +1,18 @@
+export const POLL_STATUSES = ["draft", "coming_soon", "live", "closed"] as const;
+
+export type PollStatus = (typeof POLL_STATUSES)[number];
+
+export const POLL_STATUS_LABELS: Record<PollStatus, string> = {
+  draft: "Draft",
+  coming_soon: "Coming Soon",
+  live: "Live",
+  closed: "Closed",
+};
+
+export function isPollStatus(value: string): value is PollStatus {
+  return (POLL_STATUSES as readonly string[]).includes(value);
+}
+
 export type AdminActionState = {
   error?: string;
   success?: string;
@@ -50,7 +65,7 @@ export type VoteCampaignState = {
 export type VoteCampaignPoll = {
   id: string;
   title: string;
-  status: "draft" | "live" | "closed";
+  status: PollStatus;
   options: {
     id: string;
     label: string;
@@ -175,7 +190,7 @@ export type AdminPoll = {
   id: string;
   title: string;
   description: string | null;
-  status: "draft" | "live" | "closed";
+  status: PollStatus;
   is_featured: boolean | null;
   is_pinned: boolean | null;
   sort_order: number | null;

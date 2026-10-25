@@ -2,13 +2,19 @@
 
 import { startTransition, useState } from "react";
 import { AppButton, AppButtonLink } from "@/components/ui/button";
-import { reorderPolls } from "@/features/admin/actions";
+import { useRouter } from "next/navigation";
+import { deletePoll, reorderPolls } from "@/features/admin/actions";
 import {
   CategoryManagementModal,
   type ManagedCategory,
 } from "@/features/admin/components/management/category-management-modal";
 import { NewPollModal } from "@/features/admin/components/management/new-poll-modal";
-import type { AdminCategory, AdminPoll } from "@/features/admin/types";
+import {
+  POLL_STATUSES,
+  POLL_STATUS_LABELS,
+  type AdminCategory,
+  type AdminPoll,
+} from "@/features/admin/types";
 import { PollPreview } from "@/features/landing/components/poll-preview";
 import type { FeaturedPoll } from "@/features/landing/data";
 
@@ -23,10 +29,13 @@ const ACCENTS = [
   "from-orange-400 to-red-400",
 ];
 
-const statusFilters = ["All", "Live", "Draft", "Closed"] as const;
+const statusFilters = [
+  "All",
+  ...POLL_STATUSES.map((status) => POLL_STATUS_LABELS[status]),
+];
 
 function formatStatus(status: AdminPoll["status"]) {
-  return status.charAt(0).toUpperCase() + status.slice(1);
+  return POLL_STATUS_LABELS[status];
 }
 
 function getPreviewWidth(voteCount: number, totalVotes: number, totalOptions: number) {
@@ -44,8 +53,9 @@ function toFeaturedPoll(poll: AdminPoll): FeaturedPoll {
   );
 
   return {
+    status: poll.status,
     tag: poll.category?.name ?? "Uncategorized",
-    category: formatStatus(poll.status),
+    category: poll.category?.name ?? "Uncategorized",
     image:
       poll.image_url ||
       "https://images.unsplash.com/photo-1516321318423-f06f85e504b3?w=400&q=80",
@@ -67,9 +77,13 @@ function toFeaturedPoll(poll: AdminPoll): FeaturedPoll {
 function PollCardWrapper({
   poll,
   onEdit,
+  onDelete,
+  isDeleting,
 }: {
   poll: AdminPoll;
   onEdit: () => void;
+  onDelete: () => void;
+  isDeleting: boolean;
 }) {
   return (
     <div className="flex flex-col gap-2">
@@ -91,6 +105,15 @@ function PollCardWrapper({
         >
           View Details
         </AppButtonLink>
+        <AppButton
+          onClick={onDelete}
+          disabled={isDeleting}
+          variant="danger"
+          size="sm"
+          className="flex-1"
+        >
+          {isDeleting ? "Deleting..." : "Delete"}
+        </AppButton>
       </div>
     </div>
   );
@@ -109,7 +132,9 @@ export function ManagementPageClient({
   categoriesError,
   pollsError,
 }: ManagementPageClientProps) {
+  const router = useRouter();
   const [showNew, setShowNew] = useState(false);
+  const [deletingPollId, setDeletingPollId] = useState<string | null>(null);
   const [showCategoryManagement, setShowCategoryManagement] = useState(false);
   const [editingPoll, setEditingPoll] = useState<AdminPoll | null>(null);
   const [orderedPolls, setOrderedPolls] = useState(initialPolls);
@@ -218,6 +243,54 @@ export function ManagementPageClient({
     });
   }
 
+  function handleDeletePoll(poll: AdminPoll) {
+    const votes = poll.options.reduce(
+      (sum, option) => sum + (option.vote_count ?? 0),
+      0,
+    );
+    const confirmed = window.confirm(
+      `Delete "${poll.title}" permanently?
+
+This also deletes its ${poll.options.length} options and ${votes.toLocaleString()} vote${votes === 1 ? "" : "s"}. This cannot be undone.`,
+    );
+
+    if (!confirmed) {
+      return;
+    }
+
+    setDeletingPollId(poll.id);
+    setOrderMessage(null);
+    setOrderError(null);
+
+    startTransition(async () => {
+      try {
+        const result = await deletePoll(poll.id);
+
+        if (result.error) {
+          setOrderError(result.error);
+          return;
+        }
+
+        setOrderedPolls((current) => current.filter((item) => item.id !== poll.id));
+        setOrderMessage(`"${poll.title}" deleted.`);
+        router.refresh();
+      } finally {
+        setDeletingPollId(null);
+      }
+    });
+  }
+
+  function movePollBy(pollId: string, delta: -1 | 1) {
+    const index = visiblePolls.findIndex((poll) => poll.id === pollId);
+    const target = visiblePolls[index + delta];
+
+    if (index === -1 || !target) {
+      return;
+    }
+
+    movePoll(pollId, target.id);
+  }
+
   function saveOrder() {
     if (!hasUnsavedOrder || isSavingOrder) {
       return;
@@ -252,7 +325,7 @@ export function ManagementPageClient({
               {visiblePolls.length} of {orderedPolls.length} polls visible
             </p>
             <p className="mt-2 text-xs uppercase tracking-[0.16em] text-admin-text-subtle">
-              Drag cards for quick ordering. Use the order input in edit for precise placement.
+              Use the arrows (or drag on desktop) to reorder. Use the order input in edit for precise placement.
             </p>
           </div>
 
@@ -316,7 +389,7 @@ export function ManagementPageClient({
         ) : null}
 
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-          {visiblePolls.map((poll) => (
+          {visiblePolls.map((poll, index) => (
             <div
               key={poll.id}
               draggable={dragHandlePollId === poll.id}
@@ -344,25 +417,45 @@ export function ManagementPageClient({
                 draggingPollId === poll.id ? "scale-[0.985] opacity-60" : "opacity-100"
               }`}
             >
-              <div className="mb-2 flex items-center justify-between rounded-2xl border border-admin-card-border bg-admin-card-bg px-3 py-2">
+              <div className="mb-2 flex items-center justify-between gap-2 rounded-2xl border border-admin-card-border bg-admin-card-bg px-3 py-2">
                 <div className="text-[11px] font-semibold uppercase tracking-[0.16em] text-admin-text-muted">
-                  Drag to reorder
+                  Order
                 </div>
-                <button
-                  type="button"
-                  onMouseDown={() => setDragHandlePollId(poll.id)}
-                  onMouseUp={() => setDragHandlePollId(null)}
-                  onMouseLeave={() => {
-                    if (draggingPollId !== poll.id) {
-                      setDragHandlePollId(null);
-                    }
-                  }}
-                  onTouchStart={() => setDragHandlePollId(poll.id)}
-                  onTouchEnd={() => setDragHandlePollId(null)}
-                  className="cursor-grab rounded-xl border border-admin-button-secondary-border bg-admin-button-secondary-bg px-3 py-1.5 text-xs font-semibold text-admin-button-secondary-text transition hover:bg-admin-button-secondary-bg-hover active:cursor-grabbing"
-                  aria-label={`Drag ${poll.title}`}
-                >
-                  <span className="flex items-center gap-2">
+                <div className="flex items-center gap-1.5">
+                  <button
+                    type="button"
+                    onClick={() => movePollBy(poll.id, -1)}
+                    disabled={index === 0}
+                    className="grid size-8 place-items-center rounded-xl border border-admin-button-secondary-border bg-admin-button-secondary-bg text-admin-button-secondary-text transition hover:bg-admin-button-secondary-bg-hover disabled:cursor-not-allowed disabled:opacity-40"
+                    aria-label={`Move ${poll.title} earlier`}
+                  >
+                    <svg className="size-3.5" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                      <path d="M4 10l4-4 4 4" />
+                    </svg>
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => movePollBy(poll.id, 1)}
+                    disabled={index === visiblePolls.length - 1}
+                    className="grid size-8 place-items-center rounded-xl border border-admin-button-secondary-border bg-admin-button-secondary-bg text-admin-button-secondary-text transition hover:bg-admin-button-secondary-bg-hover disabled:cursor-not-allowed disabled:opacity-40"
+                    aria-label={`Move ${poll.title} later`}
+                  >
+                    <svg className="size-3.5" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                      <path d="M4 6l4 4 4-4" />
+                    </svg>
+                  </button>
+                  <button
+                    type="button"
+                    onMouseDown={() => setDragHandlePollId(poll.id)}
+                    onMouseUp={() => setDragHandlePollId(null)}
+                    onMouseLeave={() => {
+                      if (draggingPollId !== poll.id) {
+                        setDragHandlePollId(null);
+                      }
+                    }}
+                    className="hidden cursor-grab items-center gap-2 rounded-xl border border-admin-button-secondary-border bg-admin-button-secondary-bg px-3 py-1.5 text-xs font-semibold text-admin-button-secondary-text transition hover:bg-admin-button-secondary-bg-hover active:cursor-grabbing md:flex"
+                    aria-label={`Drag ${poll.title}`}
+                  >
                     <svg
                       className="size-3.5 text-admin-text-muted"
                       viewBox="0 0 16 16"
@@ -376,11 +469,16 @@ export function ManagementPageClient({
                       <circle cx="5" cy="12" r="1.2" />
                       <circle cx="11" cy="12" r="1.2" />
                     </svg>
-                    Move
-                  </span>
-                </button>
+                    Drag
+                  </button>
+                </div>
               </div>
-              <PollCardWrapper poll={poll} onEdit={() => setEditingPoll(poll)} />
+              <PollCardWrapper
+                poll={poll}
+                onEdit={() => setEditingPoll(poll)}
+                onDelete={() => handleDeletePoll(poll)}
+                isDeleting={deletingPollId === poll.id}
+              />
             </div>
           ))}
         </div>

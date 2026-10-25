@@ -2,11 +2,13 @@
 
 import { useMemo, useTransition, useState } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import {
   LineChart, Line, XAxis, YAxis, CartesianGrid,
   Tooltip, ResponsiveContainer, PieChart, Pie, Cell, Legend,
 } from "recharts";
 import {
+  deletePoll,
   togglePollFeatured,
   togglePollPinned,
   updatePollStatus,
@@ -27,6 +29,7 @@ const CHART_COLORS = [
 
 const STATUS_CONFIG = {
   live: { label: "Live", cls: "border-admin-card-border-hover bg-success-soft text-admin-success-text", dot: "bg-admin-success-text" },
+  coming_soon: { label: "Coming Soon", cls: "border-admin-card-border-hover bg-admin-badge-info-bg text-admin-badge-info-text", dot: "bg-admin-badge-info-text" },
   draft: { label: "Draft", cls: "border-admin-card-border bg-admin-surface text-admin-text-muted", dot: "bg-admin-text-muted" },
   closed: { label: "Closed", cls: "border-admin-card-border-hover bg-danger-soft text-admin-danger-text", dot: "bg-admin-danger-text" },
 };
@@ -146,6 +149,7 @@ export function PollDetailView({
   countryTraffic: AdminPollCountryTraffic[];
   poll: AdminPoll;
 }) {
+  const router = useRouter();
   const [isPending, startTransition] = useTransition();
   const [localPoll, setLocalPoll] = useState(poll);
   const [feedback, setFeedback] = useState<{ msg: string; ok: boolean } | null>(null);
@@ -180,6 +184,29 @@ export function PollDetailView({
     const next = localPoll.status === "live" ? "closed" : "live";
     setLocalPoll((p) => ({ ...p, status: next }));
     act(() => updatePollStatus(localPoll.id, next));
+  }
+
+  function removePoll() {
+    const confirmed = window.confirm(
+      `Delete "${localPoll.title}" permanently?
+
+This also deletes its options and all votes. This cannot be undone.`,
+    );
+
+    if (!confirmed) return;
+
+    setFeedback(null);
+    startTransition(async () => {
+      const result = await deletePoll(localPoll.id);
+
+      if (result.error) {
+        setFeedback({ msg: result.error, ok: false });
+        return;
+      }
+
+      router.push("/admin/management");
+      router.refresh();
+    });
   }
 
   function toggleFeatured() {
@@ -472,7 +499,7 @@ export function PollDetailView({
                     <svg fill="none" height="14" viewBox="0 0 14 14" width="14">
                       <path d="M3 2l9 5-9 5V2z" fill="currentColor" />
                     </svg>
-                    Reopen Poll
+                    {localPoll.status === "closed" ? "Reopen Poll" : "Go Live"}
                   </>
                 )}
               </ActionButton>
@@ -498,6 +525,17 @@ export function PollDetailView({
                   <path d="M2 12l2.5-2.5" strokeLinecap="round" />
                 </svg>
                 {localPoll.is_pinned ? "Unpin Poll" : "Pin Poll"}
+              </ActionButton>
+
+              <ActionButton
+                disabled={isPending}
+                onClick={removePoll}
+                variant="danger"
+              >
+                <svg fill="none" height="14" stroke="currentColor" strokeWidth="1.5" viewBox="0 0 14 14" width="14">
+                  <path d="M2 3.5h10M5.5 3.5V2h3v1.5M3.5 3.5l.5 8h6l.5-8" strokeLinecap="round" strokeLinejoin="round" />
+                </svg>
+                Delete Poll
               </ActionButton>
             </div>
           </div>

@@ -5,11 +5,13 @@ import { AppInput, AppTextarea } from "@/components/form-controls";
 import { AppButton } from "@/components/ui/button";
 import { updatePoll } from "@/features/admin/actions";
 import { AdminSelect } from "@/features/admin/components/ui/admin-select";
-import type {
-  AdminActionState,
-  AdminCategory,
-  AdminPoll,
-  AdminPollOption,
+import {
+  POLL_STATUSES,
+  POLL_STATUS_LABELS,
+  type AdminActionState,
+  type AdminCategory,
+  type AdminPoll,
+  type AdminPollOption,
 } from "@/features/admin/types";
 
 const initialState: AdminActionState = {};
@@ -199,11 +201,7 @@ export function PollEditorCard({
                   name="status"
                   value={status}
                   onChange={(value) => setStatus(value as AdminPoll["status"])}
-                  options={[
-                    { value: "draft", label: "Draft" },
-                    { value: "live", label: "Live" },
-                    { value: "closed", label: "Closed" },
-                  ]}
+                  options={POLL_STATUSES.map((value) => ({ value, label: POLL_STATUS_LABELS[value] }))}
                 />
               </div>
 

@@ -57,6 +57,13 @@ function pollImageLoader({ src, width, quality }: ImageLoaderProps) {
   return url.toString();
 }
 
+const statusBadgeLabel: Record<NonNullable<FeaturedPoll["status"]>, string> = {
+  coming_soon: "Coming soon",
+  live: "Live",
+  closed: "Closed",
+  draft: "Draft",
+};
+
 type PollPreviewProps = {
   poll: FeaturedPoll;
   variant?: "hero" | "feed" | "management";
@@ -87,6 +94,8 @@ export function PollPreview({
   const [localSelected, setLocalSelected] = useState<number | null>(null);
   const [localWidths, setLocalWidths] = useState<string[] | null>(null);
   const [voteError, setVoteError] = useState<string | null>(null);
+  const pollStatus = poll.status ?? "live";
+  const isComingSoon = pollStatus === "coming_soon" && variant !== "management";
   const [showAuthModal, setShowAuthModal] = useState(false);
   const [showShareModal, setShowShareModal] = useState(false);
   const { isInView, ref: viewportRef } = useElementInView<HTMLDivElement>();
@@ -94,6 +103,7 @@ export function PollPreview({
   const shouldReduceMotion = useReducedMotion();
   const isMotionActive =
     activityEnabled && isInView && isPageVisible && !shouldReduceMotion;
+  const isLivePulse = isMotionActive && pollStatus === "live";
   const isCompact = variant !== "hero";
   const optimizeImage = canOptimizePollImage(poll.image);
   const showCompactOptionDescriptions =
@@ -115,6 +125,11 @@ export function PollPreview({
   function handlePick(index: number) {
     if (variant === "management") {
       setLocalSelected(index);
+      return;
+    }
+
+    if (isComingSoon) {
+      setVoteError("This poll is coming soon. Voting opens as soon as it goes live.");
       return;
     }
 
@@ -203,30 +218,30 @@ export function PollPreview({
           />
           <div className="absolute inset-x-0 bottom-0 h-24 bg-gradient-to-t from-black/55 to-transparent" />
 
-          {/* LIVE badge */}
+          {/* Status badge */}
           <div className="absolute left-4 top-4 inline-flex h-7 items-center gap-2 rounded-full bg-poll-badge-bg px-3 shadow-[0_0_8px_var(--poll-live-ring)] backdrop-blur-md">
             <span className="relative flex size-2.5 shrink-0">
               <motion.span
                 animate={
-                  isMotionActive
+                  isLivePulse
                     ? { opacity: [0.75, 0], scale: [1, 2.6] }
                     : { opacity: 0.75, scale: 1 }
                 }
                 className="absolute inline-flex h-full w-full rounded-full bg-button-primary-bg"
-                transition={{ duration: 1.35, repeat: isMotionActive ? Infinity : 0, ease: "easeOut" }}
+                transition={{ duration: 1.35, repeat: isLivePulse ? Infinity : 0, ease: "easeOut" }}
               />
               <motion.span
                 animate={
-                  isMotionActive
+                  isLivePulse
                     ? { opacity: [1, 0.55, 1], scale: [1, 0.82, 1] }
                     : { opacity: 1, scale: 1 }
                 }
                 className="relative inline-flex size-2.5 rounded-full bg-button-primary-bg shadow-[0_0_16px_var(--poll-live-glow)]"
-                transition={{ duration: 1.1, repeat: isMotionActive ? Infinity : 0, ease: "easeInOut" }}
+                transition={{ duration: 1.1, repeat: isLivePulse ? Infinity : 0, ease: "easeInOut" }}
               />
             </span>
-            <span className="text-[10px] font-bold leading-none tracking-widest text-poll-badge-text">
-              LIVE
+            <span className="text-[10px] font-bold uppercase leading-none tracking-widest text-poll-badge-text">
+              {statusBadgeLabel[pollStatus]}
             </span>
           </div>
 
@@ -261,7 +276,15 @@ export function PollPreview({
             </p>
           </div>
 
-          {!hasResults ? (
+          {isComingSoon ? (
+            <div
+              className="inline-flex w-fit items-center gap-2 rounded-full bg-poll-badge-bg px-3 py-1.5 text-xs font-semibold text-poll-badge-text"
+              role="status"
+            >
+              <span aria-hidden="true" className="size-2 rounded-full bg-warning" />
+              Coming soon — voting isn&apos;t open yet
+            </div>
+          ) : !hasResults ? (
             <div className="inline-flex w-fit items-center gap-1 rounded-full bg-poll-badge-bg px-3 py-1 text-xs font-medium text-poll-badge-text">
               <span aria-hidden="true" className="grid size-6 place-items-center">
                 {/* eslint-disable-next-line @next/next/no-img-element */}
