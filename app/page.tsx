@@ -108,7 +108,16 @@ const fetchLivePolls = unstable_cache(
       return null;
     }
 
+    // Pinned polls first, then featured, then the manual sort order.
     return polls.sort((a, b) => {
+      if (Boolean(a.is_pinned) !== Boolean(b.is_pinned)) {
+        return a.is_pinned ? -1 : 1;
+      }
+
+      if (Boolean(a.is_featured) !== Boolean(b.is_featured)) {
+        return a.is_featured ? -1 : 1;
+      }
+
       const orderA = a.sort_order ?? Number.POSITIVE_INFINITY;
       const orderB = b.sort_order ?? Number.POSITIVE_INFINITY;
 
