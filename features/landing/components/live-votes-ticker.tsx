@@ -80,7 +80,10 @@ export function LiveVotesTicker({ isActive }: { isActive: boolean }) {
             alt=""
             className="h-4 w-6 object-contain"
             decoding="async"
-            src={`https://flagcdn.com/${user.code}.svg`}
+            onError={(event) => {
+              event.currentTarget.style.display = "none";
+            }}
+            src={`/flags/${user.code}.svg`}
           />
           <span className="font-semibold">{user.name}</span>
           <span className="text-poll-card-muted">just voted</span>
